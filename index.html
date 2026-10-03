@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulación en la práctica | Ingeniería Informática UMNG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --papel:#F3F5F9; --hoja:#FFFFFF; --tinta:#1B2440; --tenue:#5A6480; --linea:#D5DAE6;
+  --indigo:#3B4CCA; --azafran:#E9A820; --verde:#128A7A; --rosa:#C8386B;
+  --titulo:"Bricolage Grotesque","Trebuchet MS",sans-serif;
+  --texto:"Atkinson Hyperlegible",Verdana,sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--papel)}
+body{margin:0;font-family:var(--texto);color:var(--tinta);background:var(--papel);line-height:1.55;font-size:17px}
+.marco{max-width:1120px;margin:0 auto;padding:0 20px}
+
+header{padding:56px 0 28px}
+header p.origen{margin:0 0 14px;color:var(--tenue);font-size:.95rem}
+h1{font-family:var(--titulo);font-weight:800;font-size:clamp(2.3rem,6.4vw,4.6rem);line-height:.98;letter-spacing:-.025em;margin:0;max-width:14ch}
+header p.entrada{max-width:62ch;margin:22px 0 0;font-size:1.1rem}
+
+nav{position:sticky;top:0;z-index:5;background:var(--papel);border-bottom:2px solid var(--tinta)}
+.pestanas{display:flex;gap:4px;overflow-x:auto}
+.pestanas button{font:600 1rem var(--titulo);color:var(--tinta);background:none;border:0;padding:14px 16px 12px;cursor:pointer;white-space:nowrap;border-bottom:5px solid transparent;margin-bottom:-2px}
+.pestanas button span{color:var(--tenue);font-weight:400;margin-right:6px}
+.pestanas button[aria-selected="true"]{border-bottom-color:var(--azafran)}
+.pestanas button:hover{background:#E7EBF3}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--indigo);outline-offset:2px}
+
+main{padding:34px 0 70px}
+h2{font-family:var(--titulo);font-weight:800;font-size:clamp(1.6rem,3.4vw,2.3rem);line-height:1.08;letter-spacing:-.015em;margin:0 0 10px}
+h3{font-family:var(--titulo);font-weight:600;font-size:1.08rem;margin:0 0 10px}
+.intro{max-width:68ch;margin:0 0 26px}
+.banco{display:grid;grid-template-columns:300px minmax(0,1fr);gap:26px;align-items:start}
+@media (max-width:820px){.banco{grid-template-columns:1fr}}
+
+.controles{background:var(--tinta);color:#fff;padding:20px;border-radius:4px}
+.controles h3{color:#fff}
+.campo{margin-bottom:15px}
+.campo label{display:flex;justify-content:space-between;gap:8px;font-size:.93rem;margin-bottom:5px}
+.campo output{font-weight:700;color:var(--azafran);white-space:nowrap}
+.campo input[type=number],.campo select{width:100%;font:inherit;padding:8px 10px;border:0;border-radius:3px;background:#fff;color:var(--tinta)}
+.campo input[type=range]{width:100%;accent-color:var(--azafran)}
+.par{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.par input[type=number]{font-size:.86rem;padding:9px 6px;-moz-appearance:textfield;appearance:textfield}
+.par input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.boton{font:700 .98rem var(--texto);border:0;border-radius:3px;padding:10px 14px;cursor:pointer;background:var(--azafran);color:var(--tinta)}
+.boton.sec{background:transparent;color:#fff;box-shadow:inset 0 0 0 1.5px #8892B8}
+.boton.sec:hover{box-shadow:inset 0 0 0 1.5px #fff}
+.fila-botones{display:flex;flex-wrap:wrap;gap:8px}
+.nota-ctrl{font-size:.86rem;color:#C5CBE0;margin:12px 0 0}
+.aviso{background:var(--rosa);color:#fff;padding:8px 10px;border-radius:3px;font-size:.9rem;margin-top:12px}
+
+.salida > * + *{margin-top:22px}
+.hoja{background:var(--hoja);border:1px solid var(--linea);padding:18px;border-radius:4px}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:620px){.dos{grid-template-columns:1fr}}
+canvas{display:block;width:100%;height:230px}
+.pie{font-size:.88rem;color:var(--tenue);margin:8px 0 0}
+
+.tira{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}
+.tira div{padding:9px 0;text-align:center;font-size:.8rem;font-weight:700;border-radius:2px}
+@media (max-width:620px){.tira{grid-template-columns:repeat(6,1fr)}}
+
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--linea);vertical-align:top}
+th{font-family:var(--titulo);font-weight:600}
+.tabla-scroll{overflow-x:auto}
+.ok{color:var(--verde);font-weight:700}
+.no{color:var(--rosa);font-weight:700}
+.veredicto{margin:14px 0 0;font-weight:700}
+
+.leyenda{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.9rem;margin-bottom:8px}
+.leyenda i{display:inline-block;width:22px;height:4px;vertical-align:middle;margin-right:6px;border-radius:2px}
+.cifras{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0;border-top:2px solid var(--tinta)}
+.cifras div{padding:12px 14px 12px 0;border-bottom:1px solid var(--linea)}
+.cifras b{display:block;font-family:var(--titulo);font-size:1.6rem;font-weight:800;line-height:1.1}
+.cifras small{color:var(--tenue);font-size:.88rem}
+svg text{font-family:var(--texto)}
+footer{border-top:1px solid var(--linea);padding:22px 0 40px;color:var(--tenue);font-size:.9rem}
+</style>
+</head>
+<body>
+
+<header class="marco">
+  <p class="origen">Universidad Militar Nueva Granada, Ingeniería Informática a distancia, séptimo semestre</p>
+  <h1>Simulación: probar antes de construir</h1>
+  <p class="entrada">Tres experimentos, uno por cada unidad de la asignatura. Cambia los parámetros y observa cómo responde el sistema: así se toman decisiones cuando equivocarse en el mundo real sale caro.</p>
+</header>
+
+<nav>
+  <div class="marco pestanas" role="tablist" aria-label="Unidades de la asignatura">
+    <button role="tab" aria-selected="true" aria-controls="u1" data-tab="u1"><span>Unidad I</span>Números pseudoaleatorios</button>
+    <button role="tab" aria-selected="false" aria-controls="u2" data-tab="u2"><span>Unidad II</span>Líneas de espera</button>
+    <button role="tab" aria-selected="false" aria-controls="u3" data-tab="u3"><span>Unidad III</span>Dinámica de sistemas</button>
+  </div>
+</nav>
+
+<main class="marco">
+
+<!-- ================= UNIDAD I ================= -->
+<section id="u1" role="tabpanel">
+  <h2>¿Qué tan aleatorio es tu generador?</h2>
+  <p class="intro">Toda simulación se alimenta de números entre 0 y 1 que parecen azar pero salen de una fórmula. Si la fórmula es mala, las conclusiones también. Elige un método, genera la serie y sométela a las pruebas estadísticas del curso.</p>
+
+  <div class="banco">
+    <div class="controles">
+      <h3>Generador</h3>
+      <div class="campo">
+        <label for="metodo">Método</label>
+        <select id="metodo">
+          <option value="lcg">Congruencial lineal</option>
+          <option value="cm">Cuadrados medios</option>
+          <option value="pm">Productos medios</option>
+        </select>
+      </div>
+      <div id="camposLcg">
+        <div class="par">
+          <div class="campo"><label for="a">Multiplicador a</label><input id="a" type="number" min="1" value="1664525"></div>
+          <div class="campo"><label for="c">Incremento c</label><input id="c" type="number" min="0" value="1013904223"></div>
+        </div>
+        <div class="par">
+          <div class="campo"><label for="m">Módulo m</label><input id="m" type="number" min="2" value="4294967296"></div>
+          <div class="campo"><label for="x0">Semilla X₀</label><input id="x0" type="number" min="0" value="2026"></div>
+        </div>
+        <div class="campo">
+          <label>Ejemplos para comparar</label>
+          <div class="fila-botones">
+            <button class="boton sec" data-pre="bueno">Confiable</button>
+            <button class="boton sec" data-pre="rejilla">Con rejilla</button>
+            <button class="boton sec" data-pre="corto">Periodo corto</button>
+          </div>
+        </div>
+      </div>
+      <div id="camposCm" hidden>
+        <div class="campo"><label for="scm">Semilla de 4 dígitos</label><input id="scm" type="number" min="1000" max="9999" value="5735"></div>
+      </div>
+      <div id="camposPm" hidden>
+        <div class="par">
+          <div class="campo"><label for="spm0">Semilla X₀</label><input id="spm0" type="number" min="1000" max="9999" value="5015"></div>
+          <div class="campo"><label for="spm1">Semilla X₁</label><input id="spm1" type="number" min="1000" max="9999" value="5734"></div>
+        </div>
+      </div>
+      <div class="campo">
+        <label for="n">Cantidad de números <output id="nOut">500</output></label>
+        <input id="n" type="range" min="50" max="2000" step="50" value="500">
+      </div>
+      <button class="boton" id="btnGenerar">Generar serie</button>
+      <p class="nota-ctrl" id="formula"></p>
+      <div class="aviso" id="avisoGen" hidden></div>
+    </div>
+
+    <div class="salida">
+      <div class="hoja">
+        <h3>Primeros 12 números de la serie</h3>
+        <div class="tira" id="tira"></div>
+        <p class="pie" id="periodo"></p>
+      </div>
+      <div class="dos">
+        <div class="hoja">
+          <h3>Histograma en 10 intervalos</h3>
+          <canvas id="cvHist" role="img" aria-label="Histograma de frecuencias de la serie generada"></canvas>
+          <p class="pie">Si la serie es uniforme, todas las barras rondan la línea punteada.</p>
+        </div>
+        <div class="hoja">
+          <h3>Cada número contra el siguiente</h3>
+          <canvas id="cvDisp" role="img" aria-label="Diagrama de dispersión de r(i) contra r(i+1)"></canvas>
+          <p class="pie">Una nube sin forma indica independencia. Líneas o rejillas delatan un patrón.</p>
+        </div>
+      </div>
+      <div class="hoja">
+        <h3>Pruebas estadísticas con 95 % de confianza</h3>
+        <div class="tabla-scroll">
+          <table>
+            <thead><tr><th>Prueba</th><th>Resultado</th><th>Criterio de aceptación</th><th>Veredicto</th></tr></thead>
+            <tbody id="pruebas"></tbody>
+          </table>
+        </div>
+        <p class="veredicto" id="veredicto"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= UNIDAD II ================= -->
+<section id="u2" role="tabpanel" hidden>
+  <h2>Mesa de ayuda: ¿cuántos técnicos hacen falta?</h2>
+  <p class="intro">Los tiquetes llegan al azar y cada técnico tarda un tiempo distinto en resolverlos. Los tiempos se generan con el método de la transformada inversa sobre una distribución exponencial. Compara lo que mide la simulación con lo que predice la teoría de colas.</p>
+
+  <div class="banco">
+    <div class="controles">
+      <h3>Parámetros del sistema</h3>
+      <div class="campo">
+        <label for="lam">Tiquetes que llegan por hora <output id="lamOut"></output></label>
+        <input id="lam" type="range" min="2" max="60" step="1" value="18">
+      </div>
+      <div class="campo">
+        <label for="mu">Tiquetes que resuelve un técnico por hora <output id="muOut"></output></label>
+        <input id="mu" type="range" min="2" max="30" step="1" value="10">
+      </div>
+      <div class="campo">
+        <label for="srv">Técnicos <output id="srvOut"></output></label>
+        <input id="srv" type="range" min="1" max="5" step="1" value="2">
+      </div>
+      <div class="campo">
+        <label for="vel">Minutos simulados por segundo <output id="velOut"></output></label>
+        <input id="vel" type="range" min="1" max="120" step="1" value="20">
+      </div>
+      <div class="fila-botones">
+        <button class="boton" id="btnCola">Iniciar simulación</button>
+        <button class="boton sec" id="btnColaReset">Reiniciar</button>
+      </div>
+      <p class="nota-ctrl" id="rhoTxt"></p>
+    </div>
+
+    <div class="salida">
+      <div class="hoja">
+        <h3 id="reloj">Tiempo simulado: 0 h 00 min</h3>
+        <canvas id="cvCola" style="height:200px" role="img" aria-label="Animación de la fila de tiquetes y los técnicos que los atienden"></canvas>
+      </div>
+      <div class="hoja">
+        <h3>Simulación frente a teoría (modelo M/M/c)</h3>
+        <div class="tabla-scroll">
+          <table>
+            <thead><tr><th>Indicador</th><th>Simulado</th><th>Teórico</th></tr></thead>
+            <tbody id="tablaCola"></tbody>
+          </table>
+        </div>
+        <p class="pie">Cuanto más tiempo dejes correr la simulación, más se acerca lo simulado a lo teórico.</p>
+      </div>
+      <div class="hoja">
+        <h3>Tiquetes en espera durante las últimas 4 horas simuladas</h3>
+        <canvas id="cvColaHist" style="height:170px" role="img" aria-label="Gráfica de la longitud de la cola en el tiempo"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= UNIDAD III ================= -->
+<section id="u3" role="tabpanel" hidden>
+  <h2>Un malware recorre la red de la empresa</h2>
+  <p class="intro">En dinámica de sistemas no se siguen individuos sino niveles que se llenan y se vacían. Aquí los equipos pasan de susceptibles a infectados y de infectados a protegidos. Mueve las tasas y compara escenarios antes de decidir dónde invertir: antivirus, parches o aislamiento.</p>
+
+  <div class="banco">
+    <div class="controles">
+      <h3>Tasas del modelo</h3>
+      <div class="campo">
+        <label for="N">Equipos en la red <output id="NOut"></output></label>
+        <input id="N" type="range" min="100" max="5000" step="100" value="1000">
+      </div>
+      <div class="campo">
+        <label for="I0">Infectados el día 0 <output id="I0Out"></output></label>
+        <input id="I0" type="range" min="1" max="50" step="1" value="3">
+      </div>
+      <div class="campo">
+        <label for="beta">Contagios por infectado al día <output id="betaOut"></output></label>
+        <input id="beta" type="range" min="0" max="2" step="0.05" value="0.6">
+      </div>
+      <div class="campo">
+        <label for="gamma">Fracción de infectados que se limpia al día <output id="gammaOut"></output></label>
+        <input id="gamma" type="range" min="0.01" max="1" step="0.01" value="0.15">
+      </div>
+      <div class="campo">
+        <label for="nu">Fracción de sanos que se parcha al día <output id="nuOut"></output></label>
+        <input id="nu" type="range" min="0" max="0.2" step="0.005" value="0">
+      </div>
+      <div class="fila-botones">
+        <button class="boton" id="btnRef">Fijar como referencia</button>
+        <button class="boton sec" id="btnRefQuitar">Quitar referencia</button>
+      </div>
+      <p class="nota-ctrl">Fija un escenario y luego cambia una tasa: la curva punteada muestra cómo era antes.</p>
+    </div>
+
+    <div class="salida">
+      <div class="hoja">
+        <h3>Diagrama de niveles y flujos</h3>
+        <svg viewBox="0 0 640 170" role="img" aria-label="Diagrama: Susceptibles pasa a Infectados por contagio, Infectados pasa a Protegidos por limpieza, y Susceptibles pasa a Protegidos por parcheo" style="width:100%;height:auto">
+          <defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1B2440"/></marker></defs>
+          <rect x="10" y="80" width="150" height="56" fill="#fff" stroke="#3B4CCA" stroke-width="3"/>
+          <rect x="245" y="80" width="150" height="56" fill="#fff" stroke="#C8386B" stroke-width="3"/>
+          <rect x="480" y="80" width="150" height="56" fill="#fff" stroke="#128A7A" stroke-width="3"/>
+          <text x="85" y="113" text-anchor="middle" font-size="16" font-weight="700" fill="#1B2440">Susceptibles</text>
+          <text x="320" y="113" text-anchor="middle" font-size="16" font-weight="700" fill="#1B2440">Infectados</text>
+          <text x="555" y="113" text-anchor="middle" font-size="16" font-weight="700" fill="#1B2440">Protegidos</text>
+          <line x1="160" y1="108" x2="243" y2="108" stroke="#1B2440" stroke-width="2.5" marker-end="url(#fl)"/>
+          <line x1="395" y1="108" x2="478" y2="108" stroke="#1B2440" stroke-width="2.5" marker-end="url(#fl)"/>
+          <text x="202" y="98" text-anchor="middle" font-size="13" fill="#5A6480">contagio</text>
+          <text x="437" y="98" text-anchor="middle" font-size="13" fill="#5A6480">limpieza</text>
+          <path d="M85 80 C 85 15, 555 15, 555 78" fill="none" stroke="#1B2440" stroke-width="2.5" stroke-dasharray="6 5" marker-end="url(#fl)"/>
+          <text x="320" y="24" text-anchor="middle" font-size="13" fill="#5A6480">parcheo preventivo</text>
+          <text x="320" y="160" text-anchor="middle" font-size="13" fill="#5A6480">Bucle de refuerzo: más infectados producen más contagios. Bucle de balance: se agotan los susceptibles.</text>
+        </svg>
+      </div>
+      <div class="hoja">
+        <div class="leyenda">
+          <span><i style="background:var(--indigo)"></i>Susceptibles</span>
+          <span><i style="background:var(--rosa)"></i>Infectados</span>
+          <span><i style="background:var(--verde)"></i>Protegidos</span>
+          <span id="leyRef" hidden><i style="background:repeating-linear-gradient(90deg,var(--azafran) 0 5px,transparent 5px 9px)"></i>Infectados en la referencia</span>
+        </div>
+        <canvas id="cvSD" style="height:300px" role="img" aria-label="Evolución de susceptibles, infectados y protegidos durante 60 días"></canvas>
+      </div>
+      <div class="cifras" id="cifrasSD"></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="marco">Material de apoyo para la asignatura Simulación. Los modelos son didácticos y simplifican la realidad a propósito.</footer>
+
+<script>
+(function(){
+"use strict";
+const $ = id => document.getElementById(id);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const COL = {tinta:css('--tinta'),tenue:css('--tenue'),linea:css('--linea'),indigo:css('--indigo'),azafran:css('--azafran'),verde:css('--verde'),rosa:css('--rosa')};
+const fmt = (x,d=2) => Number.isFinite(x) ? x.toLocaleString('es-CO',{minimumFractionDigits:d,maximumFractionDigits:d}) : '—';
+
+function lienzo(cv){
+  const r = cv.getBoundingClientRect(), d = window.devicePixelRatio||1;
+  const w = Math.max(120, r.width), h = Math.max(80, r.height);
+  cv.width = Math.round(w*d); cv.height = Math.round(h*d);
+  const g = cv.getContext('2d'); g.setTransform(d,0,0,d,0,0); g.clearRect(0,0,w,h);
+  g.font = '12px "Atkinson Hyperlegible",Verdana,sans-serif';
+  return {g,w,h};
+}
+
+/* ---------- Pestañas ---------- */
+let activa = 'u1';
+const tabs = document.querySelectorAll('[role=tab]');
+tabs.forEach(b => b.addEventListener('click', () => {
+  activa = b.dataset.tab;
+  tabs.forEach(t => t.setAttribute('aria-selected', String(t===b)));
+  document.querySelectorAll('[role=tabpanel]').forEach(p => p.hidden = p.id!==activa);
+  redibujar();
+}));
+function redibujar(){
+  if(activa==='u1') pintarU1();
+  if(activa==='u2'){ pintarCola(); pintarColaHist(); tablaCola(); }
+  if(activa==='u3') pintarSD();
+}
+window.addEventListener('resize', redibujar);
+
+/* ================= UNIDAD I ================= */
+let serie = [];
+const PRE = {
+  bueno:{a:1664525,c:1013904223,m:4294967296,x0:2026},
+  rejilla:{a:37,c:1,m:1024,x0:11},
+  corto:{a:5,c:3,m:16,x0:7}
+};
+function entero(id, min){ const v = Math.trunc(Number($(id).value)); return Number.isFinite(v) && v>=min ? v : null; }
+
+function crearGenerador(){
+  const met = $('metodo').value;
+  if(met==='lcg'){
+    const a=entero('a',1), c=entero('c',0), m=entero('m',2), s=entero('x0',0);
+    if(a===null||c===null||m===null||s===null) return {error:'Revisa los valores: a debe ser al menos 1, m al menos 2, y c y la semilla no pueden ser negativos.'};
+    if(m>2**40||a>2**40) return {error:'Usa valores de a y m menores que 2⁴⁰ para que el cálculo sea exacto.'};
+    const A=BigInt(a), C=BigInt(c), M=BigInt(m); let x=BigInt(s)%M;
+    return {sig(){ x=(A*x+C)%M; return Number(x)/m; }, clave(){ return x.toString(); },
+            formula:`Xᵢ₊₁ = (${a}·Xᵢ + ${c}) mod ${m},  rᵢ = Xᵢ / m`};
+  }
+  if(met==='cm'){
+    let x=entero('scm',1000);
+    if(x===null||x>9999) return {error:'La semilla debe tener exactamente 4 dígitos (entre 1000 y 9999).'};
+    return {sig(){ const q=String(x*x).padStart(8,'0'); x=Number(q.substr(2,4)); return x/10000; }, clave(){ return String(x); },
+            formula:'Se eleva Xᵢ al cuadrado y se toman los 4 dígitos centrales como Xᵢ₊₁.'};
+  }
+  let p=entero('spm0',1000), q=entero('spm1',1000);
+  if(p===null||q===null||p>9999||q>9999) return {error:'Las dos semillas deben tener exactamente 4 dígitos.'};
+  return {sig(){ const t=String(p*q).padStart(8,'0'); const y=Number(t.substr(2,4)); p=q; q=y; return y/10000; }, clave(){ return p+','+q; },
+          formula:'Se multiplican los dos últimos valores y se toman los 4 dígitos centrales del producto.'};
+}
+
+function periodo(){
+  const g = crearGenerador(); if(g.error) return null;
+  const vistos = new Map(), LIM = 100000;
+  for(let i=0;i<=LIM;i++){
+    const k = g.clave();
+    if(vistos.has(k)) return i - vistos.get(k);
+    vistos.set(k,i); g.sig();
+  }
+  return Infinity;
+}
+
+function generar(){
+  const g = crearGenerador();
+  $('avisoGen').hidden = !g.error;
+  if(g.error){ $('avisoGen').textContent = g.error; return; }
+  const n = Number($('n').value);
+  serie = []; for(let i=0;i<n;i++) serie.push(g.sig());
+  $('formula').textContent = g.formula;
+  const p = periodo();
+  $('periodo').textContent = p===Infinity
+    ? 'Periodo: la serie no se repite en los primeros 100.000 valores.'
+    : `Periodo: la serie entra en un ciclo que se repite cada ${p.toLocaleString('es-CO')} ${p===1?'valor':'valores'}.` + (p<n ? ' Es más corto que la cantidad solicitada, así que hay números repetidos.' : '');
+  pintarU1(); pruebas();
+}
+
+function pintarU1(){
+  if(!serie.length) return;
+  const t = $('tira'); t.innerHTML='';
+  serie.slice(0,12).forEach(r => {
+    const d=document.createElement('div');
+    d.textContent = fmt(r,4);
+    d.style.background = `rgba(59,76,202,${(0.08+0.8*r).toFixed(2)})`;
+    d.style.color = r>0.55 ? '#fff' : COL.tinta;
+    t.appendChild(d);
+  });
+  // Histograma
+  { const {g,w,h} = lienzo($('cvHist'));
+    const fr = new Array(10).fill(0); serie.forEach(r => fr[Math.min(9,Math.floor(r*10))]++);
+    const esp = serie.length/10, max = Math.max(...fr, esp*1.3), b=22, top=10, an=(w-10)/10;
+    fr.forEach((f,i) => { const al=(h-b-top)*f/max; g.fillStyle=COL.indigo; g.fillRect(5+i*an+2, h-b-al, an-4, al); });
+    const ye = h-b-(h-b-top)*esp/max;
+    g.strokeStyle=COL.azafran; g.lineWidth=2; g.setLineDash([6,4]); g.beginPath(); g.moveTo(5,ye); g.lineTo(w-5,ye); g.stroke(); g.setLineDash([]);
+    g.fillStyle=COL.tenue; g.textAlign='center';
+    for(let i=0;i<=10;i+=2) g.fillText((i/10).toLocaleString('es-CO'), 5+i*an, h-6);
+  }
+  // Dispersión
+  { const {g,w,h} = lienzo($('cvDisp'));
+    const mg=22, L=Math.min(w-2*mg, h-mg-8), ox=(w-L)/2, oy=6;
+    g.strokeStyle=COL.linea; g.lineWidth=1; g.strokeRect(ox,oy,L,L);
+    g.fillStyle='rgba(200,56,107,.7)';
+    for(let i=0;i<serie.length-1;i++){ g.beginPath(); g.arc(ox+serie[i]*L, oy+L-serie[i+1]*L, 1.8, 0, 6.3); g.fill(); }
+    g.fillStyle=COL.tenue; g.textAlign='center'; g.fillText('rᵢ', ox+L/2, oy+L+15);
+    g.save(); g.translate(ox-8, oy+L/2); g.rotate(-Math.PI/2); g.fillText('rᵢ₊₁',0,0); g.restore();
+  }
+}
+
+function chi2(z, v){ return v*Math.pow(1 - 2/(9*v) + z*Math.sqrt(2/(9*v)), 3); } // aproximación de Wilson-Hilferty
+
+function pruebas(){
+  const n = serie.length, Z=1.96;
+  const media = serie.reduce((s,r)=>s+r,0)/n;
+  const varz = serie.reduce((s,r)=>s+(r-media)**2,0)/(n-1);
+  const liM = 0.5 - Z/Math.sqrt(12*n), lsM = 0.5 + Z/Math.sqrt(12*n);
+  const liV = chi2(-Z,n-1)/(12*(n-1)), lsV = chi2(Z,n-1)/(12*(n-1));
+  const fr = new Array(10).fill(0); serie.forEach(r => fr[Math.min(9,Math.floor(r*10))]++);
+  const E = n/10, x2 = fr.reduce((s,o)=>s+(o-E)**2/E,0);
+  let corridas = 1, prev = null;
+  for(let i=0;i<n-1;i++){ const s = serie[i+1]>serie[i]; if(prev!==null && s!==prev) corridas++; prev=s; }
+  const muC=(2*n-1)/3, sdC=Math.sqrt((16*n-29)/90), z0=Math.abs((corridas-muC)/sdC);
+  const filas = [
+    ['Medias', `Media = ${fmt(media,4)}`, `Entre ${fmt(liM,4)} y ${fmt(lsM,4)}`, media>=liM&&media<=lsM],
+    ['Varianza', `Varianza = ${fmt(varz,4)}`, `Entre ${fmt(liV,4)} y ${fmt(lsV,4)}`, varz>=liV&&varz<=lsV],
+    ['Uniformidad (chi cuadrado)', `χ² = ${fmt(x2,2)}`, 'Menor que 16,92 (9 grados de libertad)', x2<16.919],
+    ['Independencia (corridas arriba y abajo)', `${corridas} corridas, |Z| = ${fmt(z0,2)}`, '|Z| menor que 1,96', z0<1.96]
+  ];
+  $('pruebas').innerHTML = filas.map(f => `<tr><td>${f[0]}</td><td>${f[1]}</td><td>${f[2]}</td><td class="${f[3]?'ok':'no'}">${f[3]?'Pasa':'No pasa'}</td></tr>`).join('');
+  const ok = filas.filter(f=>f[3]).length;
+  $('veredicto').textContent = ok===4
+    ? 'La serie pasa las cuatro pruebas: no hay evidencia para rechazarla como entrada de una simulación.'
+    : `La serie falla ${4-ok} de 4 pruebas: no debería usarse para simular.`;
+  $('veredicto').className = 'veredicto ' + (ok===4?'ok':'no');
+}
+
+function camposMetodo(){
+  const m = $('metodo').value;
+  $('camposLcg').hidden = m!=='lcg'; $('camposCm').hidden = m!=='cm'; $('camposPm').hidden = m!=='pm';
+}
+$('metodo').addEventListener('change', () => { camposMetodo(); generar(); });
+$('n').addEventListener('input', () => { $('nOut').textContent = $('n').value; generar(); });
+$('btnGenerar').addEventListener('click', generar);
+document.querySelectorAll('[data-pre]').forEach(b => b.addEventListener('click', () => {
+  const p = PRE[b.dataset.pre]; ['a','c','m','x0'].forEach(k => $(k).value = p[k]); generar();
+}));
+
+/* ================= UNIDAD II ================= */
+const Q = {};
+let corriendo = false, tPrev = 0;
+const expo = tasa => -Math.log(1-Math.random())/tasa;   // transformada inversa
+const parQ = () => ({lam:Number($('lam').value)/60, mu:Number($('mu').value)/60, c:Number($('srv').value)});
+
+function reiniciarCola(){
+  const p = parQ();
+  Object.assign(Q, {t:0, cola:[], serv:Array.from({length:p.c},()=>({ocupado:false,ini:0,fin:0})),
+    prox:expo(p.lam), llegadas:0, atendidos:0, iniciados:0, espera:0, areaLq:0, areaOc:0, hist:[], proxMuestra:0});
+}
+function iniciarServicio(s, llegada, p){
+  Q.espera += Q.t - llegada; Q.iniciados++;
+  s.ocupado = true; s.ini = Q.t; s.fin = Q.t + expo(p.mu);
+}
+function avanzar(dt){
+  const p = parQ(), meta = Q.t + dt;
+  for(let guard=0; guard<20000; guard++){
+    let ev = Q.prox, quien = -1;
+    Q.serv.forEach((s,i) => { if(s.ocupado && s.fin<ev){ ev=s.fin; quien=i; } });
+    const hasta = Math.min(ev, meta), d = hasta - Q.t;
+    Q.areaLq += Q.cola.length*d; Q.areaOc += Q.serv.filter(s=>s.ocupado).length*d;
+    while(Q.proxMuestra <= hasta){ Q.hist.push(Q.cola.length); if(Q.hist.length>240) Q.hist.shift(); Q.proxMuestra += 1; }
+    Q.t = hasta;
+    if(ev > meta) break;
+    if(quien<0){
+      Q.llegadas++;
+      const libre = Q.serv.find(s=>!s.ocupado);
+      if(libre) iniciarServicio(libre, Q.t, p); else Q.cola.push(Q.t);
+      Q.prox = Q.t + expo(p.lam);
+    } else {
+      const s = Q.serv[quien]; s.ocupado = false; Q.atendidos++;
+      if(Q.cola.length) iniciarServicio(s, Q.cola.shift(), p);
+    }
+  }
+}
+function teoria(){
+  const p = parQ(), a = p.lam/p.mu, rho = a/p.c;
+  if(rho>=1) return {rho, estable:false};
+  let suma=0, fact=1;
+  for(let k=0;k<p.c;k++){ if(k>0) fact*=k; suma += Math.pow(a,k)/fact; }
+  const cFact = (function(){ let f=1; for(let k=2;k<=p.c;k++) f*=k; return f; })();
+  const p0 = 1/(suma + Math.pow(a,p.c)/(cFact*(1-rho)));
+  const Lq = p0*Math.pow(a,p.c)*rho/(cFact*(1-rho)**2);
+  return {rho, estable:true, Lq, Wq:Lq/p.lam};
+}
+function tablaCola(){
+  const T = teoria();
+  const LqS = Q.t>0 ? Q.areaLq/Q.t : NaN, WqS = Q.iniciados>0 ? Q.espera/Q.iniciados : NaN, uS = Q.t>0 ? Q.areaOc/(Q.t*Q.serv.length) : NaN;
+  const inest = 'Crece sin límite';
+  $('tablaCola').innerHTML =
+    `<tr><td>Espera promedio antes de ser atendido</td><td>${fmt(WqS,1)} min</td><td>${T.estable?fmt(T.Wq,1)+' min':inest}</td></tr>`+
+    `<tr><td>Tiquetes en espera en promedio</td><td>${fmt(LqS,2)}</td><td>${T.estable?fmt(T.Lq,2):inest}</td></tr>`+
+    `<tr><td>Ocupación de los técnicos</td><td>${fmt(uS*100,0)} %</td><td>${T.estable?fmt(T.rho*100,0)+' %':'100 %'}</td></tr>`+
+    `<tr><td>Tiquetes recibidos y resueltos</td><td>${Q.llegadas} y ${Q.atendidos}</td><td>—</td></tr>`;
+  $('reloj').textContent = `Tiempo simulado: ${Math.floor(Q.t/60)} h ${String(Math.floor(Q.t%60)).padStart(2,'0')} min`;
+  $('rhoTxt').textContent = T.estable
+    ? `Carga del sistema: ${fmt(T.rho*100,0)} %. Entre más cerca de 100 %, más larga la espera.`
+    : `Llegan más tiquetes de los que el equipo puede resolver (carga ${fmt(T.rho*100,0)} %). La fila no deja de crecer: agrega técnicos.`;
+}
+function pintarCola(){
+  const {g,w,h} = lienzo($('cvCola'));
+  const c = Q.serv.length, sx = w-92, paso = Math.min(46,(h-20)/c);
+  g.textAlign='left'; g.fillStyle=COL.tenue; g.fillText('Llegan los tiquetes', 6, 16);
+  Q.serv.forEach((s,i) => {
+    const y = h/2 + (i-(c-1)/2)*paso - 16;
+    g.fillStyle = s.ocupado ? COL.indigo : '#fff'; g.strokeStyle = COL.indigo; g.lineWidth=2;
+    g.fillRect(sx,y,84,32); g.strokeRect(sx,y,84,32);
+    g.fillStyle = s.ocupado ? '#fff' : COL.indigo; g.textAlign='center';
+    g.fillText('Técnico '+(i+1), sx+42, y+15);
+    if(s.ocupado){ const pr = Math.min(1,(Q.t-s.ini)/Math.max(1e-6,s.fin-s.ini)); g.fillStyle=COL.azafran; g.fillRect(sx+6,y+21,72*pr,5); }
+  });
+  const x0 = sx-26, cab = Math.max(1, Math.floor((x0-20)/24)), ver = Math.min(Q.cola.length, cab);
+  for(let i=0;i<ver;i++){ g.beginPath(); g.arc(x0-i*24, h/2, 9, 0, 6.3); g.fillStyle=COL.azafran; g.fill(); g.strokeStyle=COL.tinta; g.lineWidth=1.5; g.stroke(); }
+  g.fillStyle=COL.tinta; g.textAlign='left';
+  g.fillText(Q.cola.length ? `En espera: ${Q.cola.length}` + (Q.cola.length>ver ? ` (se muestran ${ver})` : '') : 'Nadie en espera', 6, h-10);
+}
+function pintarColaHist(){
+  const {g,w,h} = lienzo($('cvColaHist'));
+  const max = Math.ceil(Math.max(6, ...Q.hist)/2)*2, b=18, iz=28;
+  g.strokeStyle=COL.linea; g.fillStyle=COL.tenue; g.textAlign='right'; g.lineWidth=1;
+  for(let i=0;i<=2;i++){ const v=max*i/2, y=h-b-(h-b-8)*i/2; g.beginPath(); g.moveTo(iz,y); g.lineTo(w,y); g.stroke(); g.fillText(Math.round(v), iz-5, y+4); }
+  if(Q.hist.length<2) { g.textAlign='left'; g.fillText('Inicia la simulación para ver la evolución de la fila.', iz+6, h/2); return; }
+  g.beginPath();
+  Q.hist.forEach((v,i) => { const x = iz+(w-iz)*i/239, y=h-b-(h-b-8)*v/max; i?g.lineTo(x,y):g.moveTo(x,y); });
+  g.strokeStyle=COL.rosa; g.lineWidth=2; g.stroke();
+}
+function cuadro(ts){
+  if(!corriendo) return;
+  const dt = Math.min(0.1,(ts-tPrev)/1000); tPrev = ts;
+  avanzar(dt*Number($('vel').value));
+  if(activa==='u2'){ pintarCola(); pintarColaHist(); tablaCola(); }
+  requestAnimationFrame(cuadro);
+}
+function etiquetasCola(){
+  $('lamOut').textContent=$('lam').value; $('muOut').textContent=$('mu').value;
+  $('srvOut').textContent=$('srv').value; $('velOut').textContent=$('vel').value;
+}
+['lam','mu','vel'].forEach(id => $(id).addEventListener('input', () => { etiquetasCola(); tablaCola(); }));
+$('srv').addEventListener('input', () => { etiquetasCola(); reiniciarCola(); redibujar(); });
+$('btnCola').addEventListener('click', () => {
+  corriendo = !corriendo;
+  $('btnCola').textContent = corriendo ? 'Pausar simulación' : 'Continuar simulación';
+  if(corriendo){ tPrev = performance.now(); requestAnimationFrame(cuadro); }
+});
+$('btnColaReset').addEventListener('click', () => {
+  corriendo = false; $('btnCola').textContent = 'Iniciar simulación'; reiniciarCola(); redibujar();
+});
+
+/* ================= UNIDAD III ================= */
+let ref = null, modelo = null;
+const DIAS = 60, DT = 0.05;
+function simularSD(){
+  const N=Number($('N').value), I0=Math.min(Number($('I0').value),N), be=Number($('beta').value), ga=Number($('gamma').value), nu=Number($('nu').value);
+  let S=N-I0, I=I0, R=0, acum=I0; const s=[],i=[],r=[];
+  const pasos = Math.round(DIAS/DT);
+  for(let k=0;k<=pasos;k++){
+    if(k%4===0){ s.push(S); i.push(I); r.push(R); }
+    const contagio = be*S*I/N, limpieza = ga*I, parcheo = nu*S;
+    S += (-contagio - parcheo)*DT; I += (contagio - limpieza)*DT; R += (limpieza + parcheo)*DT; acum += contagio*DT;
+    if(S<0) S=0;
+  }
+  let pico=0, dia=0; i.forEach((v,k)=>{ if(v>pico){ pico=v; dia=k*4*DT; } });
+  return {N,s,i,r,pico,dia,acum:Math.min(acum,N),R0:be/ga};
+}
+function pintarSD(){
+  modelo = simularSD();
+  ['N','I0','beta','gamma','nu'].forEach(id => {
+    const v = Number($(id).value);
+    $(id+'Out').textContent = id==='N'||id==='I0' ? v.toLocaleString('es-CO') : (id==='beta' ? fmt(v,2) : fmt(v*100, id==='nu'?1:0)+' %');
+  });
+  const {g,w,h} = lienzo($('cvSD'));
+  const iz=44, ab=26, ar=8, N=modelo.N, n=modelo.s.length;
+  const X = k => iz+(w-iz-6)*k/(n-1), Y = v => h-ab-(h-ab-ar)*v/N;
+  g.lineWidth=1; g.strokeStyle=COL.linea; g.fillStyle=COL.tenue;
+  g.textAlign='right';
+  for(let k=0;k<=4;k++){ const v=N*k/4; g.beginPath(); g.moveTo(iz,Y(v)); g.lineTo(w-6,Y(v)); g.stroke(); g.fillText(Math.round(v).toLocaleString('es-CO'), iz-6, Y(v)+4); }
+  g.textAlign='center';
+  for(let d=0;d<=DIAS;d+=10){ const x = iz+(w-iz-6)*d/DIAS; g.fillText(d===0?'Día 0':String(d), x, h-8); }
+  const linea = (arr,color,dash) => { g.beginPath(); arr.forEach((v,k)=> k?g.lineTo(X(k),Y(v)):g.moveTo(X(k),Y(v))); g.strokeStyle=color; g.lineWidth=dash?2:3; g.setLineDash(dash||[]); g.stroke(); g.setLineDash([]); };
+  if(ref && ref.N===N) linea(ref.i, COL.azafran, [6,5]);
+  else if(ref){ linea(ref.i.map(v=>v*N/ref.N), COL.azafran, [6,5]); }
+  linea(modelo.s, COL.indigo); linea(modelo.r, COL.verde); linea(modelo.i, COL.rosa);
+  $('leyRef').hidden = !ref;
+
+  let comp = '';
+  if(ref){ const d = modelo.pico/modelo.N - ref.pico/ref.N; comp = `<div><b>${d>0?'+':''}${fmt(d*100,1)} pts</b><small>Cambio del pico frente a la referencia</small></div>`; }
+  $('cifrasSD').innerHTML =
+    `<div><b>${fmt(modelo.R0,1)}</b><small>Contagios que causa cada infectado antes de ser limpiado. Por encima de 1 hay brote.</small></div>`+
+    `<div><b>${Math.round(modelo.pico).toLocaleString('es-CO')}</b><small>Equipos infectados en el peor momento (${fmt(100*modelo.pico/modelo.N,0)} % de la red)</small></div>`+
+    `<div><b>Día ${fmt(modelo.dia,0)}</b><small>Cuándo ocurre el pico</small></div>`+
+    `<div><b>${Math.round(modelo.acum).toLocaleString('es-CO')}</b><small>Equipos que llegaron a infectarse en 60 días</small></div>`+ comp;
+}
+['N','I0','beta','gamma','nu'].forEach(id => $(id).addEventListener('input', pintarSD));
+$('btnRef').addEventListener('click', () => { ref = simularSD(); pintarSD(); });
+$('btnRefQuitar').addEventListener('click', () => { ref = null; pintarSD(); });
+
+/* ---------- Arranque ---------- */
+camposMetodo(); etiquetasCola(); reiniciarCola(); generar();
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(redibujar);
+})();
+</script>
+</body>
+</html>
