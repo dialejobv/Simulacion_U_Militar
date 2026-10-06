@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laboratorio de Simulación · Unidad I</title>
+<style>
+:root{
+  --ink:#1A1433; --ink2:#2D2357; --tint:#F2F0F9; --line:#D9D5EA; --muted:#6B7280; --bg:#FFFFFF;
+  --teal:#00A896; --amber:#F2A900; --coral:#E4572E; --violet:#6C4AB6; --blue:#3A86C8;
+  --serif:Cambria,Georgia,"Times New Roman",serif; --sans:Calibri,"Segoe UI",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--bg);font-size:16px;line-height:1.45}
+header{background:var(--ink);color:#fff;padding:22px 24px 0}
+.wrap{max-width:1180px;margin:0 auto}
+.over{color:var(--amber);font-weight:700;letter-spacing:.18em;font-size:12px}
+h1{font-family:var(--serif);font-size:30px;margin:6px 0 4px}
+header p{margin:0 0 18px;color:#D9D5EA}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav button{font:inherit;font-weight:700;border:0;background:var(--ink2);color:#D9D5EA;padding:11px 16px;border-radius:10px 10px 0 0;cursor:pointer}
+nav button .n{display:inline-block;background:var(--ink);color:var(--amber);border-radius:5px;width:22px;height:22px;line-height:22px;text-align:center;font-family:var(--serif);margin-right:7px}
+nav button.on{background:var(--bg);color:var(--ink)}
+nav button.on .n{background:var(--amber);color:var(--ink)}
+main{padding:24px}
+section{display:none} section.on{display:block}
+h2{font-family:var(--serif);font-size:24px;margin:0 0 4px}
+.lead{color:var(--ink2);margin:0 0 18px;max-width:75ch}
+.grid{display:grid;gap:18px;grid-template-columns:340px minmax(0,1fr);align-items:start}
+.two{display:grid;gap:18px;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.grid>*,.two>*{min-width:0}
+@media(max-width:900px){.grid,.two{grid-template-columns:minmax(0,1fr) !important}}
+.card{background:var(--tint);border-radius:14px;padding:18px}
+.card.dark{background:var(--ink2);color:#fff}
+.card h3{margin:0 0 10px;font-size:17px}
+label{display:block;font-size:13px;font-weight:700;color:var(--ink2);margin:10px 0 4px}
+input[type=text],input[type=number],select{width:100%;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--violet)}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+button.b{font:inherit;font-weight:700;border:0;border-radius:8px;padding:9px 14px;cursor:pointer;background:var(--violet);color:#fff}
+button.b.alt{background:#fff;color:var(--ink);border:1px solid var(--line)}
+button.b.go{background:var(--teal)} button.b.warn{background:var(--coral)}
+button.b:disabled{opacity:.45;cursor:default}
+.chipbtn{font:inherit;font-size:13px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px;cursor:pointer;color:var(--ink)}
+.formula{background:var(--ink2);color:#fff;border-radius:12px;padding:14px 16px;font-family:var(--serif);font-size:18px;text-align:center;margin-top:14px;line-height:1.7}
+.tablewrap{overflow:auto;max-height:430px;border:1px solid var(--line);border-radius:10px;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{position:sticky;top:0;background:var(--ink2);color:#fff;padding:8px 10px;text-align:center;font-weight:700}
+td{padding:6px 10px;text-align:center;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+tr:nth-child(even) td{background:var(--tint)}
+td.mono,.mono{font-family:var(--serif);letter-spacing:.06em}
+mark{background:var(--amber);color:var(--ink);border-radius:4px;padding:0 2px}
+.msg{margin-top:12px;padding:10px 14px;border-radius:10px;background:#fff;border:1px solid var(--line);font-size:15px}
+.msg.bad{border-color:var(--coral);background:#FDF0EC}.msg.ok{border-color:var(--teal);background:#E8F8F5}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.stat{background:var(--ink2);color:#fff;border-radius:12px;padding:12px 14px}
+.stat b{display:block;font-family:var(--serif);font-size:26px;color:var(--amber);font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:#D9D5EA}.stat small{display:block;font-size:12px;color:#D9D5EA;margin-top:2px}
+.tag{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700;color:#fff}
+.tag.ok{background:var(--teal)}.tag.bad{background:var(--coral)}.tag.na{background:var(--muted)}
+canvas{width:100%;display:block;background:#fff;border-radius:10px;border:1px solid var(--line)}
+.cap{font-size:13px;color:var(--muted);margin:6px 0 0}
+.ex{background:var(--tint);border-radius:14px;padding:16px 18px;margin-bottom:14px}
+.ex h3{margin:0 0 6px;font-size:17px;display:flex;align-items:center;gap:10px}
+.ex .num{background:var(--violet);color:#fff;border-radius:7px;width:30px;height:30px;display:inline-grid;place-items:center;font-family:var(--serif)}
+.ex p{margin:0 0 10px}.ex .ans{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ex .ans input[type=text]{flex:1;min-width:220px}.ex .ans select{width:auto}
+.sol{display:none;margin-top:10px;background:#fff;border-radius:10px;padding:10px 14px;border:1px solid var(--line);font-size:15px}
+.fb{font-weight:700;font-size:14px}
+footer{padding:0 24px 30px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="over">SIMULACIÓN · UNIDAD MODULAR I</div>
+  <h1>Laboratorio de números aleatorios y eventos</h1>
+  <p>Genera números pseudoaleatorios, pruébalos y úsalos para alimentar una simulación discreta y una continua.</p>
+  <nav id="nav">
+    <button data-t="gen" class="on"><span class="n">1</span>Generadores</button>
+    <button data-t="pru"><span class="n">2</span>Pruebas</button>
+    <button data-t="sed"><span class="n">3</span>Eventos discretos</button>
+    <button data-t="con"><span class="n">4</span>Eventos continuos</button>
+    <button data-t="eje"><span class="n">5</span>Ejercicios</button>
+  </nav>
+</div></header>
+
+<main><div class="wrap">
+
+<!-- ================= 1. GENERADORES ================= -->
+<section id="gen" class="on">
+  <h2>Generadores de números pseudoaleatorios</h2>
+  <p class="lead">Elige un método, ajusta sus parámetros y observa el cálculo paso a paso. El generador que configures aquí alimenta las demás pestañas.</p>
+  <div class="grid">
+    <div class="card">
+      <label for="metodo">Método</label>
+      <select id="metodo">
+        <option value="cuad">Cuadrados medios</option>
+        <option value="prod">Productos medios</option>
+        <option value="mixto" selected>Congruencial lineal mixto</option>
+        <option value="mult">Congruencial multiplicativo</option>
+      </select>
+      <div class="row">
+        <div data-m="cuad prod mixto mult"><label for="x0">Semilla X₀</label><input id="x0" type="text" value="37"></div>
+        <div data-m="prod"><label for="x1">Semilla X₁</label><input id="x1" type="text" value="5734"></div>
+        <div data-m="cuad prod"><label for="D">Dígitos D</label><input id="D" type="number" min="2" max="8" value="4"></div>
+      </div>
+      <div class="row">
+        <div data-m="mixto mult"><label for="a">Multiplicador a</label><input id="a" type="text" value="19"></div>
+        <div data-m="mixto"><label for="c">Incremento c</label><input id="c" type="text" value="33"></div>
+      </div>
+      <div data-m="mixto mult"><label for="m">Módulo m</label><input id="m" type="text" value="100"></div>
+      <label for="N">Cantidad de números a generar</label><input id="N" type="number" min="5" max="5000" value="200">
+      <label>Ejemplos listos</label>
+      <div class="btns" style="margin-top:0" id="presets"></div>
+      <div class="btns"><button class="b go" id="btnGen">Generar</button></div>
+      <div class="formula" id="formula"></div>
+    </div>
+    <div>
+      <div id="genMsg" class="msg"></div>
+      <div class="tablewrap" style="margin-top:12px"><table id="genTable"></table></div>
+      <p class="cap" id="genCap"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2. PRUEBAS ================= -->
+<section id="pru">
+  <h2>Pruebas estadísticas sobre la secuencia</h2>
+  <p class="lead">Se evalúa la secuencia generada en la pestaña 1 con un nivel de confianza del 95 %. Un buen generador debe pasar las cuatro.</p>
+  <div class="stats" id="testStats"></div>
+  <div class="two">
+    <div class="card"><h3>Histograma: uniformidad</h3><canvas id="cvHist" data-pad="36" data-h="260" height="260"></canvas><p class="cap">Diez intervalos iguales. La línea punteada es la frecuencia esperada n/10.</p></div>
+    <div class="card"><h3>Dispersión (r<sub>i</sub>, r<sub>i+1</sub>): independencia</h3><canvas id="cvScat" data-pad="36" data-h="260" height="260"></canvas><p class="cap">Si los puntos forman líneas o se concentran, hay dependencia entre números consecutivos.</p></div>
+  </div>
+</section>
+
+<!-- ================= 3. EVENTOS DISCRETOS ================= -->
+<section id="sed">
+  <h2>Simulación de eventos discretos: cola de un cajero</h2>
+  <p class="lead">El reloj salta de evento en evento. Cada tiempo se obtiene con la transformada inversa x = −media · ln(1 − r), usando los números r del generador elegido.</p>
+  <div class="grid">
+    <div class="card">
+      <label for="ma">Media entre llegadas (min)</label><input id="ma" type="number" step="0.5" min="0.5" value="4">
+      <label for="ms">Media de servicio (min)</label><input id="ms" type="number" step="0.5" min="0.5" value="3">
+      <label for="nc">Clientes a simular</label><input id="nc" type="number" min="5" max="5000" value="100">
+      <label for="src">Fuente de números r</label>
+      <select id="src"><option value="gen">Generador de la pestaña 1</option><option value="math">Math.random() del navegador (referencia)</option></select>
+      <label for="vel">Velocidad de reproducción</label><input id="vel" type="range" min="1" max="10" value="5">
+      <div class="btns">
+        <button class="b alt" id="sedReset">Reiniciar</button>
+        <button class="b" id="sedStep">Paso</button>
+        <button class="b go" id="sedPlay">Reproducir</button>
+        <button class="b alt" id="sedEnd">Terminar</button>
+      </div>
+      <div id="sedMsg" class="msg"></div>
+      <h3 style="margin-top:16px">Lista de eventos futuros</h3>
+      <div class="tablewrap"><table id="fel"></table></div>
+    </div>
+    <div>
+      <div class="stats" id="sedStats"></div>
+      <canvas id="cvScene" data-h="150" height="150"></canvas>
+      <canvas id="cvN" data-h="200" height="200" style="margin-top:12px"></canvas>
+      <p class="cap">Clientes en el sistema N(t): función escalonada típica de un sistema de eventos discretos.</p>
+      <div class="tablewrap" style="margin-top:12px;max-height:260px"><table id="sedLog"></table></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 4. EVENTOS CONTINUOS ================= -->
+<section id="con">
+  <h2>Simulación continua: nivel de un tanque</h2>
+  <p class="lead">El estado cambia en todo instante según A · dh/dt = Q<sub>in</sub> − k·√h, integrada con el método de Euler. Activa las fallas para ver un sistema híbrido: eventos discretos aleatorios que perturban un proceso continuo.</p>
+  <div class="grid">
+    <div class="card">
+      <label for="qin">Caudal de entrada Q<sub>in</sub>: <span id="qinV"></span> m³/min</label><input id="qin" type="range" min="0" max="3" step="0.1" value="1.2">
+      <label for="kk">Coeficiente de descarga k: <span id="kkV"></span></label><input id="kk" type="range" min="0.2" max="1.5" step="0.05" value="0.6">
+      <label for="AA">Área del tanque A: <span id="AAV"></span> m²</label><input id="AA" type="range" min="1" max="10" step="0.5" value="4">
+      <label for="h0">Nivel inicial h₀: <span id="h0V"></span> m</label><input id="h0" type="range" min="0" max="8" step="0.1" value="0.2">
+      <label style="display:flex;gap:8px;align-items:center;font-weight:400;font-size:15px;margin-top:14px"><input type="checkbox" id="hyb"> Fallas aleatorias de la bomba (modelo híbrido)</label>
+      <div class="btns"><button class="b go" id="conPlay">Iniciar</button><button class="b alt" id="conReset">Reiniciar</button></div>
+      <div class="formula">A · dh/dt = Q<sub>in</sub> − k·√h<br>h(t + Δt) = h(t) + Δt · (Q<sub>in</sub> − k·√h) / A</div>
+      <div id="conMsg" class="msg"></div>
+    </div>
+    <div>
+      <div class="stats" id="conStats"></div>
+      <div class="two" style="grid-template-columns:220px minmax(0,1fr)">
+        <div><canvas id="cvTank" data-h="300" height="300"></canvas></div>
+        <div><canvas id="cvH" data-h="300" height="300"></canvas><p class="cap">Nivel h(t). La línea punteada es el equilibrio h* = (Q<sub>in</sub>/k)². Las franjas marcan fallas de la bomba.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 5. EJERCICIOS ================= -->
+<section id="eje">
+  <h2>Ejercicios</h2>
+  <p class="lead">Resuelve a mano y verifica tu respuesta. Separa varios valores con comas y usa punto decimal. Puedes comprobar los procedimientos en las otras pestañas.</p>
+  <div class="msg" id="score" style="margin:0 0 14px"></div>
+  <div id="exList"></div>
+</section>
+
+</div></main>
+<footer><div class="wrap">Material de apoyo para la Unidad Modular I: números aleatorios y pseudoaleatorios, tipos de eventos y simulación de eventos discretos.</div></footer>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const COL = {ink:"#1A1433", ink2:"#2D2357", tint:"#F2F0F9", line:"#D9D5EA", muted:"#6B7280", teal:"#00A896", amber:"#F2A900", coral:"#E4572E", violet:"#6C4AB6", blue:"#3A86C8"};
+const fx = (x, d = 2) => Number.isFinite(x) ? x.toFixed(d) : "—";
+
+/* ---------------------------------------------------------------
+   1. GENERADORES
+---------------------------------------------------------------- */
+function midDigits(n, D) {              // n: BigInt
+  let s = n.toString();
+  if (s.length < 2 * D) s = s.padStart(2 * D, "0");
+  if ((s.length - D) % 2) s = "0" + s;
+  const st = (s.length - D) / 2;
+  return { padded: s, mid: s.substr(st, D), st };
+}
+const hl = (m, D) => m.padded.slice(0, m.st) + "<mark>" + m.mid + "</mark>" + m.padded.slice(m.st + D);
+
+// Devuelve un objeto con next() -> {r, cells, key}
+function makeGen(cfg) {
+  const D = cfg.D;
+  if (cfg.metodo === "cuad") {
+    let x = cfg.x0;
+    return { head: ["i", "X<sub>i</sub>", "Y = X<sub>i</sub>²", "X<sub>i+1</sub>", "r<sub>i+1</sub>"], next() {
+      const m = midDigits(x * x, D), xs = x.toString().padStart(D, "0");
+      x = BigInt(m.mid);
+      return { r: Number("0." + m.mid), cells: [xs, hl(m, D), m.mid, "0." + m.mid], key: m.mid };
+    } };
+  }
+  if (cfg.metodo === "prod") {
+    let a = cfg.x0, b = cfg.x1;
+    return { head: ["i", "X<sub>i</sub>", "X<sub>i+1</sub>", "Y = X<sub>i</sub>·X<sub>i+1</sub>", "X<sub>i+2</sub>", "r<sub>i+1</sub>"], next() {
+      const m = midDigits(a * b, D), as = a.toString().padStart(D, "0"), bs = b.toString().padStart(D, "0");
+      a = b; b = BigInt(m.mid);
+      return { r: Number("0." + m.mid), cells: [as, bs, hl(m, D), m.mid, "0." + m.mid], key: a + "," + b };
+    } };
+  }
+  const a = cfg.a, c = cfg.metodo === "mixto" ? cfg.c : 0n, m = cfg.m; let x = cfg.x0;
+  const op = cfg.metodo === "mixto" ? `${a}·X<sub>i</sub> + ${c}` : `${a}·X<sub>i</sub>`;
+  return { head: ["i", "X<sub>i</sub>", op, "X<sub>i+1</sub>", "r<sub>i+1</sub>"], next() {
+    const t = a * x + c, nx = t % m, old = x; x = nx;
+    const r = Number(nx) / Number(m - 1n);
+    return { r, cells: [old.toString(), t.toString(), nx.toString(), r.toFixed(4)], key: nx.toString() };
+  } };
+}
+
+function readCfg() {
+  const big = id => { const v = $(id).value.trim(); if (!/^\d+$/.test(v)) throw new Error("«" + v + "» no es un entero no negativo válido."); return BigInt(v); };
+  const cfg = { metodo: $("metodo").value, D: Math.max(2, Math.min(8, parseInt($("D").value) || 4)) };
+  cfg.x0 = big("x0");
+  if (cfg.metodo === "prod") cfg.x1 = big("x1");
+  if (cfg.metodo === "mixto" || cfg.metodo === "mult") {
+    cfg.a = big("a"); cfg.m = big("m"); if (cfg.metodo === "mixto") cfg.c = big("c");
+    if (cfg.m < 2n) throw new Error("El módulo m debe ser mayor que 1.");
+  } else if (cfg.x0.toString().length > cfg.D || (cfg.x1 !== undefined && cfg.x1.toString().length > cfg.D)) {
+    throw new Error("La semilla no puede tener más de D = " + cfg.D + " dígitos.");
+  }
+  return cfg;
+}
+// Periodo: primera repetición del estado interno
+function findPeriod(cfg, limit) {
+  const g = makeGen(cfg), seen = new Map();
+  for (let i = 0; i < limit; i++) { const k = g.next().key; if (seen.has(k)) return { cola: seen.get(k), periodo: i - seen.get(k) }; seen.set(k, i); }
+  return null;
+}
+const gcd = (a, b) => b === 0n ? a : gcd(b, a % b);
+function primeFactors(n) { const f = []; let d = 2n; while (d * d <= n && f.length < 40) { if (n % d === 0n) { f.push(d); while (n % d === 0n) n /= d; } d++; } if (n > 1n) f.push(n); return f; }
+function hullDobell(cfg) {
+  if (cfg.metodo !== "mixto" || cfg.m > 10n ** 12n) return "";
+  const c1 = gcd(cfg.c, cfg.m) === 1n, c2 = primeFactors(cfg.m).every(p => (cfg.a - 1n) % p === 0n), c3 = cfg.m % 4n !== 0n || (cfg.a - 1n) % 4n === 0n;
+  const t = b => `<span class="tag ${b ? "ok" : "bad"}">${b ? "cumple" : "no cumple"}</span>`;
+  return `<br><b>Hull y Dobell:</b> c y m primos relativos ${t(c1)} · a − 1 divisible por los factores primos de m ${t(c2)} · regla del múltiplo de 4 ${t(c3)}`;
+}
+
+const FORM = {
+  cuad: "Y = X<sub>i</sub>²<br>X<sub>i+1</sub> = dígitos centrales de Y<br>r<sub>i+1</sub> = 0.X<sub>i+1</sub>",
+  prod: "Y = X<sub>i</sub> · X<sub>i+1</sub><br>X<sub>i+2</sub> = dígitos centrales de Y<br>r<sub>i+1</sub> = 0.X<sub>i+2</sub>",
+  mixto: "X<sub>i+1</sub> = (a·X<sub>i</sub> + c) mod m<br>r<sub>i</sub> = X<sub>i</sub> / (m − 1)",
+  mult: "X<sub>i+1</sub> = (a·X<sub>i</sub>) mod m<br>r<sub>i</sub> = X<sub>i</sub> / (m − 1)" };
+const PRESETS = [
+  ["Ejemplo de clase", { metodo: "mixto", a: 19, c: 33, m: 100, x0: 37 }],
+  ["Periodo completo", { metodo: "mixto", a: 1664525, c: 1013904223, m: 4294967296, x0: 12345 }],
+  ["MINSTD", { metodo: "mult", a: 16807, m: 2147483647, x0: 12345 }],
+  ["RANDU", { metodo: "mult", a: 65539, m: 2147483648, x0: 1 }],
+  ["Cuadrados 5735", { metodo: "cuad", x0: 5735, D: 4 }],
+  ["Cuadrados que degeneran", { metodo: "cuad", x0: 3708, D: 4 }],
+  ["Productos medios", { metodo: "prod", x0: 5015, x1: 5734, D: 4 }]];
+
+let CFG = null, SEQ = [];
+function showFields() {
+  const m = $("metodo").value;
+  document.querySelectorAll("[data-m]").forEach(e => e.style.display = e.dataset.m.split(" ").includes(m) ? "" : "none");
+  $("formula").innerHTML = FORM[m];
+}
+function generate() {
+  const msg = $("genMsg");
+  try { CFG = readCfg(); } catch (e) { msg.className = "msg bad"; msg.textContent = e.message; return false; }
+  const N = Math.max(5, Math.min(5000, parseInt($("N").value) || 200));
+  const g = makeGen(CFG); SEQ = []; const rows = [];
+  for (let i = 0; i < N; i++) { const o = g.next(); SEQ.push(o.r); if (i < 100) rows.push("<tr><td>" + i + "</td>" + o.cells.map(c => '<td class="mono">' + c + "</td>").join("") + "</tr>"); }
+  $("genTable").innerHTML = "<tr>" + g.head.map(h => "<th>" + h + "</th>").join("") + "</tr>" + rows.join("");
+  $("genCap").textContent = N > 100 ? "Se muestran los primeros 100 pasos de " + N + "." : "";
+  const p = findPeriod(CFG, 20000);
+  if (p) {
+    const corto = p.cola + p.periodo < N;
+    msg.className = "msg " + (corto ? "bad" : "ok");
+    msg.innerHTML = `<b>Periodo detectado: ${p.periodo}</b>` + (p.cola ? ` (después de ${p.cola} valores iniciales)` : "") + "." +
+      (corto ? " Solo hay " + (p.cola + p.periodo) + " valores distintos y se pidieron " + N + ": la secuencia se repite y no sirve para simular." : " Es suficiente para esta muestra.") + hullDobell(CFG);
+  } else { msg.className = "msg ok"; msg.innerHTML = "<b>No se repitió en 20 000 valores.</b> El periodo es largo." + hullDobell(CFG); }
+  runTests(); sedReset(); return true;
+}
+
+/* ---------------------------------------------------------------
+   2. PRUEBAS
+---------------------------------------------------------------- */
+function canvas(id) {
+  // El lienzo solo se redimensiona cuando cambia su tamaño: reasignarlo en cada cuadro agota la memoria gráfica en algunos equipos.
+  const c = $(id), dpr = Math.min(window.devicePixelRatio || 1, 2), w = Math.round(c.parentElement.clientWidth - (c.dataset.pad | 0)) || 600, h = +c.getAttribute("data-h");
+  const W = Math.round(w * dpr), H = Math.round(h * dpr);
+  if (c.width !== W || c.height !== H) { c.width = W; c.height = H; c.style.height = h + "px"; }
+  const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.globalAlpha = 1; ctx.setLineDash([]); ctx.clearRect(0, 0, w, h);
+  ctx.font = "12px Calibri, Segoe UI, sans-serif"; return { ctx, w, h };
+}
+function axes(ctx, w, h, P, xmax, ymax, xl, yl, xt = 5, yt = 4, xd = 0, yd = 0) {
+  ctx.strokeStyle = COL.line; ctx.fillStyle = COL.muted; ctx.lineWidth = 1;
+  for (let i = 0; i <= yt; i++) { const y = h - P.b - (h - P.b - P.t) * i / yt; ctx.beginPath(); ctx.moveTo(P.l, y); ctx.lineTo(w - P.r, y); ctx.stroke(); ctx.textAlign = "right"; ctx.fillText((ymax * i / yt).toFixed(yd), P.l - 6, y + 4); }
+  for (let i = 0; i <= xt; i++) { const x = P.l + (w - P.l - P.r) * i / xt; ctx.textAlign = "center"; ctx.fillText((xmax * i / xt).toFixed(xd), x, h - P.b + 16); }
+  ctx.textAlign = "center"; ctx.fillText(xl, P.l + (w - P.l - P.r) / 2, h - 4);
+  ctx.save(); ctx.translate(12, P.t + (h - P.b - P.t) / 2); ctx.rotate(-Math.PI / 2); ctx.fillText(yl, 0, 0); ctx.restore();
+  return { X: v => P.l + (w - P.l - P.r) * v / xmax, Y: v => h - P.b - (h - P.b - P.t) * v / ymax };
+}
+function runTests() {
+  const r = SEQ, n = r.length; if (!n) return;
+  const mean = r.reduce((a, b) => a + b, 0) / n;
+  const vari = r.reduce((a, b) => a + (b - mean) ** 2, 0) / (n - 1);
+  const half = 1.96 / Math.sqrt(12 * n), okMean = Math.abs(mean - 0.5) <= half;
+  const hist = new Array(10).fill(0); r.forEach(v => hist[Math.min(9, Math.floor(v * 10))]++);
+  const E = n / 10, chi = hist.reduce((s, o) => s + (o - E) ** 2 / E, 0), okChi = chi <= 16.919;
+  // corridas arriba y abajo
+  let runs = 0, prev = 0;
+  for (let i = 1; i < n; i++) { const s = Math.sign(r[i] - r[i - 1]) || prev; if (s !== prev) { runs++; prev = s; } }
+  const mu = (2 * n - 1) / 3, sd = Math.sqrt((16 * n - 29) / 90), z = (runs - mu) / sd, okRun = Math.abs(z) <= 1.96;
+  const okVar = Math.abs(vari - 1 / 12) <= 1.96 * Math.sqrt(1 / 180 / n);   // aproximación normal para n grande
+  const tag = b => `<span class="tag ${b ? "ok" : "bad"}">${b ? "pasa" : "no pasa"}</span>`;
+  $("testStats").innerHTML =
+    `<div class="stat"><span>Media (esperada 0.5)</span><b>${fx(mean, 4)}</b><small>Límites ${fx(0.5 - half, 4)} a ${fx(0.5 + half, 4)} ${tag(okMean)}</small></div>` +
+    `<div class="stat"><span>Varianza (esperada 0.0833)</span><b>${fx(vari, 4)}</b><small>Aproximación normal ${tag(okVar)}</small></div>` +
+    `<div class="stat"><span>Chi-cuadrada χ²₀</span><b>${fx(chi, 2)}</b><small>Valor crítico 16.92 ${n >= 50 ? tag(okChi) : '<span class="tag na">n &lt; 50</span>'}</small></div>` +
+    `<div class="stat"><span>Corridas observadas</span><b>${runs}</b><small>Esperadas ${fx(mu, 1)}, z = ${fx(z, 2)} ${tag(okRun)}</small></div>` +
+    `<div class="stat"><span>Tamaño de muestra</span><b>${n}</b><small>Nivel de confianza 95 %</small></div>`;
+  // histograma
+  { const { ctx, w, h } = canvas("cvHist"), P = { l: 44, r: 12, t: 14, b: 34 }, ymax = Math.max(...hist, E) * 1.15 || 1;
+    const A = axes(ctx, w, h, P, 1, ymax, "r", "Frecuencia", 10, 4, 1, 0), bw = (w - P.l - P.r) / 10;
+    hist.forEach((o, i) => { ctx.fillStyle = COL.violet; ctx.fillRect(P.l + i * bw + 3, A.Y(o), bw - 6, A.Y(0) - A.Y(o)); ctx.fillStyle = COL.ink; ctx.textAlign = "center"; ctx.fillText(o, P.l + i * bw + bw / 2, A.Y(o) - 4); });
+    ctx.setLineDash([5, 4]); ctx.strokeStyle = COL.coral; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(P.l, A.Y(E)); ctx.lineTo(w - P.r, A.Y(E)); ctx.stroke(); ctx.setLineDash([]); }
+  // dispersión
+  { const { ctx, w, h } = canvas("cvScat"), P = { l: 44, r: 12, t: 14, b: 34 };
+    const A = axes(ctx, w, h, P, 1, 1, "r(i)", "r(i+1)", 5, 4, 1, 2); ctx.fillStyle = COL.teal; ctx.globalAlpha = n > 800 ? 0.45 : 0.8;
+    for (let i = 0; i < n - 1; i++) { ctx.beginPath(); ctx.arc(A.X(r[i]), A.Y(r[i + 1]), 2.4, 0, 7); ctx.fill(); } ctx.globalAlpha = 1; }
+}
+
+/* ---------------------------------------------------------------
+   3. EVENTOS DISCRETOS (avance al próximo evento)
+---------------------------------------------------------------- */
+let S = null, sedTimer = null;
+function sedReset() {
+  sedPause();
+  const ma = Math.max(0.1, +$("ma").value || 4), ms = Math.max(0.1, +$("ms").value || 3), N = Math.max(5, Math.min(5000, parseInt($("nc").value) || 100));
+  const useGen = $("src").value === "gen" && CFG, g = useGen ? makeGen(CFG) : null;
+  S = { ma, ms, N, clock: 0, queue: [], busy: null, tArr: 0, tDep: Infinity, arrivals: 0, served: 0, sumW: 0, sumSys: 0, areaQ: 0, areaB: 0, hist: [[0, 0]], log: [], used: 0, maxQ: 0, done: false,
+    rnd() { this.used++; const r = g ? g.next().r : Math.random(); return Math.min(0.9999, Math.max(0.0001, r)); },
+    expo(mean) { const r = this.rnd(); return { r, x: -mean * Math.log(1 - r) }; } };
+  const first = S.expo(ma); S.tArr = first.x; S.firstR = first;
+  const p = useGen ? findPeriod(CFG, 20000) : null, need = 2 * N, m = $("sedMsg");
+  if (p && p.cola + p.periodo < need) { m.className = "msg bad"; m.innerHTML = `<b>Atención:</b> la simulación necesita unos ${need} números y el generador tiene periodo ${p.periodo}. Los tiempos se repetirán en ciclo y los resultados no serán confiables.`; }
+  else { m.className = "msg ok"; m.innerHTML = useGen ? "El generador elegido tiene periodo suficiente para esta corrida." : "Usando Math.random() como referencia."; }
+  sedDraw();
+}
+function sedStep() {
+  if (!S || S.done) return false;
+  const isArr = S.tArr <= S.tDep, t = isArr ? S.tArr : S.tDep, dt = t - S.clock;
+  S.areaQ += S.queue.length * dt; S.areaB += (S.busy ? 1 : 0) * dt; S.clock = t;
+  let who, note = "";
+  if (isArr) {
+    who = ++S.arrivals; const cl = { id: who, arr: t };
+    if (!S.busy) { const s = S.expo(S.ms); S.busy = cl; S.tDep = t + s.x; note = `Servicio: r = ${fx(s.r, 4)} → ${fx(s.x)} min`; }
+    else { S.queue.push(cl); S.maxQ = Math.max(S.maxQ, S.queue.length); note = "Espera en cola"; }
+    if (S.arrivals < S.N) { const a = S.expo(S.ma); S.tArr = t + a.x; note += ` · Próxima llegada: r = ${fx(a.r, 4)} → ${fx(a.x)} min`; } else S.tArr = Infinity;
+  } else {
+    who = S.busy.id; S.served++; S.sumSys += t - S.busy.arr;
+    if (S.queue.length) { const cl = S.queue.shift(); S.sumW += t - cl.arr; const s = S.expo(S.ms); S.busy = cl; S.tDep = t + s.x; note = `Pasa el cliente ${cl.id}: r = ${fx(s.r, 4)} → ${fx(s.x)} min`; }
+    else { S.busy = null; S.tDep = Infinity; note = "El cajero queda libre"; }
+  }
+  const n = S.queue.length + (S.busy ? 1 : 0);
+  S.hist.push([t, S.hist[S.hist.length - 1][1]], [t, n]);
+  S.log.unshift([S.log.length + 1, fx(t), isArr ? "Llegada" : "Salida", who, n, S.queue.length, note]);
+  if (S.served >= S.N) S.done = true;
+  return true;
+}
+function sedDraw() {
+  const s = S, lam = 1 / s.ma, mu = 1 / s.ms, rho = lam / mu, stable = rho < 1;
+  const Wq = s.served ? s.sumW / s.served : 0, U = s.clock ? s.areaB / s.clock : 0, Lq = s.clock ? s.areaQ / s.clock : 0;
+  const th = (v, d = 2) => stable ? "Teórico M/M/1: " + fx(v, d) : "Sistema inestable (ρ ≥ 1)";
+  $("sedStats").innerHTML =
+    `<div class="stat"><span>Reloj de simulación</span><b>${fx(s.clock)} min</b><small>Atendidos ${s.served} de ${s.N}</small></div>` +
+    `<div class="stat"><span>Espera promedio en cola</span><b>${fx(Wq)} min</b><small>${th(lam / (mu * (mu - lam)))}</small></div>` +
+    `<div class="stat"><span>Utilización del cajero</span><b>${fx(U * 100, 1)} %</b><small>${stable ? "Teórico: " + fx(rho * 100, 1) + " %" : "ρ = " + fx(rho)}</small></div>` +
+    `<div class="stat"><span>Longitud promedio de cola</span><b>${fx(Lq)}</b><small>${th(rho * rho / (1 - rho))}</small></div>` +
+    `<div class="stat"><span>Números r usados</span><b>${s.used}</b><small>Cola máxima: ${s.maxQ}</small></div>`;
+  $("fel").innerHTML = "<tr><th>Evento</th><th>Instante</th><th>Falta</th></tr>" +
+    [["Próxima llegada", s.tArr], ["Próxima salida", s.tDep]].sort((a, b) => a[1] - b[1]).map(([e, t]) => `<tr><td>${e}</td><td>${Number.isFinite(t) ? fx(t) : "—"}</td><td>${Number.isFinite(t) ? fx(t - s.clock) : "—"}</td></tr>`).join("");
+  $("sedLog").innerHTML = "<tr><th>#</th><th>Reloj</th><th>Evento</th><th>Cliente</th><th>En sistema</th><th>En cola</th><th>Qué se programó</th></tr>" +
+    (s.log.length ? s.log.slice(0, 40).map(r => "<tr>" + r.map((c, i) => `<td${i === 6 ? ' style="text-align:left"' : ""}>${c}</td>`).join("") + "</tr>").join("")
+      : `<tr><td colspan="7" style="text-align:left">Primera llegada programada: r = ${fx(s.firstR.r, 4)} → ${fx(s.firstR.x)} min. Pulsa «Paso» o «Reproducir».</td></tr>`);
+  // escena
+  { const { ctx, w, h } = canvas("cvScene"), sx = w - 190, sy = 35;
+    ctx.fillStyle = s.busy ? COL.ink2 : COL.tint; ctx.strokeStyle = COL.ink2; ctx.lineWidth = 2; ctx.beginPath(); ctx.roundRect(sx, sy, 96, 80, 10); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = s.busy ? "#fff" : COL.muted; ctx.textAlign = "center"; ctx.font = "bold 13px Calibri, sans-serif"; ctx.fillText(s.busy ? "ATENDIENDO" : "LIBRE", sx + 48, sy + 100);
+    ctx.fillStyle = COL.muted; ctx.fillText("Cajero", sx + 48, sy - 10);
+    const ball = (x, y, id, col) => { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, 17, 0, 7); ctx.fill(); ctx.fillStyle = col === COL.amber ? COL.ink : "#fff"; ctx.font = "bold 12px Calibri, sans-serif"; ctx.fillText(id, x, y + 4); };
+    if (s.busy) ball(sx + 48, sy + 40, s.busy.id, COL.amber);
+    const max = Math.max(1, Math.floor((sx - 60) / 40)), show = s.queue.slice(0, max);
+    show.forEach((c, i) => ball(sx - 30 - i * 40, sy + 40, c.id, COL.violet));
+    ctx.fillStyle = COL.ink; ctx.font = "13px Calibri, sans-serif"; ctx.textAlign = "left";
+    ctx.fillText("Cola: " + s.queue.length + (s.queue.length > max ? " (se muestran " + max + ")" : ""), 14, 22);
+    ctx.strokeStyle = COL.teal; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(sx + 106, sy + 40); ctx.lineTo(w - 30, sy + 40); ctx.lineTo(w - 40, sy + 33); ctx.moveTo(w - 30, sy + 40); ctx.lineTo(w - 40, sy + 47); ctx.stroke();
+    ctx.fillStyle = COL.teal; ctx.textAlign = "center"; ctx.fillText("Salen: " + s.served, sx + 143, sy + 66); }
+  // N(t)
+  { const { ctx, w, h } = canvas("cvN"), P = { l: 44, r: 12, t: 14, b: 34 };
+    const xmax = Math.max(10, s.clock), ymax = Math.max(4, ...s.hist.map(p => p[1]));
+    const A = axes(ctx, w, h, P, xmax, ymax, "Tiempo (min)", "N(t)", 5, Math.min(ymax, 4), 0, ymax > 4 ? 1 : 0);
+    ctx.strokeStyle = COL.coral; ctx.lineWidth = 2; ctx.beginPath(); s.hist.forEach((p, i) => i ? ctx.lineTo(A.X(p[0]), A.Y(p[1])) : ctx.moveTo(A.X(p[0]), A.Y(p[1]))); ctx.stroke(); }
+  $("sedStep").disabled = $("sedPlay").disabled = $("sedEnd").disabled = s.done;
+  if (s.done) { const m = $("sedMsg"); if (!m.dataset.end) m.innerHTML += " <b>Corrida terminada.</b>"; m.dataset.end = "1"; } else delete $("sedMsg").dataset.end;
+}
+function sedPause() { clearInterval(sedTimer); sedTimer = null; $("sedPlay").textContent = "Reproducir"; }
+function sedPlay() {
+  if (sedTimer) return sedPause();
+  $("sedPlay").textContent = "Pausa";
+  sedTimer = setInterval(() => { const k = +$("vel").value > 8 ? 5 : 1; for (let i = 0; i < k; i++) sedStep(); sedDraw(); if (S.done) sedPause(); }, 1100 / (+$("vel").value) ** 1.4);
+}
+
+/* ---------------------------------------------------------------
+   4. EVENTOS CONTINUOS (Euler) + fallas discretas (híbrido)
+---------------------------------------------------------------- */
+const HMAX = 10; let T = null, conRAF = null;
+function conParams() { return { q: +$("qin").value, k: +$("kk").value, A: +$("AA").value, h0: +$("h0").value }; }
+function conReset() {
+  cancelAnimationFrame(conRAF); conRAF = null; $("conPlay").textContent = "Iniciar";
+  const p = conParams(); ["qin", "kk", "AA", "h0"].forEach(id => $(id + "V").textContent = (+$(id).value).toFixed(id === "kk" ? 2 : 1));
+  const g = CFG ? makeGen(CFG) : null;
+  T = { t: 0, h: p.h0, pts: [[0, p.h0]], pump: true, nextEv: Infinity, fails: [], nFail: 0, over: false,
+    rnd() { const r = g ? g.next().r : Math.random(); return Math.min(0.9999, Math.max(0.0001, r)); } };
+  if ($("hyb").checked) T.nextEv = -12 * Math.log(1 - T.rnd());
+  conDraw();
+}
+function conAdvance(span) {
+  const dt = 0.02, p = conParams(), hyb = $("hyb").checked;
+  for (let e = 0; e < span; e += dt) {
+    if (hyb && T.t >= T.nextEv) {           // evento discreto: la bomba falla o se repara
+      T.pump = !T.pump;
+      if (!T.pump) { T.nFail++; T.fails.push([T.t, null]); T.nextEv = T.t - 4 * Math.log(1 - T.rnd()); }
+      else { T.fails[T.fails.length - 1][1] = T.t; T.nextEv = T.t - 12 * Math.log(1 - T.rnd()); }
+    }
+    const qin = hyb && !T.pump ? 0 : p.q;
+    T.h += dt * (qin - p.k * Math.sqrt(Math.max(T.h, 0))) / p.A;   // paso de Euler
+    if (T.h < 0) T.h = 0; if (T.h > HMAX) { T.h = HMAX; T.over = true; }
+    T.t += dt;
+  }
+  T.pts.push([T.t, T.h]); if (T.pts.length > 4000) T.pts = T.pts.filter((_, i) => i % 2 === 0);
+}
+function conDraw() {
+  const p = conParams(), heq = (p.q / p.k) ** 2, hyb = $("hyb").checked;
+  $("conStats").innerHTML =
+    `<div class="stat"><span>Tiempo</span><b>${fx(T.t, 1)} min</b><small>Paso de integración Δt = 0.02</small></div>` +
+    `<div class="stat"><span>Nivel actual h</span><b>${fx(T.h)} m</b><small>Capacidad: ${HMAX} m</small></div>` +
+    `<div class="stat"><span>Nivel de equilibrio h*</span><b>${fx(heq)} m</b><small>${heq > HMAX ? "Supera la capacidad: se desborda" : "Donde entrada = salida"}</small></div>` +
+    `<div class="stat"><span>Bomba</span><b>${!hyb || T.pump ? "Activa" : "En falla"}</b><small>${hyb ? "Fallas ocurridas: " + T.nFail : "Sin eventos aleatorios"}</small></div>`;
+  const m = $("conMsg");
+  m.className = "msg" + (T.over ? " bad" : ""); m.innerHTML = T.over ? "<b>El tanque alcanzó su capacidad máxima.</b> Reduce Q<sub>in</sub> o aumenta k." :
+    hyb ? "Tiempo entre fallas: exponencial de media 12 min. Duración de la reparación: exponencial de media 4 min. Ambos se generan con el método de la pestaña 1." : "Sin fallas, el nivel se acerca suavemente al equilibrio: no hay saltos.";
+  { const { ctx, w, h } = canvas("cvTank"), x0 = 40, tw = w - 80, y0 = 20, th = h - 60, lv = th * T.h / HMAX;
+    ctx.fillStyle = COL.blue; ctx.globalAlpha = .85; ctx.fillRect(x0, y0 + th - lv, tw, lv); ctx.globalAlpha = 1;
+    ctx.strokeStyle = COL.ink2; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0, y0 + th); ctx.lineTo(x0 + tw, y0 + th); ctx.lineTo(x0 + tw, y0); ctx.stroke();
+    if (heq <= HMAX) { const ye = y0 + th - th * heq / HMAX; ctx.setLineDash([5, 4]); ctx.strokeStyle = COL.coral; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x0 - 8, ye); ctx.lineTo(x0 + tw + 8, ye); ctx.stroke(); ctx.setLineDash([]); }
+    const on = !hyb || T.pump; ctx.fillStyle = on ? COL.teal : COL.coral; ctx.fillRect(x0 + 10, 0, 14, y0 + (on && p.q > 0 ? th - lv : 0) * 1); ctx.fillStyle = COL.muted; ctx.textAlign = "center"; ctx.fillText("h = " + fx(T.h) + " m", w / 2, h - 14);
+    ctx.fillStyle = COL.blue; if (T.h > 0.01) ctx.fillRect(x0 + tw, y0 + th - 10, 28, 7); }
+  { const { ctx, w, h } = canvas("cvH"), P = { l: 44, r: 12, t: 14, b: 34 }, xmax = Math.max(60, T.t);
+    const A = axes(ctx, w, h, P, xmax, HMAX, "Tiempo (min)", "Nivel h (m)", 6, 5, 0, 0);
+    ctx.fillStyle = "rgba(228,87,46,.15)"; T.fails.forEach(([a, b]) => ctx.fillRect(A.X(a), P.t, A.X(b ?? T.t) - A.X(a), h - P.t - P.b));
+    if (heq <= HMAX) { ctx.setLineDash([5, 4]); ctx.strokeStyle = COL.coral; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(P.l, A.Y(heq)); ctx.lineTo(w - P.r, A.Y(heq)); ctx.stroke(); ctx.setLineDash([]); }
+    ctx.strokeStyle = COL.teal; ctx.lineWidth = 2.5; ctx.beginPath(); T.pts.forEach((q, i) => i ? ctx.lineTo(A.X(q[0]), A.Y(q[1])) : ctx.moveTo(A.X(q[0]), A.Y(q[1]))); ctx.stroke(); }
+}
+function conPlay() {
+  if (conRAF) { cancelAnimationFrame(conRAF); conRAF = null; $("conPlay").textContent = "Continuar"; return; }
+  $("conPlay").textContent = "Pausa";
+  let odd = false; const loop = () => { conAdvance(0.1); if (odd = !odd) conDraw(); conRAF = T.t < 600 ? requestAnimationFrame(loop) : null; if (!conRAF) $("conPlay").textContent = "Iniciar"; };
+  conRAF = requestAnimationFrame(loop);
+}
+
+/* ---------------------------------------------------------------
+   5. EJERCICIOS (las soluciones se calculan con las mismas funciones)
+---------------------------------------------------------------- */
+const seqOf = (cfg, n, f) => { const g = makeGen(cfg), o = []; for (let i = 0; i < n; i++) o.push(f(g.next())); return o; };
+const nums = s => s.split(/[,;\s]+/).filter(Boolean).map(v => Number(v.replace("%", "")));
+const sameList = (a, b, tol) => a.length === b.length && a.every((v, i) => Math.abs(v - b[i]) <= tol);
+const e1 = seqOf({ metodo: "cuad", x0: 3708n, D: 4 }, 5, o => o.r), e2 = seqOf({ metodo: "prod", x0: 6965n, x1: 9803n, D: 4 }, 5, o => o.r);
+const e3 = seqOf({ metodo: "mixto", a: 5n, c: 7n, m: 8n, x0: 4n }, 8, o => +o.key), e4 = seqOf({ metodo: "mult", a: 11n, m: 64n, x0: 15n }, 16, o => +o.key);
+const e5 = [0.5 - 1.96 / Math.sqrt(480), 0.5 + 1.96 / Math.sqrt(480)], e6 = [-5 * Math.log(0.65), -5 * Math.log(0.2)];
+const EX = [
+  { t: "Cuadrados medios", q: "Con X₀ = 3708 y D = 4, escribe los primeros cinco números r generados.", ph: "0.xxxx, 0.xxxx, …",
+    ok: v => sameList(nums(v), e1, 0.00006), sol: "r = " + e1.map(v => v.toFixed(4)).join(", ") + ". Si continúas, la secuencia cae en el ciclo 2100 → 4100 → 8100 → 6100: el método degenera." },
+  { t: "Productos medios", q: "Con X₀ = 6965, X₁ = 9803 y D = 4, escribe los primeros cinco números r.", ph: "0.xxxx, 0.xxxx, …",
+    ok: v => sameList(nums(v), e2, 0.00006), sol: "r = " + e2.map(v => v.toFixed(4)).join(", ") + "." },
+  { t: "Congruencial mixto y periodo", q: "Con a = 5, c = 7, m = 8 y X₀ = 4, escribe los ocho valores X₁ … X₈.", ph: "x1, x2, …, x8",
+    ok: v => sameList(nums(v), e3, 0), sol: "X = " + e3.join(", ") + ". Aparecen los 8 residuos posibles: periodo completo N = m = 8. Se cumple Hull y Dobell: mcd(7, 8) = 1; a − 1 = 4 es divisible por 2 y por 4." },
+  { t: "Congruencial multiplicativo", q: "Con X₀ = 15, k = 1 (a = 3 + 8k) y g = 6 (m = 2<sup>g</sup>), indica a, m y el periodo máximo N.", ph: "a, m, N",
+    ok: v => sameList(nums(v), [11, 64, 16], 0), sol: "a = 11, m = 64, N = m/4 = 16. Secuencia: " + e4.join(", ") + " (el valor 15 reaparece en la posición 16)." },
+  { t: "Prueba de medias", q: "Una muestra de n = 40 números tiene promedio 0.43. Con α = 5 % (z = 1.96), calcula el límite inferior y el superior de aceptación.", ph: "LI, LS",
+    ok: v => sameList(nums(v), e5, 0.0011), sol: `LI, LS = 0.5 ∓ 1.96 / √(12·40) = ${e5[0].toFixed(4)} y ${e5[1].toFixed(4)}. Como 0.43 está dentro del intervalo, no se rechaza que la media sea 0.5.` },
+  { t: "Transformada inversa", q: "El tiempo entre llegadas es exponencial con media 5 min. Calcula el tiempo que corresponde a r = 0.35 y a r = 0.80.", ph: "x1, x2 (min)",
+    ok: v => sameList(nums(v), e6, 0.011), sol: `x = −5·ln(1 − 0.35) = ${e6[0].toFixed(2)} min y x = −5·ln(1 − 0.80) = ${e6[1].toFixed(2)} min.` },
+  { t: "Clasificación de eventos", q: "Clasifica cada variable de estado como discreta o continua.", sel: ["Inventario de una tienda", "Temperatura de un horno", "Llamadas en espera en un call center", "Nivel de un embalse"], key: ["D", "C", "D", "C"],
+    sol: "Inventario: discreto (cambia por unidades en cada venta o pedido). Temperatura: continua. Llamadas en espera: discreto. Nivel del embalse: continuo." },
+  { t: "Simulación manual de una cola", q: "Tiempos entre llegadas: 2, 4, 1, 3, 5 min. Tiempos de servicio: 3, 2, 4, 1, 2 min. Calcula la espera promedio en cola (min) y la utilización del servidor (%).", ph: "espera, utilización",
+    ok: v => { const a = nums(v); return a.length === 2 && Math.abs(a[0] - 0.6) < 0.011 && (Math.abs(a[1] - 70.6) < 0.11 || Math.abs(a[1] - 0.706) < 0.0011); },
+    sol: "Llegadas: 2, 6, 7, 10, 15. Inicios: 2, 6, 8, 12, 15. Fines: 5, 8, 12, 13, 17. Esperas: 0, 0, 1, 2, 0 → promedio 0.6 min. Utilización = 12 / 17 = 70.6 %." }];
+const done = new Set();
+function buildEx() {
+  $("exList").innerHTML = EX.map((e, i) => `<div class="ex"><h3><span class="num">${i + 1}</span>${e.t}</h3><p>${e.q}</p><div class="ans">` +
+    (e.sel ? e.sel.map((s, j) => `<label style="margin:0;font-weight:400;font-size:15px;color:inherit">${s} <select id="ex${i}_${j}"><option value="">—</option><option value="D">Discreta</option><option value="C">Continua</option></select></label>`).join("")
+           : `<input type="text" id="ex${i}" placeholder="${e.ph}" aria-label="Respuesta del ejercicio ${i + 1}">`) +
+    `<button class="b" data-chk="${i}">Verificar</button><button class="b alt" data-sol="${i}">Ver solución</button><span class="fb" id="fb${i}"></span></div><div class="sol" id="sol${i}">${e.sol}</div></div>`).join("");
+  score();
+}
+const score = () => $("score").innerHTML = `<b>Progreso:</b> ${done.size} de ${EX.length} ejercicios correctos.`;
+$("exList").addEventListener("click", ev => {
+  const b = ev.target.closest("button"); if (!b) return;
+  if (b.dataset.sol) { const s = $("sol" + b.dataset.sol); s.style.display = s.style.display === "block" ? "none" : "block"; return; }
+  const i = +b.dataset.chk, e = EX[i]; let ok;
+  if (e.sel) ok = e.key.every((k, j) => $(`ex${i}_${j}`).value === k); else ok = !!e.ok($("ex" + i).value);
+  $("fb" + i).textContent = ok ? "✓ Correcto" : "✗ Revisa el procedimiento"; $("fb" + i).style.color = ok ? COL.teal : COL.coral;
+  ok ? done.add(i) : done.delete(i); score();
+});
+
+/* ---------------------------------------------------------------
+   Inicio y eventos de la interfaz
+---------------------------------------------------------------- */
+function redraw() { const t = document.querySelector("section.on").id; if (t === "pru") runTests(); if (t === "sed") sedDraw(); if (t === "con") conDraw(); }
+$("nav").addEventListener("click", ev => {
+  const b = ev.target.closest("button"); if (!b) return;
+  document.querySelectorAll("nav button").forEach(x => x.classList.toggle("on", x === b));
+  document.querySelectorAll("section").forEach(s => s.classList.toggle("on", s.id === b.dataset.t));
+  if (b.dataset.t !== "sed") sedPause();
+  redraw();
+});
+$("presets").innerHTML = PRESETS.map((p, i) => `<button class="chipbtn" data-p="${i}">${p[0]}</button>`).join("");
+$("presets").addEventListener("click", ev => {
+  const b = ev.target.closest("button"); if (!b) return; const p = PRESETS[+b.dataset.p][1];
+  $("metodo").value = p.metodo; ["x0", "x1", "a", "c", "m", "D"].forEach(k => { if (p[k] !== undefined) $(k).value = p[k]; });
+  showFields(); generate();
+});
+$("metodo").addEventListener("change", () => { showFields(); const m = $("metodo").value; if (m === "cuad") $("x0").value = "5735"; if (m === "prod") { $("x0").value = "5015"; $("x1").value = "5734"; } if (m === "mult") { $("a").value = "21"; $("m").value = "32"; $("x0").value = "17"; } if (m === "mixto") { $("a").value = "19"; $("c").value = "33"; $("m").value = "100"; $("x0").value = "37"; } generate(); });
+$("btnGen").addEventListener("click", generate);
+$("sedReset").addEventListener("click", sedReset); $("sedStep").addEventListener("click", () => { sedPause(); sedStep(); sedDraw(); });
+$("sedPlay").addEventListener("click", sedPlay); $("sedEnd").addEventListener("click", () => { sedPause(); while (sedStep()); sedDraw(); });
+["ma", "ms", "nc", "src"].forEach(id => $(id).addEventListener("change", sedReset));
+$("vel").addEventListener("input", () => { if (sedTimer) { sedPause(); sedPlay(); } });
+["qin", "kk", "AA"].forEach(id => $(id).addEventListener("input", () => { $(id + "V").textContent = (+$(id).value).toFixed(id === "kk" ? 2 : 1); conDraw(); }));
+$("h0").addEventListener("input", conReset); $("hyb").addEventListener("change", conReset);
+$("conPlay").addEventListener("click", conPlay); $("conReset").addEventListener("click", conReset);
+window.addEventListener("resize", redraw);
+document.querySelectorAll("canvas").forEach(c => c.addEventListener("contextrestored", redraw));
+
+showFields(); buildEx(); generate(); conReset();
+</script>
+</body>
+</html>
