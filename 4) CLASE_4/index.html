@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laboratorio de Simulación · Unidad III · Casos de aplicación</title>
+<style>
+
+:root{--ink:#1A1433;--ink2:#2D2357;--tint:#F2F0F9;--line:#D9D5EA;--muted:#6B7280;--bg:#FFFFFF;--teal:#00A896;--amber:#F2A900;--coral:#E4572E;--violet:#6C4AB6;--blue:#3A86C8;--okbg:#E8F8F5;--badbg:#FDF0EC;--serif:Cambria,Georgia,"Times New Roman",serif;--sans:Calibri,"Segoe UI",system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--bg);font-size:16px;line-height:1.45}
+header{background:var(--ink);color:#fff;padding:22px 24px 0}
+.wrap{max-width:1240px;margin:0 auto}
+.over{color:var(--amber);font-weight:700;letter-spacing:.18em;font-size:12px}
+h1{font-family:var(--serif);font-size:30px;margin:6px 0 4px}
+header p{margin:0 0 18px;color:#D9D5EA;max-width:90ch}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav button{font:inherit;font-weight:700;border:0;background:var(--ink2);color:#D9D5EA;padding:11px 14px;border-radius:10px 10px 0 0;cursor:pointer}
+nav button .n{display:inline-block;background:var(--ink);color:var(--amber);border-radius:5px;width:22px;height:22px;line-height:22px;text-align:center;font-family:var(--serif);margin-right:7px}
+nav button.on{background:var(--bg);color:var(--ink)} nav button.on .n{background:var(--amber);color:var(--ink)}
+main{padding:24px} section{display:none} section.on{display:block}
+h2{font-family:var(--serif);font-size:24px;margin:0 0 4px} h3{margin:0 0 10px;font-size:17px}
+.lead{color:var(--ink2);margin:0 0 18px;max-width:90ch}
+.grid{display:grid;gap:18px;grid-template-columns:330px minmax(0,1fr);align-items:start}
+.two{display:grid;gap:18px;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.three{display:grid;gap:18px;grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid>*,.two>*,.three>*{min-width:0}
+.stack{display:grid;gap:18px}.stack>*{min-width:0}
+@media(max-width:1000px){.three{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:900px){.grid,.two{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--tint);border-radius:14px;padding:18px}
+.card.w{background:#fff;border:1px solid var(--line)}
+label{display:block;font-size:13px;font-weight:700;color:var(--ink2);margin:10px 0 4px}
+input[type=text],input[type=number],select,textarea{width:100%;font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+input[type=range]{width:100%}
+textarea{min-height:110px;font-size:14px;font-family:Consolas,monospace}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 40%;min-width:0}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+button.b{font:inherit;font-weight:700;border:0;border-radius:8px;padding:9px 14px;cursor:pointer;background:var(--violet);color:#fff}
+button.b.alt{background:#fff;color:var(--ink);border:1px solid var(--line)} button.b.go{background:var(--teal)} button.b.warn{background:var(--coral)}
+.chipbtn{font:inherit;font-size:13px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 11px;cursor:pointer;color:var(--ink)}
+.chipbtn.on{background:var(--ink2);color:#fff;border-color:var(--ink2)}
+.subnav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.formula{background:var(--ink2);color:#fff;border-radius:12px;padding:12px 14px;font-family:var(--serif);font-size:16px;text-align:center;line-height:1.7}
+.tablewrap{overflow:auto;max-height:380px;border:1px solid var(--line);border-radius:10px;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{position:sticky;top:0;background:var(--ink2);color:#fff;padding:7px 9px;text-align:center;font-weight:700}
+td{padding:6px 9px;text-align:center;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+td.l,th.l{text-align:left}
+tr:nth-child(even) td{background:var(--tint)} td.hi{background:#FBEFC9 !important;font-weight:700}
+.msg{margin-top:12px;padding:10px 14px;border-radius:10px;background:#fff;border:1px solid var(--line);font-size:15px}
+.msg.bad{border-color:var(--coral);background:var(--badbg)}.msg.ok{border-color:var(--teal);background:var(--okbg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:12px;margin:0 0 16px}
+.stat{background:var(--ink2);color:#fff;border-radius:12px;padding:11px 13px}
+.stat b{display:block;font-family:var(--serif);font-size:22px;color:var(--amber);font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:#D9D5EA}
+.stat i{display:block;font-style:normal;font-size:12px;color:#B9B3D6}
+.tag{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700;color:#fff}
+.tag.ok{background:var(--teal)}.tag.bad{background:var(--coral)}.tag.mid{background:var(--amber);color:var(--ink)}
+canvas{width:100%;display:block;background:#fff;border-radius:10px;border:1px solid var(--line)}
+.cap{font-size:13px;color:var(--muted);margin:6px 0 0}
+.plate{display:inline-block;background:#F7D33B;color:#111;border:2px solid #111;border-radius:5px;padding:0 6px;font-family:Consolas,monospace;font-weight:700;letter-spacing:.06em}
+.note{border-left:4px solid var(--amber);background:#FFF8E5;padding:10px 14px;border-radius:0 10px 10px 0;font-size:14px;margin:12px 0}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}.kv b{color:var(--ink2)}
+.legend-inline span{display:inline-flex;align-items:center;gap:5px;margin-right:12px;font-size:13px;color:var(--muted)}
+.legend-inline i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.case{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:6px}
+.case .card h3{display:flex;gap:10px;align-items:center}
+.case .ico{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:#fff;font-weight:700;font-family:var(--serif)}
+code{background:var(--tint);border-radius:5px;padding:1px 5px;font-size:14px}
+pre{background:var(--ink);color:#EDEAF7;border-radius:10px;padding:12px 14px;overflow:auto;font-size:13px}
+footer{padding:0 24px 30px;color:var(--muted);font-size:13px}
+
+.scenebar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0 0}
+.scenebar .sp{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)} .scenebar input[type=range]{width:120px}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:#fff;cursor:pointer;user-select:none}
+.chk input{margin:0}
+.camwrap{display:grid;gap:14px;grid-template-columns:minmax(0,1fr) 260px} @media(max-width:1100px){.camwrap{grid-template-columns:minmax(0,1fr)}}
+.insp{background:var(--ink);color:#E9E6F5;border-radius:12px;padding:14px;font-size:13px;min-height:200px}
+.insp h4{margin:0 0 8px;font-family:var(--serif);color:var(--amber);font-size:16px}
+.insp .kv{grid-template-columns:auto 1fr;color:#E9E6F5} .insp .kv b{color:#B9B3D6;font-weight:400}
+.insp canvas{border:0;background:#111;margin:8px 0}
+.log{font-family:Consolas,monospace;font-size:12px;background:#0F0B22;color:#C9F2E9;border-radius:10px;padding:8px 10px;height:150px;overflow:auto}
+.log div{white-space:nowrap}.log .t{color:#F2A900}
+.cardimg{display:block;width:100%;height:auto;border-radius:10px;margin-bottom:10px;background:#fff}
+.case .card{cursor:pointer;transition:transform .15s, box-shadow .15s}.case .card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(26,20,51,.12)}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;padding:6px 9px;border-radius:7px;z-index:20;display:none;white-space:nowrap}
+.bubble{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 14px;font-style:italic;min-height:44px;position:relative;margin-bottom:10px}
+.pmgrid{display:grid;gap:18px;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)} @media(max-width:1000px){.pmgrid{grid-template-columns:minmax(0,1fr)}}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+.steps li{counter-increment:s;padding:8px 10px 8px 44px;position:relative;border-radius:10px;margin-bottom:6px;background:#fff;border:1px solid var(--line);cursor:pointer;font-size:14px}
+.steps li:before{content:counter(s);position:absolute;left:10px;top:8px;width:24px;height:24px;border-radius:6px;background:var(--line);color:var(--ink);display:grid;place-items:center;font-weight:700;font-family:var(--serif)}
+.steps li.on{border-color:var(--violet);background:#F4F0FF}.steps li.on:before{background:var(--violet);color:#fff}
+.steps li.done:before{background:var(--teal);color:#fff}
+.codebox{background:#0F0B22;color:#E9E6F5;border-radius:10px;padding:12px 14px;font-family:Consolas,monospace;font-size:13px;white-space:pre-wrap;margin-top:10px}
+.pill2{display:inline-block;background:var(--tint);border-radius:999px;padding:2px 10px;font-size:12px;margin:2px}
+.mini{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="tip" id="tip"></div>
+<header><div class="wrap">
+  <div class="over">SIMULACIÓN · UNIDAD MODULAR III</div>
+  <h1>Laboratorio de casos: distribuciones en acción</h1>
+  <p>Agrotrónica, domótica, inmótica industrial, una cámara de seguridad con visión computacional (YOLO simulado), una encuesta de energía renovable, un analizador de distribuciones y los simuladores ProModel y FlexSim.</p>
+  <nav id="nav">
+    <button class="on" data-t="ini"><span class="n">0</span>Inicio</button>
+    <button data-t="agro"><span class="n">1</span>Agrotrónica</button>
+    <button data-t="domo"><span class="n">2</span>Domótica</button>
+    <button data-t="inmo"><span class="n">3</span>Inmótica industrial</button>
+    <button data-t="yolo"><span class="n">4</span>Cámara · YOLO</button>
+    <button data-t="enc"><span class="n">5</span>Encuesta</button>
+    <button data-t="ana"><span class="n">6</span>Analizador</button>
+    <button data-t="pm"><span class="n">7</span>ProModel · FlexSim</button>
+  </nav>
+</div></header>
+<main><div class="wrap">
+
+<!-- ================= INICIO ================= -->
+<section id="ini" class="on">
+  <h2>¿Qué variable aleatoria hay detrás de cada sistema?</h2>
+  <p class="lead">Elige un caso. Cada pestaña muestra el sistema en movimiento y, debajo, las distribuciones que lo gobiernan con sus parámetros y pruebas de bondad de ajuste. Cambia los parámetros y la semilla para ver qué pasa.</p>
+  <div class="row" style="max-width:420px;margin-bottom:14px"><div><label for="seed">Semilla global (misma semilla = mismos resultados)</label><input id="seed" type="number" value="2026"></div></div>
+  <div class="case" id="cases">
+    <div class="card" data-go="agro">
+      <svg class="cardimg" viewBox="0 0 240 120"><rect width="240" height="120" fill="#CFE8F5"/><circle cx="200" cy="26" r="13" fill="#F2A900"/><rect y="88" width="240" height="32" fill="#7A5230"/><path d="M30 88 V52 Q30 30 70 30 H170 Q210 30 210 52 V88" fill="#E9F7F4" stroke="#00A896" stroke-width="3" opacity=".9"/><g fill="#2E9E5B"><path d="M50 88 q6-22 12 0z"/><path d="M80 88 q6-26 12 0z"/><path d="M110 88 q6-22 12 0z"/><path d="M140 88 q6-26 12 0z"/><path d="M170 88 q6-22 12 0z"/></g><g stroke="#3A86C8" stroke-width="2"><line x1="60" y1="40" x2="56" y2="50"/><line x1="64" y1="40" x2="66" y2="50"/><line x1="120" y1="40" x2="116" y2="50"/><line x1="124" y1="40" x2="126" y2="50"/><line x1="180" y1="40" x2="176" y2="50"/></g><rect x="214" y="70" width="18" height="18" rx="3" fill="#2D2357"/><circle cx="223" cy="76" r="3" fill="#00A896"/></svg>
+      <h3>Agrotrónica</h3><p class="mini">Invernadero con riego automático: humedad <b>normal</b>, lluvias <b>Poisson</b>, vida de la bomba <b>Weibull</b>.</p></div>
+    <div class="card" data-go="domo">
+      <svg class="cardimg" viewBox="0 0 240 120"><rect width="240" height="120" fill="#1A1433"/><circle cx="30" cy="20" r="1.5" fill="#fff"/><circle cx="70" cy="14" r="1" fill="#fff"/><circle cx="210" cy="22" r="1.5" fill="#fff"/><path d="M40 60 L120 18 L200 60 Z" fill="#6C4AB6"/><rect x="50" y="60" width="140" height="56" fill="#F2F0F9"/><line x1="120" y1="60" x2="120" y2="116" stroke="#D9D5EA" stroke-width="2"/><line x1="50" y1="88" x2="190" y2="88" stroke="#D9D5EA" stroke-width="2"/><rect x="58" y="66" width="56" height="18" fill="#F2A900" opacity=".85"/><rect x="126" y="92" width="58" height="20" fill="#F2A900" opacity=".6"/><rect x="128" y="34" width="40" height="10" fill="#3A86C8" transform="rotate(-27 148 39)"/><circle cx="90" cy="102" r="5" fill="#E4572E"/><rect x="88" y="106" width="4" height="8" fill="#E4572E"/><text x="160" y="80" font-size="10" fill="#00A896" font-family="Arial">2.4 kW</text></svg>
+      <h3>Domótica</h3><p class="mini">Casa inteligente: dispositivos por hogar <b>serie logarítmica</b>, eventos <b>Poisson</b>, consumo <b>lognormal</b>.</p></div>
+    <div class="card" data-go="inmo">
+      <svg class="cardimg" viewBox="0 0 240 120"><rect width="240" height="120" fill="#E6E9EF"/><rect y="92" width="240" height="28" fill="#4B5563"/><rect y="86" width="240" height="6" fill="#9CA3AF"/><path d="M60 86 h50 l8-10 h30 l10 10 h20 v-14 h-118z" fill="#3A86C8"/><g stroke="#F2A900" stroke-width="7" stroke-linecap="round" fill="none"><path d="M40 92 L52 58 L84 44"/></g><circle cx="52" cy="58" r="5" fill="#2D2357"/><circle cx="84" cy="44" r="4" fill="#2D2357"/><g fill="#F2A900"><circle cx="90" cy="48" r="2"/><circle cx="94" cy="44" r="1.5"/><circle cx="88" cy="40" r="1.5"/></g><g stroke="#F2A900" stroke-width="7" stroke-linecap="round" fill="none"><path d="M200 92 L188 58 L160 46"/></g><circle cx="188" cy="58" r="5" fill="#2D2357"/><rect x="20" y="8" width="200" height="22" rx="4" fill="#2D2357"/><g fill="#F2A900"><rect x="30" y="13" width="14" height="12"/><rect x="52" y="13" width="14" height="12"/><rect x="96" y="13" width="14" height="12"/><rect x="140" y="13" width="14" height="12"/><rect x="184" y="13" width="14" height="12"/></g></svg>
+      <h3>Inmótica industrial</h3><p class="mini">Planta con brazos robóticos ensamblando autos (<b>M/M/c</b>), oficinas ocupadas (<b>binomial</b>) y HVAC (<b>normal</b>).</p></div>
+    <div class="card" data-go="yolo">
+      <svg class="cardimg" viewBox="0 0 240 120"><rect width="240" height="120" fill="#1F2937"/><rect y="30" width="240" height="60" fill="#374151"/><g fill="#F9FAFB"><rect x="110" y="32" width="6" height="56"/><rect x="122" y="32" width="6" height="56"/><rect x="134" y="32" width="6" height="56"/></g><rect x="30" y="38" width="54" height="22" rx="6" fill="#3A86C8"/><rect x="26" y="34" width="62" height="30" fill="none" stroke="#00A896" stroke-width="2"/><rect x="26" y="26" width="46" height="9" fill="#00A896"/><text x="28" y="33" font-size="7" fill="#fff" font-family="Arial">auto 0.94</text><rect x="160" y="64" width="64" height="22" rx="4" fill="#F2A900"/><rect x="156" y="60" width="72" height="30" fill="none" stroke="#E4572E" stroke-width="2"/><circle cx="104" cy="96" r="4" fill="#D9D5EA"/><rect x="102" y="100" width="4" height="12" fill="#D9D5EA"/><circle cx="12" cy="12" r="4" fill="#E4572E"/><text x="20" y="16" font-size="9" fill="#fff" font-family="Arial">REC · CAM-01</text></svg>
+      <h3>Cámara · YOLO</h3><p class="mini">Autos, motos, buses y peatones: llegadas <b>Poisson</b>, confianza <b>beta</b>, OCR <b>geométrica</b>, latencia <b>lognormal</b>.</p></div>
+    <div class="card" data-go="enc">
+      <svg class="cardimg" viewBox="0 0 240 120"><rect width="240" height="120" fill="#FFF8E5"/><rect x="20" y="14" width="70" height="92" rx="6" fill="#fff" stroke="#2D2357" stroke-width="2"/><rect x="40" y="8" width="30" height="12" rx="3" fill="#2D2357"/><g fill="#D9D5EA"><rect x="30" y="34" width="50" height="5"/><rect x="30" y="50" width="40" height="5"/><rect x="30" y="66" width="46" height="5"/></g><g fill="#00A896"><circle cx="34" cy="86" r="5"/></g><g><rect x="110" y="70" width="18" height="36" fill="#E4572E"/><rect x="134" y="54" width="18" height="52" fill="#F2A900"/><rect x="158" y="38" width="18" height="68" fill="#3A86C8"/><rect x="182" y="24" width="18" height="82" fill="#00A896"/></g><circle cx="205" cy="18" r="9" fill="#F2A900"/></svg>
+      <h3>Encuesta</h3><p class="mini">Encuesta semiestructurada de energía renovable que se llena en vivo: Likert, <b>χ²</b>, intervalos y tamaño de muestra.</p></div>
+    <div class="card" data-go="ana">
+      <svg class="cardimg" viewBox="0 0 240 120"><rect width="240" height="120" fill="#F2F0F9"/><g fill="#6C4AB6" opacity=".55"><rect x="40" y="96" width="16" height="10"/><rect x="58" y="80" width="16" height="26"/><rect x="76" y="56" width="16" height="50"/><rect x="94" y="34" width="16" height="72"/><rect x="112" y="26" width="16" height="80"/><rect x="130" y="38" width="16" height="68"/><rect x="148" y="60" width="16" height="46"/><rect x="166" y="82" width="16" height="24"/><rect x="184" y="96" width="16" height="10"/></g><path d="M30 104 C80 104 90 22 120 22 C150 22 160 104 210 104" fill="none" stroke="#F2A900" stroke-width="3"/><g fill="#00A896"><circle cx="70" cy="14" r="4"/><circle cx="120" cy="8" r="4"/><circle cx="160" cy="16" r="4"/></g></svg>
+      <h3>Analizador</h3><p class="mini">Doce distribuciones con deslizadores, generación animada, calculadora de probabilidades y las tres pruebas.</p></div>
+    <div class="card" data-go="pm">
+      <svg class="cardimg" viewBox="0 0 240 120"><rect width="240" height="120" fill="#EAF2FB"/><g stroke="#C9D7E8"><path d="M0 30h240M0 60h240M0 90h240M60 0v120M120 0v120M180 0v120"/></g><rect x="14" y="48" width="36" height="26" rx="4" fill="#00A896"/><rect x="74" y="48" width="44" height="26" rx="4" fill="#9CA3AF"/><rect x="142" y="42" width="36" height="38" rx="4" fill="#3A86C8"/><rect x="200" y="48" width="28" height="26" rx="4" fill="#E4572E"/><g stroke="#2D2357" stroke-width="2"><line x1="50" y1="61" x2="74" y2="61"/><line x1="118" y1="61" x2="142" y2="61"/><line x1="178" y1="61" x2="200" y2="61"/></g><g fill="#F2A900"><rect x="80" y="54" width="10" height="10"/><rect x="94" y="54" width="10" height="10"/><rect x="154" y="54" width="12" height="12"/></g><text x="14" y="104" font-size="10" fill="#2D2357" font-family="Arial">Source → Queue → Processor → Sink</text></svg>
+      <h3>ProModel · FlexSim</h3><p class="mini">Cómo se construye un modelo en cada simulador, paso a paso y animado, y un traductor de distribuciones.</p></div>
+  </div>
+  <div class="note"><b>Privacidad.</b> Las placas de esta página son <b>sintéticas</b>. Una placa real es un dato personal (Ley 1581 de 2012); para trabajar con video real se necesita autorización, aviso de captura y una política de tratamiento de datos.</div>
+</section>
+
+<!-- ================= AGROTRÓNICA ================= -->
+<section id="agro">
+  <h2>Agrotrónica: invernadero con riego automático</h2>
+  <p class="lead">Cada día la humedad del suelo cambia con memoria del día anterior; las lluvias la suben; si baja del umbral, los aspersores riegan. La bomba se desgasta con cada riego y falla según una Weibull.</p>
+  <div class="grid">
+    <div class="card">
+      <h3>Parámetros</h3>
+      <div class="row"><div><label for="aMu">Humedad media μ (%)</label><input id="aMu" type="number" value="32" step="0.5"></div><div><label for="aSd">Desviación σ (%)</label><input id="aSd" type="number" value="4" step="0.5"></div></div>
+      <div class="row"><div><label for="aUmb">Umbral de riego (%)</label><input id="aUmb" type="number" value="25" step="0.5"></div><div><label for="aRho">Memoria diaria φ</label><input id="aRho" type="number" value="0.6" step="0.05" min="0" max="0.95"></div></div>
+      <div class="row"><div><label for="aLam">Lluvias por semana λ</label><input id="aLam" type="number" value="2.4" step="0.1"></div><div><label for="aRain">Aporte por lluvia (%)</label><input id="aRain" type="number" value="3" step="0.5"></div></div>
+      <div class="row"><div><label for="aK">Bomba: forma k</label><input id="aK" type="number" value="1.8" step="0.1"></div><div><label for="aL">Bomba: escala λ (h)</label><input id="aL" type="number" value="900" step="50"></div></div>
+      <div class="row"><div><label for="aH">Horas de bombeo por riego</label><input id="aH" type="number" value="40" step="5"></div><div><label for="aD">Días a simular</label><input id="aD" type="number" value="365" step="30"></div></div>
+      <div class="btns"><button class="b go" id="aRun">Nueva temporada</button></div>
+      <div class="formula" style="margin-top:14px">H<sub>t</sub> = μ<sub>0</sub> + φ(H<sub>t−1</sub> − μ<sub>0</sub>) + σ√(1−φ²)·Z + aporte·N<sub>t</sub><br>N<sub>t</sub> ~ Poisson(λ/7) · vida ~ Weibull(k, λ)</div>
+    </div>
+    <div class="stack">
+      <div class="card w"><h3>Invernadero en vivo</h3><canvas id="cvA0" data-h="340"></canvas>
+        <div class="scenebar"><button class="b go" id="aPlay">Pausar</button><button class="b alt" id="aBack">Reiniciar temporada</button><span class="sp">Velocidad <input type="range" id="aSpd" min="0.5" max="20" step="0.5" value="3"> días/s</span></div></div>
+      <div class="stats" id="aStats"></div>
+      <div class="card w"><h3>Humedad diaria del suelo (hasta el día actual)</h3><canvas id="cvA1" data-h="220"></canvas><p class="cap"><span style="color:var(--teal)">■</span> humedad · <span style="color:var(--coral)">●</span> riego · <span style="color:var(--blue)">▲</span> lluvia · <span style="color:var(--violet)">│</span> falla de bomba · línea discontinua: umbral</p></div>
+      <div class="two">
+        <div class="card w"><h3>Lluvias por semana vs Poisson</h3><canvas id="cvA2" data-h="220"></canvas><div id="aT2" class="cap"></div></div>
+        <div class="card w"><h3>Vidas de la bomba vs Weibull</h3><canvas id="cvA3" data-h="220"></canvas><div id="aT3" class="cap"></div></div>
+      </div>
+      <div class="card w"><h3>Parámetros de las distribuciones del caso</h3><div class="tablewrap" id="aTab"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DOMÓTICA ================= -->
+<section id="domo">
+  <h2>Domótica: casa inteligente</h2>
+  <p class="lead">Mira un día en una casa conectada. Cada evento (luz, movimiento, puerta, termostato, cámara) llega como un proceso de Poisson cuya tasa cambia entre la noche y el día. El medidor acumula el consumo, que varía de un día a otro según una lognormal.</p>
+  <div class="grid">
+    <div class="card">
+      <h3>Parámetros</h3>
+      <div class="row"><div><label for="dLam">Eventos por hora (noche) λ</label><input id="dLam" type="number" value="6" step="0.5"></div><div><label for="dLamD">Eventos por hora (día) λ</label><input id="dLamD" type="number" value="14" step="0.5"></div></div>
+      <div class="row"><div><label for="dMu">Consumo: μ de ln X</label><input id="dMu" type="number" value="2.3" step="0.05"></div><div><label for="dS">Consumo: σ de ln X</label><input id="dS" type="number" value="0.35" step="0.05"></div></div>
+      <div class="row"><div><label for="dTh">Serie logarítmica θ (barrio)</label><input id="dTh" type="number" value="0.8" step="0.05" min="0.05" max="0.98"></div><div><label for="dN">Hogares del barrio</label><input id="dN" type="number" value="400" step="50"></div></div>
+      <div class="row"><div><label for="dLim">Límite alto (kWh/día)</label><input id="dLim" type="number" value="15" step="1"></div><div><label for="dTar">Tarifa ($/kWh)</label><input id="dTar" type="number" value="850" step="10"></div></div>
+      <div class="btns"><button class="b go" id="dRun">Aplicar parámetros</button></div>
+      <div class="formula" style="margin-top:14px">N(1 h) ~ Poisson(λ(t))<br>p(k) = −θ<sup>k</sup> / (k ln(1 − θ))</div>
+    </div>
+    <div class="stack">
+      <div class="card w"><h3>La casa en vivo</h3><canvas id="cvD0" data-h="380"></canvas>
+        <div class="scenebar"><button class="b go" id="dPlay">Pausar</button><span class="sp">Velocidad <input type="range" id="dSpd" min="0.1" max="4" step="0.1" value="0.6"> h/s</span><span class="sp mini">Haz clic en una habitación para encender o apagar la luz manualmente.</span></div></div>
+      <div class="two">
+        <div class="stats" id="dLive" style="margin:0"></div>
+        <div><div class="log" id="dLog"></div></div>
+      </div>
+      <div class="two">
+        <div class="card w"><h3>Eventos por hora nocturna: casa simulada vs Poisson</h3><canvas id="cvD5" data-h="220"></canvas><div id="dT5" class="cap"></div></div>
+        <div class="card w"><h3>Eventos de hoy por hora</h3><canvas id="cvD3" data-h="220"></canvas></div>
+      </div>
+      <div class="stats" id="dStats"></div>
+      <div class="two">
+        <div class="card w"><h3>Mapa del barrio (color = dispositivos)</h3><canvas id="cvD1" data-h="240"></canvas></div>
+        <div class="card w"><h3>Dispositivos por hogar vs serie logarítmica</h3><canvas id="cvD2" data-h="240"></canvas><div id="dT2" class="cap"></div></div>
+      </div>
+      <div class="card w"><h3>Consumo diario por hogar vs lognormal</h3><canvas id="cvD4" data-h="220"></canvas><div id="dT4" class="cap"></div></div>
+      <div class="card w"><h3>Parámetros de las distribuciones del caso</h3><div class="tablewrap" id="dTab"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= INMÓTICA ================= -->
+<section id="inmo">
+  <h2>Inmótica industrial: planta de ensamble con robots</h2>
+  <p class="lead">Las carrocerías llegan a la línea como un proceso de Poisson y esperan en la banda hasta que una de las c celdas robóticas queda libre (cola M/M/c). Arriba, el edificio inteligente: oficinas ocupadas según una binomial y un HVAC que actúa cuando la temperatura (normal) sale de la banda.</p>
+  <div class="grid">
+    <div class="card">
+      <h3>Parámetros</h3>
+      <div class="row"><div><label for="iLam">Llegadas λ (carrocerías/h)</label><input id="iLam" type="number" value="180" step="10"></div><div><label for="iMu">Capacidad μ por robot (/h)</label><input id="iMu" type="number" value="75" step="5"></div></div>
+      <div class="row"><div><label for="iC">Celdas robóticas c (1 a 6)</label><input id="iC" type="number" value="3" step="1" min="1" max="6"></div><div><label for="iHoras">Horas para el análisis</label><input id="iHoras" type="number" value="40" step="5"></div></div>
+      <div class="row"><div><label for="iSalas">Oficinas</label><input id="iSalas" type="number" value="12" step="1" min="1" max="24"></div><div><label for="iP">P(oficina ocupada)</label><input id="iP" type="number" value="0.65" step="0.05"></div></div>
+      <div class="row"><div><label for="iT">Temperatura media (°C)</label><input id="iT" type="number" value="22" step="0.5"></div><div><label for="iTs">σ temperatura</label><input id="iTs" type="number" value="0.8" step="0.1"></div></div>
+      <div class="row"><div><label for="iBand">Banda del HVAC ± (°C)</label><input id="iBand" type="number" value="1.5" step="0.1"></div><div><label for="iCw">Costo espera ($/carrocería-h)</label><input id="iCw" type="number" value="40000" step="1000"></div></div>
+      <div class="btns"><button class="b go" id="iRun">Aplicar y simular</button></div>
+      <div class="formula" style="margin-top:14px">a = λ/μ, ρ = a/c<br>W<sub>q</sub> = P<sub>w</sub> / (cμ − λ) (Erlang C)</div>
+    </div>
+    <div class="stack">
+      <div class="card w"><h3>Planta en vivo</h3><canvas id="cvI0" data-h="420"></canvas>
+        <div class="scenebar"><button class="b go" id="iPlay">Pausar</button><button class="b alt" id="iAdd">+ robot</button><button class="b alt" id="iDel">− robot</button><span class="sp">Velocidad <input type="range" id="iSpd" min="2" max="120" step="2" value="30"> s simulados/s</span></div></div>
+      <div class="stats" id="iLive"></div>
+      <div class="card w"><h3>Carrocerías en cola (en vivo)</h3><canvas id="cvI5" data-h="180"></canvas></div>
+      <div class="stats" id="iStats"></div>
+      <div class="two">
+        <div class="card w"><h3>¿Cuántos robots? Erlang C</h3><div class="tablewrap" id="iTab"></div></div>
+        <div class="card w"><h3>Espera en cola: simulación vs exponencial teórica</h3><canvas id="cvI2" data-h="230"></canvas><div id="iT2" class="cap"></div></div>
+      </div>
+      <div class="two">
+        <div class="card w"><h3>Oficinas ocupadas vs binomial</h3><canvas id="cvI3" data-h="220"></canvas></div>
+        <div class="card w"><h3>Temperatura interior vs normal</h3><canvas id="cvI4" data-h="220"></canvas><div id="iT4" class="cap"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= YOLO ================= -->
+<section id="yolo">
+  <h2>Cámara de seguridad con visión computacional (YOLO simulado)</h2>
+  <p class="lead">Una cámara en la portería detecta autos, motos, buses, camiones y peatones. Cada objeto recibe un recuadro con su confianza; los vehículos que cruzan la línea de conteo pasan al lector de placas (OCR). Haz clic sobre cualquier objeto para inspeccionarlo.</p>
+  <div class="grid">
+    <div class="card">
+      <h3>Tasas de llegada (por minuto)</h3>
+      <div class="row"><div><label for="yLa">Autos λ</label><input id="yLa" type="number" value="6" step="0.1"></div><div><label for="yLm2">Motos λ</label><input id="yLm2" type="number" value="4" step="0.1"></div></div>
+      <div class="row"><div><label for="yLb">Buses λ</label><input id="yLb" type="number" value="0.8" step="0.05"></div><div><label for="yLc">Camiones λ</label><input id="yLc" type="number" value="0.8" step="0.05"></div></div>
+      <div class="row"><div><label for="yLp">Peatones λ</label><input id="yLp" type="number" value="5" step="0.1"></div><div><label for="yUmb">Umbral de confianza</label><input id="yUmb" type="number" value="0.8" step="0.05"></div></div>
+      <h3 style="margin-top:14px">Modelo de detección</h3>
+      <div class="row"><div><label for="yA">Confianza: Beta α (autos, día)</label><input id="yA" type="number" value="18" step="1"></div><div><label for="yB">Confianza: Beta β</label><input id="yB" type="number" value="2.2" step="0.1"></div></div>
+      <div class="row"><div><label for="yP">OCR: P(éxito por intento)</label><input id="yP" type="number" value="0.85" step="0.05"></div><div><label for="yMax">Máx. intentos</label><input id="yMax" type="number" value="5" step="1"></div></div>
+      <div class="row"><div><label for="yLm">Latencia: mediana (ms)</label><input id="yLm" type="number" value="28" step="1"></div><div><label for="yLs">Latencia: σ de ln</label><input id="yLs" type="number" value="0.25" step="0.05"></div></div>
+      <div class="row"><div><label for="yE">Error de posición σ (px)</label><input id="yE" type="number" value="3" step="0.5"></div><div><label for="yTh">Repeticiones: θ serie log.</label><input id="yTh" type="number" value="0.6" step="0.05"></div></div>
+      <div class="btns"><button class="b" id="yBatch">Simular 4 horas</button><button class="b alt" id="yCsv">Descargar CSV</button><button class="b alt" id="yReset">Reiniciar</button></div>
+    </div>
+    <div class="stack">
+      <div class="card w">
+        <div class="camwrap">
+          <div><canvas id="cvY0" data-h="430" style="background:#111;cursor:crosshair"></canvas>
+            <div class="scenebar"><button class="b go" id="yPlay">Pausar</button><span class="sp">Velocidad <input type="range" id="ySpd" min="0.5" max="8" step="0.5" value="2">×</span>
+              <label class="chk"><input type="checkbox" id="yNight">Noche (IR)</label><label class="chk"><input type="checkbox" id="yRain">Lluvia</label><label class="chk"><input type="checkbox" id="yTrail" checked>Trayectorias</label><label class="chk"><input type="checkbox" id="yHeat">Mapa de calor</label><label class="chk"><input type="checkbox" id="yBoxes" checked>Recuadros</label></div>
+            <div class="scenebar" id="yCls"></div>
+          </div>
+          <div class="insp" id="yInsp"><h4>Inspector</h4><p>Haz clic sobre un objeto de la escena.</p></div>
+        </div>
+      </div>
+      <div class="stats" id="yStats"></div>
+      <div class="two">
+        <div class="card w"><h3>Conteo por clase (línea de conteo)</h3><canvas id="cvY2" data-h="220"></canvas></div>
+        <div class="card w"><h3>Registro de lecturas</h3><div class="tablewrap" id="yLog" style="max-height:240px"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <h3>Análisis de distribuciones de los datos capturados</h3>
+    <div class="subnav" id="yVar"></div>
+    <div class="two">
+      <div><canvas id="cvY1" data-h="280"></canvas><p class="cap" id="yCap"></p></div>
+      <div><div id="yPar" class="tablewrap" style="max-height:none"></div><div id="yTest"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ENCUESTA ================= -->
+<section id="enc">
+  <h2>Encuesta semiestructurada: energía renovable en el hogar</h2>
+  <p class="lead">Mira cómo se llena la encuesta persona a persona: cada respuesta actualiza las gráficas, el intervalo de confianza se estrecha y la prueba de independencia cambia. Haz clic sobre una persona para leer su respuesta completa.</p>
+  <div class="grid">
+    <div class="card">
+      <h3>Diseño de la encuesta</h3>
+      <div class="row"><div><label for="eN">Encuestados</label><input id="eN" type="number" value="300" step="10"></div><div><label for="eConf">Confianza</label><select id="eConf"><option value="0.90">90 %</option><option value="0.95" selected>95 %</option><option value="0.99">99 %</option></select></div></div>
+      <label for="eEf">Efecto del estrato en la disposición (0 = ninguno)</label><input id="eEf" type="range" min="0" max="10" value="3">
+      <div class="row"><div><label for="ePay">Disposición a pagar: media (millones)</label><input id="ePay" type="number" value="2.5" step="0.1"></div><div><label for="ePaySd">σ (millones)</label><input id="ePaySd" type="number" value="1" step="0.1"></div></div>
+      <div class="row"><div><label for="eErr">Error deseado e (%)</label><input id="eErr" type="number" value="5" step="0.5"></div><div><label for="eP">p esperada</label><input id="eP" type="number" value="0.5" step="0.05"></div></div>
+      <div class="btns"><button class="b go" id="eRun">Nueva encuesta</button><button class="b alt" id="eAll">Completar al instante</button></div>
+      <label for="eTxt" style="margin-top:16px">O pega tus datos: <code>estrato,likert</code> por línea (1-2, 3-4 o 5-6; Likert 1 a 5)</label>
+      <textarea id="eTxt" placeholder="1-2,4&#10;3-4,5&#10;5-6,3"></textarea>
+      <div class="btns"><button class="b alt" id="eUse">Analizar mis datos</button></div>
+    </div>
+    <div class="stack">
+      <div class="card w"><h3>Trabajo de campo en vivo</h3>
+        <div class="bubble" id="eBub">Pulsa «Nueva encuesta» para empezar.</div>
+        <canvas id="cvE0" data-h="260"></canvas>
+        <div class="scenebar"><button class="b go" id="ePlay">Pausar</button><span class="sp">Velocidad <input type="range" id="eSpd" min="1" max="60" value="10"> personas/s</span></div>
+        <div class="legend-inline" id="eLeg"></div></div>
+      <div class="stats" id="eStats"></div>
+      <div class="two">
+        <div class="card w"><h3>¿Instalaría paneles solares? (por estrato)</h3><canvas id="cvE1" data-h="220"></canvas></div>
+        <div class="card w"><h3>Proporción favorable e intervalo de confianza a medida que crece n</h3><canvas id="cvE4" data-h="220"></canvas></div>
+      </div>
+      <div class="two">
+        <div class="card w"><h3>Independencia: estrato × disposición</h3><div class="tablewrap" id="eTab"></div><div id="eChi"></div></div>
+        <div class="card w"><h3>Barreras (respuesta abierta codificada)</h3><canvas id="cvE2" data-h="230"></canvas></div>
+      </div>
+      <div class="card w"><h3>Disposición a pagar vs normal</h3><canvas id="cvE3" data-h="220"></canvas><div id="eT3" class="cap"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ANALIZADOR ================= -->
+<section id="ana">
+  <h2>Analizador de distribuciones</h2>
+  <p class="lead">Mueve los deslizadores y todo se recalcula al instante. Pasa el cursor sobre las gráficas para leer f(x) y F(x), anima la transformada inversa y calcula probabilidades en el intervalo que elijas.</p>
+  <div class="grid">
+    <div class="card">
+      <label for="nDist">Distribución</label><select id="nDist"></select>
+      <div id="nPars"></div>
+      <div class="row"><div><label for="nN">Tamaño de muestra n</label><input id="nN" type="range" min="20" max="5000" step="10" value="500"><span class="mini" id="nNv">500</span></div><div><label for="nAlfa">α</label><select id="nAlfa"><option value="0.1">0.10</option><option value="0.05" selected>0.05</option><option value="0.01">0.01</option></select></div></div>
+      <div class="btns"><button class="b go" id="nRun">Nueva muestra</button><button class="b" id="nAnim">Animar la generación</button></div>
+      <label class="chk" style="margin-top:12px"><input type="checkbox" id="nNorm">Superponer la normal con la misma media y varianza</label>
+      <h3 style="margin-top:16px">Calculadora de probabilidad</h3>
+      <div class="row"><div><label for="nA">a</label><input id="nA" type="number" step="any"></div><div><label for="nB">b</label><input id="nB" type="number" step="any"></div></div>
+      <div id="nProb" class="msg"></div>
+      <div class="formula" id="nForm" style="margin-top:14px"></div>
+      <p class="cap" id="nMet"></p>
+    </div>
+    <div class="stack">
+      <div class="two">
+        <div class="card w"><h3 id="nT1">Muestra frente a teoría</h3><canvas id="cvN1" data-h="270"></canvas></div>
+        <div class="card w"><h3>Función acumulada y transformada inversa</h3><canvas id="cvN2" data-h="270"></canvas></div>
+      </div>
+      <div class="two">
+        <div class="card w"><h3>Parámetros</h3><div class="tablewrap" id="nPar" style="max-height:none"></div></div>
+        <div class="card w"><h3>Pruebas de bondad de ajuste</h3><div id="nTest"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROMODEL · FLEXSIM ================= -->
+<section id="pm">
+  <h2>ProModel y FlexSim: cómo se construye un modelo</h2>
+  <p class="lead">Los dos son simuladores de eventos discretos para Windows. En ProModel el modelo se arma con <b>tablas</b> (ubicaciones, entidades, llegadas, procesamiento); en FlexSim se arma <b>arrastrando objetos 3D</b> y conectándolos. Recorre los pasos: la animación muestra lo que hace cada uno.</p>
+  <div class="subnav" id="pmNav">
+    <button class="chipbtn on" data-p="pro">ProModel · portería</button><button class="chipbtn" data-p="flex">FlexSim · línea de producción</button><button class="chipbtn" data-p="cmp">Comparación y descarga</button><button class="chipbtn" data-p="tr">Traductor de distribuciones</button>
+  </div>
+  <div id="pm_pro" class="pmp">
+    <div class="pmgrid">
+      <div class="card w"><h3>Vista del modelo (estilo ProModel)</h3><canvas id="cvP1" data-h="360"></canvas>
+        <div class="scenebar"><button class="b go" id="pPlay">Pausar</button><span class="sp">Carriles <input type="range" id="pC" min="1" max="4" value="2"> <b id="pCv">2</b></span><span class="sp">Velocidad <input type="range" id="pSpd" min="5" max="240" value="60"> s/s</span></div>
+        <div class="stats" id="pStats" style="margin-top:12px"></div></div>
+      <div class="card"><h3>Pasos en ProModel</h3><p class="mini" style="margin:-4px 0 10px">Haz clic en un paso: la vista muestra lo que se construye en él y el código que se escribe.</p><ol class="steps" id="pSteps"></ol><div class="codebox" id="pCode"></div></div>
+    </div>
+  </div>
+  <div id="pm_flex" class="pmp" style="display:none">
+    <div class="pmgrid">
+      <div class="card w"><h3>Vista del modelo (estilo FlexSim 3D)</h3><canvas id="cvP2" data-h="380"></canvas>
+        <div class="scenebar"><button class="b go" id="fPlay">Pausar</button><span class="sp">Velocidad <input type="range" id="fSpd" min="10" max="600" value="180"> s/s</span><span class="sp mini">Verde = procesando · amarillo = esperando pieza</span></div>
+        <canvas id="cvP3" data-h="170" style="margin-top:10px"></canvas></div>
+      <div class="card"><h3>Pasos en FlexSim</h3><p class="mini" style="margin:-4px 0 10px">Haz clic en un paso: la vista muestra lo que se construye en él y el código que se escribe.</p><ol class="steps" id="fSteps"></ol><div class="codebox" id="fCode"></div></div>
+    </div>
+  </div>
+  <div id="pm_cmp" class="pmp" style="display:none">
+    <div class="tablewrap" style="max-height:none" id="pmCmp"></div>
+    <div class="two" style="margin-top:18px">
+      <div class="card"><h3>Descargar ProModel</h3><p>Versión estudiantil gratuita (programa con McGraw-Hill): <a href="https://www.promodel.com/mcgraw-hill/" target="_blank" rel="noopener">promodel.com/mcgraw-hill</a>. Las licencias académicas para salas de cómputo se solicitan a BigBear.ai: <a href="https://bigbear.ai/industries/academic-simulation-software" target="_blank" rel="noopener">bigbear.ai</a>. Incluye Stat::Fit para ajustar distribuciones.</p><p class="mini">Solo Windows. Revisa los límites de la versión estudiantil antes de modelar sistemas grandes.</p></div>
+      <div class="card"><h3>Descargar FlexSim</h3><p>FlexSim es ahora un producto de Autodesk. Prueba de 30 días: <a href="https://www.autodesk.com/products/flexsim/trial-intake" target="_blank" rel="noopener">autodesk.com/products/flexsim</a>. Sin licencia abre en <b>modo Express</b>: hasta 30 objetos 3D y 35 actividades de Process Flow, suficiente para los ejemplos de clase.</p><p class="mini">Solo Windows. Condiciones consultadas en octubre de 2026; pueden cambiar.</p></div>
+    </div>
+  </div>
+  <div id="pm_tr" class="pmp" style="display:none">
+    <div class="grid">
+      <div class="card"><label for="tDist">Distribución</label><select id="tDist"></select><div id="tPars"></div><p class="cap">Escribe los parámetros como los entrega Stat::Fit o el cuaderno de Colab.</p></div>
+      <div class="stack"><div class="tablewrap" style="max-height:none" id="tOut"></div><div class="note" id="tNote"></div><canvas id="cvT" data-h="200"></canvas></div>
+    </div>
+  </div>
+</section>
+
+</div></main>
+<footer><div class="wrap">Simulación · Unidad III · Laboratorio de casos. Todos los datos son simulados con un generador con semilla (mulberry32); con la misma semilla obtienes los mismos resultados.</div></footer>
+<script>
+const $ = id => document.getElementById(id);
+const COL = { ink: "#1A1433", ink2: "#2D2357", line: "#D9D5EA", muted: "#6B7280", teal: "#00A896", amber: "#F2A900", coral: "#E4572E", violet: "#6C4AB6", blue: "#3A86C8" };
+const fx = (x, d = 4) => Number.isFinite(x) ? (+x).toFixed(d) : "—";
+
+/* ======== números aleatorios con semilla ======== */
+function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+let RNG = mulberry32(2026);
+const rnd = () => { let u = RNG(); while (u === 0) u = RNG(); return u; };
+const reseed = () => { RNG = mulberry32(+$("seed").value || 1); };
+
+/* ======== funciones especiales ======== */
+function erf(x) { const s = Math.sign(x); x = Math.abs(x); const t = 1 / (1 + 0.3275911 * x); const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x); return s * y; }
+const normCdf = (x, m = 0, s = 1) => 0.5 * (1 + erf((x - m) / (s * Math.SQRT2)));
+function normInv(p) { const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239], b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572], c = [-0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783], d = [0.007784695709041462, 0.3224671290700398, 2.445134137142996, 3.754408661907416]; const pl = 0.02425; let q, r;
+  if (p < pl) { q = Math.sqrt(-2 * Math.log(p)); return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); }
+  if (p > 1 - pl) return -normInv(1 - p); q = p - 0.5; r = q * q; return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1); }
+function lnGamma(z) { const g = 7, c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7]; if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - lnGamma(1 - z); z -= 1; let x = c[0]; for (let i = 1; i < g + 2; i++) x += c[i] / (z + i); const t = z + g + 0.5; return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x); }
+function gammaP(a, x) { if (x <= 0) return 0; if (x < a + 1) { let s = 1 / a, t = s; for (let n = 1; n < 1000; n++) { t *= x / (a + n); s += t; if (Math.abs(t) < Math.abs(s) * 1e-15) break; } return s * Math.exp(-x + a * Math.log(x) - lnGamma(a)); }
+  let b = x + 1 - a, c = 1e300, d = 1 / b, h = d; for (let i = 1; i < 1000; i++) { const an = -i * (i - a); b += 2; d = an * d + b; if (Math.abs(d) < 1e-300) d = 1e-300; c = b + an / c; if (Math.abs(c) < 1e-300) c = 1e-300; d = 1 / d; const del = d * c; h *= del; if (Math.abs(del - 1) < 1e-15) break; } return 1 - Math.exp(-x + a * Math.log(x) - lnGamma(a)) * h; }
+const chi2cdf = (x, k) => gammaP(k / 2, x / 2);
+function chi2inv(p, k) { let lo = 0, hi = k + 60 + 20 * Math.sqrt(2 * k); for (let i = 0; i < 200; i++) { const m = (lo + hi) / 2; if (chi2cdf(m, k) < p) lo = m; else hi = m; } return (lo + hi) / 2; }
+function digamma(x) { let r = 0; while (x < 6) { r -= 1 / x; x += 1; } const f = 1 / (x * x); return r + Math.log(x) - 0.5 / x - f * (1 / 12 - f * (1 / 120 - f * (1 / 252 - f * (1 / 240 - f / 132)))); }
+function trigamma(x) { let r = 0; while (x < 6) { r += 1 / (x * x); x += 1; } const f = 1 / (x * x); return r + 1 / x + f / 2 + f / x * (1 / 6 - f * (1 / 30 - f * (1 / 42 - f / 30))); }
+const lnFact = n => lnGamma(n + 1);
+const ksCrit = (n, a) => ({ 0.1: 1.224, 0.05: 1.358, 0.01: 1.628 }[a]) / (Math.sqrt(n) + 0.12 + 0.11 / Math.sqrt(n)); // aproximación de Stephens
+const AD_CRIT = { 0.1: 1.933, 0.05: 2.492, 0.01: 3.857 };
+
+/* ======== distribuciones ======== */
+const DIST = {
+  poisson: { n: "Poisson", tipo: "d", pars: [["lam", "λ (media)", 3]], form: "p(x) = e^{−λ} λ^x / x!", pmf: (x, p) => x < 0 ? 0 : Math.exp(-p.lam + x * Math.log(p.lam) - lnFact(x)), mean: p => p.lam, var: p => p.lam, rng: p => [0, Math.max(10, Math.ceil(p.lam + 5 * Math.sqrt(p.lam)))] },
+  binom: { n: "Binomial", tipo: "d", pars: [["n", "n (ensayos)", 10], ["p", "p (éxito)", 0.3]], form: "p(x) = C(n, x) p^x (1 − p)^{n−x}", pmf: (x, p) => x < 0 || x > p.n ? 0 : Math.exp(lnFact(p.n) - lnFact(x) - lnFact(p.n - x) + x * Math.log(p.p) + (p.n - x) * Math.log(1 - p.p)), mean: p => p.n * p.p, var: p => p.n * p.p * (1 - p.p), rng: p => [0, p.n] },
+  geom: { n: "Geométrica", tipo: "d", min: 1, pars: [["p", "p (éxito)", 0.3]], form: "p(x) = (1 − p)^{x−1} p,  x = 1, 2, …", pmf: (x, p) => x < 1 ? 0 : Math.pow(1 - p.p, x - 1) * p.p, mean: p => 1 / p.p, var: p => (1 - p.p) / (p.p * p.p), rng: p => [1, Math.max(10, Math.ceil(5 / p.p))] },
+  unif: { n: "Uniforme", tipo: "c", pars: [["a", "a (mínimo)", 2], ["b", "b (máximo)", 8]], form: "f(x) = 1/(b − a),  F(x) = (x − a)/(b − a)", pdf: (x, p) => x >= p.a && x <= p.b ? 1 / (p.b - p.a) : 0, cdf: (x, p) => Math.min(1, Math.max(0, (x - p.a) / (p.b - p.a))), inv: (u, p) => p.a + (p.b - p.a) * u, mean: p => (p.a + p.b) / 2, var: p => (p.b - p.a) ** 2 / 12, rng: p => [p.a - 0.1 * (p.b - p.a), p.b + 0.1 * (p.b - p.a)] },
+  expo: { n: "Exponencial", tipo: "c", pars: [["m", "media θ = 1/λ", 4]], form: "f(x) = (1/θ) e^{−x/θ},  F(x) = 1 − e^{−x/θ}", pdf: (x, p) => x < 0 ? 0 : Math.exp(-x / p.m) / p.m, cdf: (x, p) => x < 0 ? 0 : 1 - Math.exp(-x / p.m), inv: (u, p) => -p.m * Math.log(1 - u), mean: p => p.m, var: p => p.m * p.m, rng: p => [0, 6 * p.m] },
+  norm: { n: "Normal", tipo: "c", pars: [["mu", "μ", 10], ["s", "σ", 2]], form: "f(x) = e^{−(x−μ)²/2σ²} / (σ√(2π))", pdf: (x, p) => Math.exp(-((x - p.mu) ** 2) / (2 * p.s * p.s)) / (p.s * Math.sqrt(2 * Math.PI)), cdf: (x, p) => normCdf(x, p.mu, p.s), inv: (u, p) => p.mu + p.s * normInv(u), mean: p => p.mu, var: p => p.s * p.s, rng: p => [p.mu - 4 * p.s, p.mu + 4 * p.s] },
+  tri: { n: "Triangular", tipo: "c", pars: [["a", "a (mínimo)", 2], ["c", "c (moda)", 3], ["b", "b (máximo)", 5]], form: "F(c) = (c − a)/(b − a);  x = a + √(r(b−a)(c−a)) si r < F(c)", pdf: (x, p) => x < p.a || x > p.b ? 0 : x < p.c ? 2 * (x - p.a) / ((p.b - p.a) * (p.c - p.a)) : 2 * (p.b - x) / ((p.b - p.a) * (p.b - p.c)), cdf: (x, p) => x <= p.a ? 0 : x >= p.b ? 1 : x < p.c ? (x - p.a) ** 2 / ((p.b - p.a) * (p.c - p.a)) : 1 - (p.b - x) ** 2 / ((p.b - p.a) * (p.b - p.c)), inv: (u, p) => { const F = (p.c - p.a) / (p.b - p.a); return u < F ? p.a + Math.sqrt(u * (p.b - p.a) * (p.c - p.a)) : p.b - Math.sqrt((1 - u) * (p.b - p.a) * (p.b - p.c)); }, mean: p => (p.a + p.b + p.c) / 3, var: p => (p.a * p.a + p.b * p.b + p.c * p.c - p.a * p.b - p.a * p.c - p.b * p.c) / 18, rng: p => [p.a, p.b] },
+  gamma: { n: "Gamma / Erlang", tipo: "c", pars: [["k", "forma k", 2.65], ["t", "escala θ", 1.7]], form: "f(x) = x^{k−1} e^{−x/θ} / (Γ(k) θ^k)", pdf: (x, p) => x <= 0 ? 0 : Math.exp((p.k - 1) * Math.log(x) - x / p.t - lnGamma(p.k) - p.k * Math.log(p.t)), cdf: (x, p) => gammaP(p.k, x / p.t), mean: p => p.k * p.t, var: p => p.k * p.t * p.t, rng: p => [0, p.k * p.t + 5 * Math.sqrt(p.k) * p.t] },
+  weib: { n: "Weibull", tipo: "c", pars: [["k", "forma k", 2], ["l", "escala λ", 5]], form: "F(x) = 1 − e^{−(x/λ)^k};  x = λ(−ln(1 − r))^{1/k}", pdf: (x, p) => x < 0 ? 0 : (p.k / p.l) * Math.pow(x / p.l, p.k - 1) * Math.exp(-Math.pow(x / p.l, p.k)), cdf: (x, p) => x < 0 ? 0 : 1 - Math.exp(-Math.pow(x / p.l, p.k)), inv: (u, p) => p.l * Math.pow(-Math.log(1 - u), 1 / p.k), mean: p => p.l * Math.exp(lnGamma(1 + 1 / p.k)), var: p => p.l * p.l * (Math.exp(lnGamma(1 + 2 / p.k)) - Math.exp(2 * lnGamma(1 + 1 / p.k))), rng: p => [0, p.l * Math.pow(Math.log(1000), 1 / p.k)] },
+  logn: { n: "Lognormal", tipo: "c", pars: [["mu", "μ de ln X", 1.3], ["s", "σ de ln X", 0.66]], form: "ln X ~ Normal(μ, σ);  x = e^{μ + σ Z}", pdf: (x, p) => x <= 0 ? 0 : Math.exp(-((Math.log(x) - p.mu) ** 2) / (2 * p.s * p.s)) / (x * p.s * Math.sqrt(2 * Math.PI)), cdf: (x, p) => x <= 0 ? 0 : normCdf(Math.log(x), p.mu, p.s), inv: (u, p) => Math.exp(p.mu + p.s * normInv(u)), mean: p => Math.exp(p.mu + p.s * p.s / 2), var: p => (Math.exp(p.s * p.s) - 1) * Math.exp(2 * p.mu + p.s * p.s), rng: p => [0, Math.exp(p.mu + 3.2 * p.s)] },
+};
+const isD = k => DIST[k].tipo === "d";
+function cdfOf(k, x, p) { const d = DIST[k]; if (d.cdf) return d.cdf(x, p); let s = 0; for (let i = d.min || 0; i <= Math.floor(x); i++) s += d.pmf(i, p); return Math.min(1, s); }
+function invOf(k, u, p) {
+  const d = DIST[k]; if (d.inv) return d.inv(u, p);
+  if (d.tipo === "d") { let x = d.min || 0, s = d.pmf(x, p); while (s < u && x < 1e5) { x++; s += d.pmf(x, p); } return x; }
+  let lo = 0, hi = Math.max(1, d.mean(p)); while (cdfOf(k, hi, p) < u) hi *= 2;
+  for (let i = 0; i < 80; i++) { const m = (lo + hi) / 2; if (cdfOf(k, m, p) < u) lo = m; else hi = m; } return (lo + hi) / 2;
+}
+const sample = (k, p, n) => Array.from({ length: n }, () => invOf(k, rnd(), p));
+function readPars(k, prefix) { const p = {}; DIST[k].pars.forEach(([id]) => p[id] = +$(prefix + id).value); return p; }
+function parsHTML(k, prefix, vals) { return '<div class="row" style="flex-wrap:wrap">' + DIST[k].pars.map(([id, l, d]) => `<div style="flex:1 1 40%"><label for="${prefix + id}">${l}</label><input type="number" step="any" id="${prefix + id}" value="${vals && vals[id] !== undefined ? +vals[id].toFixed(4) : d}"></div>`).join("") + "</div>"; }
+function validPars(k, p) {
+  const bad = Object.entries(p).find(([, v]) => !Number.isFinite(v)); if (bad) return "Revisa los parámetros.";
+  if (k === "unif" && !(p.b > p.a)) return "Se requiere b > a."; if (k === "tri" && !(p.a <= p.c && p.c <= p.b && p.a < p.b)) return "Se requiere a ≤ c ≤ b.";
+  if ((k === "binom" || k === "geom") && !(p.p > 0 && p.p < 1)) return "p debe estar entre 0 y 1."; if (k === "binom" && !(p.n >= 1 && Number.isInteger(p.n))) return "n debe ser un entero positivo.";
+  if (["poisson"].includes(k) && !(p.lam > 0)) return "λ debe ser positivo."; if (["expo"].includes(k) && !(p.m > 0)) return "La media debe ser positiva.";
+  if (["norm", "logn"].includes(k) && !(p.s > 0)) return "σ debe ser positiva."; if (["gamma", "weib"].includes(k) && !(Object.values(p).every(v => v > 0))) return "Los parámetros deben ser positivos.";
+  return null;
+}
+
+/* ======== gráficas ======== */
+function canvas(id) {
+  const c = $(id), dpr = Math.min(window.devicePixelRatio || 1, 2), w = Math.round(c.clientWidth) || Math.round(c.parentElement.clientWidth - 36) || 500, h = +c.dataset.h;
+  const W = Math.round(w * dpr), H = Math.round(h * dpr); if (c.width !== W || c.height !== H) { c.width = W; c.height = H; c.style.height = h + "px"; }
+  const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.globalAlpha = 1; ctx.setLineDash([]); ctx.clearRect(0, 0, w, h); ctx.font = "12px Calibri, Segoe UI, sans-serif"; return { ctx, w, h };
+}
+const P0 = { l: 50, r: 14, t: 16, b: 36 };
+function axes(ctx, w, h, x0, x1, y0, y1, xl, yl, xd = 1, yd = 2, noX = false) {
+  const X = v => P0.l + (w - P0.l - P0.r) * (v - x0) / (x1 - x0), Y = v => h - P0.b - (h - P0.b - P0.t) * (v - y0) / (y1 - y0);
+  ctx.strokeStyle = COL.line; ctx.fillStyle = COL.muted; ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) { const v = y0 + (y1 - y0) * i / 4, y = Y(v); ctx.beginPath(); ctx.moveTo(P0.l, y); ctx.lineTo(w - P0.r, y); ctx.stroke(); ctx.textAlign = "right"; ctx.fillText(v.toFixed(yd), P0.l - 6, y + 4); }
+  if (!noX) for (let i = 0; i <= 5; i++) { const v = x0 + (x1 - x0) * i / 5; ctx.textAlign = "center"; ctx.fillText(v.toFixed(xd), X(v), h - P0.b + 16); }
+  ctx.textAlign = "center"; ctx.fillText(xl, P0.l + (w - P0.l - P0.r) / 2, h - 3);
+  ctx.save(); ctx.translate(12, P0.t + (h - P0.b - P0.t) / 2); ctx.rotate(-Math.PI / 2); ctx.fillText(yl, 0, 0); ctx.restore(); return { X, Y, x0, x1, y0, y1, w, h };
+}
+const path = (ctx, pts, col, w = 2.2, dash) => { ctx.strokeStyle = col; ctx.lineWidth = w; if (dash) ctx.setLineDash(dash); ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.setLineDash([]); };
+function legend(ctx, items, x, y) { ctx.textAlign = "left"; items.forEach(([t, c], i) => { ctx.fillStyle = c; ctx.fillRect(x, y + i * 16 - 8, 12, 8); ctx.fillStyle = COL.ink; ctx.fillText(t, x + 17, y + i * 16); }); }
+// histograma de la muestra con curva teórica (densidad o probabilidad)
+function histVsTheory(id, xs, k, p, opts = {}) {
+  const { ctx, w, h } = canvas(id), n = xs.length;
+  if (k && isD(k)) {
+    const [a, b] = DIST[k].rng(p), lo = Math.min(a, ...xs), hi = Math.max(b, ...xs.filter(v => v < a + 200));
+    const cnt = {}; xs.forEach(v => cnt[v] = (cnt[v] || 0) + 1);
+    let ym = 0; for (let x = lo; x <= hi; x++) ym = Math.max(ym, (cnt[x] || 0) / n, DIST[k].pmf(x, p));
+    const A = axes(ctx, w, h, lo - 0.5, hi + 0.5, 0, ym * 1.15, "x", "probabilidad", 0, 2), bw = (A.X(1) - A.X(0)) * 0.38;
+    for (let x = lo; x <= hi; x++) { ctx.fillStyle = COL.violet; ctx.fillRect(A.X(x) - bw, A.Y((cnt[x] || 0) / n), bw, A.Y(0) - A.Y((cnt[x] || 0) / n)); ctx.fillStyle = COL.amber; const t = DIST[k].pmf(x, p); ctx.fillRect(A.X(x), A.Y(t), bw, A.Y(0) - A.Y(t)); }
+    legend(ctx, [["muestra", COL.violet], ["teórica", COL.amber]], w - 110, P0.t + 10); A.disc = true; return A;
+  }
+  let [lo, hi] = opts.range || (k ? DIST[k].rng(p) : [Math.min(...xs), Math.max(...xs)]);
+  const bins = opts.bins || Math.min(40, Math.max(10, Math.round(Math.sqrt(n)))), bw = (hi - lo) / bins, c = new Array(bins).fill(0);
+  xs.forEach(v => { const i = Math.floor((v - lo) / bw); if (i >= 0 && i < bins) c[i]++; });
+  const dens = c.map(v => v / (n * bw)); let ym = Math.max(...dens);
+  const curve = []; if (k) for (let i = 0; i <= 200; i++) { const x = lo + (hi - lo) * i / 200; curve.push([x, DIST[k].pdf(x, p)]); ym = Math.max(ym, curve[i][1]); }
+  if (opts.curve) opts.curve.forEach(([, y]) => ym = Math.max(ym, y));
+  const A = axes(ctx, w, h, lo, hi, 0, ym * 1.12 || 1, opts.xl || "x", "densidad", hi - lo > 20 ? 0 : 1, ym > 1 ? 2 : 3);
+  ctx.fillStyle = opts.color || "rgba(108,74,182,.55)"; dens.forEach((d, i) => ctx.fillRect(A.X(lo + i * bw) + 1, A.Y(d), A.X(lo + (i + 1) * bw) - A.X(lo + i * bw) - 2, A.Y(0) - A.Y(d)));
+  if (k) path(ctx, curve.map(([x, y]) => [A.X(x), A.Y(y)]), COL.amber, 2.5);
+  if (opts.curve) path(ctx, opts.curve.map(([x, y]) => [A.X(x), A.Y(y)]), COL.amber, 2.5);
+  legend(ctx, [["muestra", COL.violet], ["teórica", COL.amber]], w - 110, P0.t + 10); A.bw = bw; A.bins = bins; return A;
+}
+const stat = (l, v) => `<div class="stat"><span>${l}</span><b>${v}</b></div>`;
+const meanOf = a => a.reduce((s, v) => s + v, 0) / a.length;
+function chiTest(xs, k, p, alfa, nEst) {
+  const n = xs.length; let cl = [];
+  if (isD(k)) {
+    const lo = Math.min(...xs), hi = Math.max(...xs);
+    for (let x = Math.min(lo, DIST[k].min || 0); x <= hi; x++) cl.push({ lo: x, hi: x, O: xs.filter(v => v === x).length, p: DIST[k].pmf(x, p) });
+    cl[cl.length - 1].hi = Infinity; cl[cl.length - 1].O = xs.filter(v => v >= cl[cl.length - 1].lo).length; cl[cl.length - 1].p = 1 - cdfOf(k, cl[cl.length - 1].lo - 1, p);
+    cl[0].p = cdfOf(k, cl[0].lo, p);
+    while (cl.length > 2 && n * cl[0].p < 5) { const a = cl.shift(); cl[0] = { lo: a.lo, hi: cl[0].hi, O: a.O + cl[0].O, p: a.p + cl[0].p }; }
+    while (cl.length > 2 && n * cl[cl.length - 1].p < 5) { const a = cl.pop(), b = cl[cl.length - 1]; cl[cl.length - 1] = { lo: b.lo, hi: a.hi, O: a.O + b.O, p: a.p + b.p }; }
+    cl.forEach(c => c.lbl = c.hi === Infinity ? `≥ ${c.lo}` : c.lo === c.hi ? `${c.lo}` : `${c.lo}–${c.hi}`);
+  } else {
+    const m = Math.max(3, Math.min(Math.round(Math.sqrt(n)), Math.floor(n / 5))), edges = [-Infinity];
+    for (let i = 1; i < m; i++) edges.push(invOf(k, i / m, p)); edges.push(Infinity);
+    for (let i = 0; i < m; i++) cl.push({ lbl: `${i ? fx(edges[i], 2) : "−∞"} a ${i < m - 1 ? fx(edges[i + 1], 2) : "∞"}`, O: xs.filter(v => v >= edges[i] && v < edges[i + 1]).length, p: 1 / m });
+  }
+  cl.forEach(c => { c.E = n * c.p; c.contrib = (c.O - c.E) ** 2 / c.E; });
+  const chi = cl.reduce((s, c) => s + c.contrib, 0), gl = cl.length - 1 - nEst;
+  return { cl, chi, gl, crit: gl > 0 ? chi2inv(1 - alfa, gl) : NaN, ok: gl > 0 && chi <= chi2inv(1 - alfa, gl), p: gl > 0 ? 1 - chi2cdf(chi, gl) : NaN };
+}
+function ksTest(xs, k, p, alfa) { const s = [...xs].sort((a, b) => a - b), n = s.length, F = s.map(v => cdfOf(k, v, p)); let Dp = -1, Dm = -1, at = 0; F.forEach((f, i) => { const a = (i + 1) / n - f, b = f - i / n; if (a > Dp) Dp = a; if (b > Dm) Dm = b; if (Math.max(a, b) >= Math.max(Dp, Dm)) at = i; }); const D = Math.max(Dp, Dm), crit = ksCrit(n, alfa); return { s, F, Dp, Dm, D, crit, ok: D <= crit, at }; }
+function adTest(xs, k, p, alfa) { const s = [...xs].sort((a, b) => a - b), n = s.length, F = s.map(v => Math.min(1 - 1e-12, Math.max(1e-12, cdfOf(k, v, p)))); let S = 0; for (let i = 0; i < n; i++) S += (2 * i + 1) * (Math.log(F[i]) + Math.log(1 - F[n - 1 - i])); const A2 = -n - S / n; return { A2, crit: AD_CRIT[alfa], ok: A2 <= AD_CRIT[alfa] }; }
+const varOf = a => { const m = meanOf(a); return a.reduce((s, v) => s + (v - m) ** 2, 0) / (a.length - 1); };
+const pretty = s => s.replace(/\^\{([^}]*)\}/g, "<sup>$1</sup>").replace(/\^(\S)/g, "<sup>$1</sup>");
+function erlangC(l, m, c) { const a = l / m, rho = a / c; if (rho >= 1) return null; let s = 0, t = 1; for (let k = 0; k < c; k++) { if (k) t *= a / k; s += t; } const tc = t * a / c / (1 - rho); const Pw = tc / (s + tc), Wq = Pw / (c * m - l); return { rho, Pw, Wq, W: Wq + 1 / m, Lq: l * Wq, L: l * (Wq + 1 / m) }; }
+
+
+/* ======== funciones adicionales ======== */
+function betacf(a, b, x) { const MAXIT = 300, EPS = 3e-14, FPMIN = 1e-300; let qab = a + b, qap = a + 1, qam = a - 1, c = 1, d = 1 - qab * x / qap; if (Math.abs(d) < FPMIN) d = FPMIN; d = 1 / d; let h = d;
+  for (let m = 1; m <= MAXIT; m++) { const m2 = 2 * m; let aa = m * (b - m) * x / ((qam + m2) * (a + m2)); d = 1 + aa * d; if (Math.abs(d) < FPMIN) d = FPMIN; c = 1 + aa / c; if (Math.abs(c) < FPMIN) c = FPMIN; d = 1 / d; h *= d * c;
+    aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2)); d = 1 + aa * d; if (Math.abs(d) < FPMIN) d = FPMIN; c = 1 + aa / c; if (Math.abs(c) < FPMIN) c = FPMIN; d = 1 / d; const del = d * c; h *= del; if (Math.abs(del - 1) < EPS) break; } return h; }
+function ibeta(x, a, b) { if (x <= 0) return 0; if (x >= 1) return 1; const bt = Math.exp(lnGamma(a + b) - lnGamma(a) - lnGamma(b) + a * Math.log(x) + b * Math.log(1 - x));
+  return x < (a + 1) / (a + b + 2) ? bt * betacf(a, b, x) / a : 1 - bt * betacf(b, a, 1 - x) / b; }
+const gfun = z => Math.exp(lnGamma(z));
+let spareZ = null;
+function zBoxMuller() { if (spareZ !== null) { const z = spareZ; spareZ = null; return z; } const u1 = rnd(), u2 = rnd(), r = Math.sqrt(-2 * Math.log(u1)); spareZ = r * Math.sin(2 * Math.PI * u2); return r * Math.cos(2 * Math.PI * u2); }
+function gammaMT(k) { // Marsaglia-Tsang (aceptación y rechazo); k < 1 con el ajuste U^(1/k)
+  if (k < 1) return gammaMT(k + 1) * Math.pow(rnd(), 1 / k);
+  const d = k - 1 / 3, c = 1 / Math.sqrt(9 * d);
+  for (;;) { let z, v; do { z = zBoxMuller(); v = 1 + c * z; } while (v <= 0); v = v * v * v; const u = rnd(); if (Math.log(u) < 0.5 * z * z + d - d * v + d * Math.log(v)) return d * v; } }
+function logserPmf(x, th) { return x < 1 ? 0 : -Math.pow(th, x) / (x * Math.log(1 - th)); }
+function logserInv(u, th) { let k = 1, p = -th / Math.log(1 - th), F = p; while (u > F && k < 1e5) { p *= th * k / (k + 1); k++; F += p; } return k; }
+function logserFit(m) { if (!(m > 1)) return 0.01; let lo = 1e-6, hi = 1 - 1e-9; for (let i = 0; i < 100; i++) { const t = (lo + hi) / 2, mt = -t / ((1 - t) * Math.log(1 - t)); if (mt < m) lo = t; else hi = t; } return (lo + hi) / 2; }
+function discMoments(pmf, from, p) { let m = 0, s = 0, x = from, acc = 0; const pts = []; while (acc < 1 - 1e-12 && x < from + 1e5) { const q = pmf(x, p); pts.push([x, q]); acc += q; m += x * q; x++; } let m2 = 0, m3 = 0, m4 = 0; pts.forEach(([x, q]) => { const d = x - m; m2 += d * d * q; m3 += d ** 3 * q; m4 += d ** 4 * q; }); return { mean: m, var: m2, sk: m3 / m2 ** 1.5, ku: m4 / (m2 * m2) - 3 }; }
+
+/* distribuciones nuevas y momentos de orden 3 y 4 */
+Object.assign(DIST, {
+  beta: { n: "Beta", tipo: "c", pars: [["a", "α", 18], ["b", "β", 2.2]], form: "f(x) = x^{α−1}(1 − x)^{β−1} / B(α, β),  0 ≤ x ≤ 1", pdf: (x, p) => x <= 0 || x >= 1 ? 0 : Math.exp((p.a - 1) * Math.log(x) + (p.b - 1) * Math.log(1 - x) + lnGamma(p.a + p.b) - lnGamma(p.a) - lnGamma(p.b)), cdf: (x, p) => ibeta(x, p.a, p.b), mean: p => p.a / (p.a + p.b), var: p => p.a * p.b / ((p.a + p.b) ** 2 * (p.a + p.b + 1)), rng: p => [0, 1] },
+  logser: { n: "Serie logarítmica", tipo: "d", min: 1, pars: [["th", "θ (0 < θ < 1)", 0.8]], form: "p(x) = −θ^x / (x ln(1 − θ)),  x = 1, 2, …", pmf: (x, p) => logserPmf(x, p.th), mean: p => -p.th / ((1 - p.th) * Math.log(1 - p.th)), var: p => -p.th * (p.th + Math.log(1 - p.th)) / ((1 - p.th) ** 2 * Math.log(1 - p.th) ** 2), rng: p => [1, Math.max(8, logserInv(0.995, p.th))] },
+});
+const SKKU = {
+  norm: () => [0, 0], expo: () => [2, 6], unif: () => [0, -1.2],
+  tri: p => { const { a, b, c } = p, q = a * a + b * b + c * c - a * b - a * c - b * c; return [Math.SQRT2 * (a + b - 2 * c) * (2 * a - b - c) * (a - 2 * b + c) / (5 * q ** 1.5), -0.6]; },
+  gamma: p => [2 / Math.sqrt(p.k), 6 / p.k],
+  logn: p => { const w = Math.exp(p.s * p.s); return [(w + 2) * Math.sqrt(w - 1), w ** 4 + 2 * w ** 3 + 3 * w ** 2 - 6]; },
+  weib: p => { const g = i => gfun(1 + i / p.k), v = g(2) - g(1) ** 2; return [(g(3) - 3 * g(1) * g(2) + 2 * g(1) ** 3) / v ** 1.5, (g(4) - 4 * g(1) * g(3) + 6 * g(1) ** 2 * g(2) - 3 * g(1) ** 4) / (v * v) - 3]; },
+  beta: p => { const { a, b } = p; return [2 * (b - a) * Math.sqrt(a + b + 1) / ((a + b + 2) * Math.sqrt(a * b)), 6 * ((a - b) ** 2 * (a + b + 1) - a * b * (a + b + 2)) / (a * b * (a + b + 2) * (a + b + 3))]; },
+  poisson: p => [1 / Math.sqrt(p.lam), 1 / p.lam],
+  binom: p => { const v = p.n * p.p * (1 - p.p); return [(1 - 2 * p.p) / Math.sqrt(v), (1 - 6 * p.p * (1 - p.p)) / v]; },
+  geom: p => [(2 - p.p) / Math.sqrt(1 - p.p), 6 + p.p * p.p / (1 - p.p)],
+  logser: p => { const m = discMoments((x, q) => logserPmf(x, q.th), 1, p); return [m.sk, m.ku]; },
+};
+function theo(k, p) { const d = DIST[k], [sk, ku] = SKKU[k](p), v = d.var(p); return { mean: d.mean(p), var: v, sd: Math.sqrt(v), cv: Math.sqrt(v) / d.mean(p), sk, ku, med: invOf(k, 0.5, p) }; }
+function sampleMoments(xs) { const n = xs.length, m = meanOf(xs); let m2 = 0, m3 = 0, m4 = 0; xs.forEach(v => { const d = v - m; m2 += d * d; m3 += d ** 3; m4 += d ** 4; }); m2 /= n; m3 /= n; m4 /= n;
+  const s = [...xs].sort((a, b) => a - b), med = n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2, v = m2 * n / (n - 1);
+  return { n, mean: m, var: v, sd: Math.sqrt(v), cv: Math.sqrt(v) / m, sk: m3 / m2 ** 1.5, ku: m4 / (m2 * m2) - 3, med, min: s[0], max: s[n - 1] }; }
+
+/* generadores: el método natural para cada distribución */
+const METODO = { norm: "Box-Muller (transformación de dos uniformes)", expo: "Transformada inversa: x = −θ ln(1 − r)", unif: "Transformada inversa: x = a + (b − a) r", tri: "Transformada inversa por tramos", gamma: "Aceptación y rechazo (Marsaglia-Tsang); con k entero equivale a convolución de exponenciales", weib: "Transformada inversa: x = λ(−ln(1 − r))^{1/k}", logn: "Transformación: x = e^{μ + σZ}, Z por Box-Muller", beta: "Composición de gammas: X = G₁/(G₁ + G₂)", poisson: "Transformada inversa discreta (búsqueda en la acumulada)", binom: "Convolución: suma de n ensayos de Bernoulli", geom: "Transformada inversa cerrada: x = ⌈ln(1 − r)/ln(1 − p)⌉", logser: "Transformada inversa discreta con p(k+1) = p(k)·θk/(k+1)" };
+function gen(k, p) {
+  switch (k) {
+    case "norm": return p.mu + p.s * zBoxMuller();
+    case "logn": return Math.exp(p.mu + p.s * zBoxMuller());
+    case "gamma": return gammaMT(p.k) * p.t;
+    case "beta": { const g1 = gammaMT(p.a), g2 = gammaMT(p.b); return g1 / (g1 + g2); }
+    case "binom": { let c = 0; for (let i = 0; i < p.n; i++) if (rnd() < p.p) c++; return c; }
+    case "geom": return Math.max(1, Math.ceil(Math.log(1 - rnd()) / Math.log(1 - p.p)));
+    case "logser": return logserInv(rnd(), p.th);
+    default: return invOf(k, rnd(), p);
+  }
+}
+const genN = (k, p, n) => Array.from({ length: n }, () => gen(k, p));
+function validPars2(k, p) { if (k === "beta" && !(p.a > 0 && p.b > 0)) return "α y β deben ser positivos."; if (k === "logser" && !(p.th > 0 && p.th < 1)) return "θ debe estar entre 0 y 1."; return validPars(k, p); }
+
+/* tablas y veredictos */
+const T = (head, rows, hiRow) => `<table><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr>${rows.map((r, i) => `<tr>${r.map((c, j) => `<td class="${j === 0 ? "l" : ""}${i === hiRow ? " hi" : ""}">${c}</td>`).join("")}</tr>`).join("")}</table>`;
+const tag = (ok, a = "No se rechaza H₀", b = "Se rechaza H₀") => `<span class="tag ${ok ? "ok" : "bad"}">${ok ? a : b}</span>`;
+const parStr = (k, p) => DIST[k].pars.map(([id, l]) => `${l.split(" ")[0]} = ${fx(p[id], 3)}`).join(", ");
+function momentsTable(rows) { // rows: [nombre, k, p, xs]
+  const out = [];
+  rows.forEach(([nm, k, p, xs]) => { const t = theo(k, p), s = sampleMoments(xs);
+    out.push([`<b>${nm}</b><br><span class="cap">${DIST[k].n}(${parStr(k, p)})</span>`, `${fx(t.mean, 3)}<br><span class="cap">${fx(s.mean, 3)}</span>`, `${fx(t.var, 3)}<br><span class="cap">${fx(s.var, 3)}</span>`, `${fx(t.sk, 3)}<br><span class="cap">${fx(s.sk, 3)}</span>`, `${fx(t.ku, 3)}<br><span class="cap">${fx(s.ku, 3)}</span>`, `${fx(t.med, 3)}<br><span class="cap">${fx(s.med, 3)}</span>`]); });
+  return T(["Variable · distribución", "Media", "Varianza", "Asimetría", "Curtosis (exceso)", "Mediana"], out) + '<p class="cap" style="padding:0 10px">Arriba: valor teórico. Abajo, en gris: valor de la muestra simulada.</p>';
+}
+const chiLine = r => `χ²₀ = ${fx(r.chi, 3)}, gl = ${r.gl}, crítico = ${fx(r.crit, 3)}, p = ${fx(r.p, 4)} ${tag(r.ok)}`;
+function barsChart(id, labels, series, colors, opts = {}) { // barras agrupadas
+  const { ctx, w, h } = canvas(id), n = labels.length, ym = Math.max(...series.flat(), 1e-9) * 1.15;
+  const A = axes(ctx, w, h, -0.5, n - 0.5, 0, ym, opts.xl || "", opts.yl || "", 0, opts.yd ?? 2, true), g = (A.X(1) - A.X(0)) * 0.8, bw = g / series.length;
+  ctx.fillStyle = COL.muted; ctx.textAlign = "center"; labels.forEach((l, i) => ctx.fillText(l, A.X(i), h - P0.b + 16));
+  series.forEach((s, j) => { ctx.fillStyle = colors[j]; s.forEach((v, i) => ctx.fillRect(A.X(i) - g / 2 + j * bw + 1, A.Y(v), bw - 2, A.Y(0) - A.Y(v))); });
+  if (opts.leg) legend(ctx, opts.leg.map((t, j) => [t, colors[j]]), w - 130, P0.t + 10);
+  return A;
+}
+const gseed = () => +$("seed").value || 1;
+
+
+/* ======== núcleo de animación ======== */
+const reseedN = off => { RNG = mulberry32(gseed() * 7919 + off); spareZ = null; };
+const num = id => +$(id).value;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const ANIM = {};
+let TCLOCK = 0, lastTs = 0;
+function mainLoop(ts) {
+  const dt = Math.min(0.05, (ts - (lastTs || ts)) / 1000); lastTs = ts; TCLOCK += dt;
+  const sec = document.querySelector("section.on"), a = sec && ANIM[sec.id];
+  if (a) { try { a.tick && a.tick(dt); a.draw && a.draw(); } catch (e) { console.error(e); } }
+  requestAnimationFrame(mainLoop);
+}
+function rr(ctx, x, y, w, h, r) { r = Math.min(r, w / 2, h / 2); ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+function disc(ctx, x, y, r, col) { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); }
+function txt(ctx, s, x, y, o = {}) { ctx.font = `${o.b ? "bold " : ""}${o.s || 12}px ${o.mono ? "Consolas, monospace" : "Calibri, Segoe UI, sans-serif"}`; ctx.fillStyle = o.c || COL.ink; ctx.textAlign = o.a || "left"; ctx.textBaseline = o.bl || "alphabetic"; ctx.fillText(s, x, y); ctx.textBaseline = "alphabetic"; }
+function label(ctx, s, x, y, bg, fg = "#fff", sz = 12) { ctx.font = `bold ${sz}px Calibri, sans-serif`; const w = ctx.measureText(s).width + 10; ctx.fillStyle = bg; ctx.fillRect(x, y - sz - 4, w, sz + 6); ctx.fillStyle = fg; ctx.textAlign = "left"; ctx.fillText(s, x + 5, y - 2); return w; }
+function shade(hex, f) { const n = parseInt(hex.slice(1), 16); let r = n >> 16, g = n >> 8 & 255, b = n & 255; r = clamp(Math.round(r * f), 0, 255); g = clamp(Math.round(g * f), 0, 255); b = clamp(Math.round(b * f), 0, 255); return `rgb(${r},${g},${b})`; }
+function mixRGB(a, b, t) { return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(",")})`; }
+function playBtn(id, obj) { $(id).onclick = () => { obj.play = !obj.play; $(id).textContent = obj.play ? "Pausar" : "Continuar"; $(id).classList.toggle("go", obj.play); }; }
+const TIP = () => $("tip");
+function showTip(ev, html) { const t = TIP(); t.innerHTML = html; t.style.display = "block"; t.style.left = (ev.clientX + 14) + "px"; t.style.top = (ev.clientY + 12) + "px"; }
+function hideTip() { TIP().style.display = "none"; }
+function canvasPos(ev, id) { const c = $(id), b = c.getBoundingClientRect(); return [ev.clientX - b.left, ev.clientY - b.top]; }
+// pequeña gráfica de línea en vivo
+function liveLine(id, ys, opts = {}) {
+  const { ctx, w, h } = canvas(id); const n = ys.length; const ym = Math.max(opts.ymin || 3, ...ys) * 1.15;
+  const A = axes(ctx, w, h, 0, Math.max(1, n - 1), 0, ym, opts.xl || "", opts.yl || "", 0, opts.yd ?? 0, !!opts.noX);
+  if (opts.ref !== undefined) { ctx.strokeStyle = COL.amber; ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.moveTo(A.X(0), A.Y(opts.ref)); ctx.lineTo(A.X(Math.max(1, n - 1)), A.Y(opts.ref)); ctx.stroke(); ctx.setLineDash([]); }
+  if (n > 1) path(ctx, ys.map((v, i) => [A.X(i), A.Y(v)]), opts.col || COL.violet, 1.6);
+  if (opts.leg) legend(ctx, opts.leg, w - 170, P0.t + 10);
+  return A;
+}
+
+
+/* ======================= 1. AGROTRÓNICA ======================= */
+const AG = { play: true, d: 0, drops: [], spray: [], lastStat: 0 };
+function agroRun() {
+  reseedN(11);
+  const mu = num("aMu"), sd = num("aSd"), umb = num("aUmb"), phi = clamp(num("aRho"), 0, 0.95), lam = num("aLam"), ap = num("aRain"), k = num("aK"), L = num("aL"), hr = num("aH"), D = clamp(Math.round(num("aD")), 28, 3650);
+  if (!(sd > 0 && lam > 0 && k > 0 && L > 0 && hr > 0)) { $("aStats").innerHTML = '<div class="msg bad" style="grid-column:1/-1">Revisa los parámetros: deben ser positivos.</div>'; return; }
+  const mu0 = mu - ap * (lam / 7) / (1 - phi), H = [], lluv = [], riego = []; let h = mu;
+  for (let d = 0; d < D; d++) { const n = gen("poisson", { lam: lam / 7 }); lluv.push(n); h = mu0 + phi * (h - mu0) + sd * Math.sqrt(1 - phi * phi) * zBoxMuller() + ap * n; const r = h < umb; riego.push(r); H.push(h); if (r) h = umb + 5; }
+  const vidas = genN("weib", { k, l: L }, 300);
+  // proceso de renovación de la bomba: horas usadas por día
+  const bIdx = [], bHoras = [], falla = []; let j = 0, usadas = 0;
+  for (let d = 0; d < D; d++) { if (riego[d]) { usadas += hr; while (usadas >= vidas[j]) { usadas -= vidas[j]; j++; falla.push(d); } } bIdx.push(j); bHoras.push(usadas); }
+  Object.assign(AG, { H, lluv, riego, umb, D, mu, sd, lam, k, L, hr, vidas, bIdx, bHoras, falla: new Set(falla), nFallas: falla.length, d: 0, drops: [], spray: [], sem: stepWeeks(lluv, 7) });
+  histVsTheory("cvA2", AG.sem, "poisson", { lam });
+  const c2 = chiTest(AG.sem, "poisson", { lam }, 0.05, 0); $("aT2").innerHTML = `χ² frente a Poisson(${lam}): ${chiLine(c2)}`;
+  histVsTheory("cvA3", vidas, "weib", { k, l: L }, { xl: "horas" });
+  const ksr = ksTest(vidas, "weib", { k, l: L }, 0.05), adr = adTest(vidas, "weib", { k, l: L }, 0.05);
+  $("aT3").innerHTML = `K-S: D = ${fx(ksr.D, 4)} (crítico ${fx(ksr.crit, 4)}) ${tag(ksr.ok)} · A-D: A² = ${fx(adr.A2, 3)} (crítico 2.492) ${tag(adr.ok)}`;
+  $("aTab").innerHTML = momentsTable([["Humedad diaria (%)", "norm", { mu, s: sd }, H], ["Lluvias por semana", "poisson", { lam }, AG.sem], ["Vida de la bomba (h)", "weib", { k, l: L }, vidas]]);
+  agroStats(true);
+}
+function stepWeeks(arr, size) { const out = []; for (let i = 0; i + size <= arr.length; i += size) out.push(arr.slice(i, i + size).reduce((s, v) => s + v, 0)); return out; }
+function agroStats(force) {
+  if (!AG.H) return; const d = Math.min(AG.D - 1, Math.floor(AG.d)), n = d + 1, pT = normCdf(AG.umb, AG.mu, AG.sd);
+  const rg = AG.riego.slice(0, n).filter(Boolean).length, ll = AG.lluv.slice(0, n).reduce((s, v) => s + v, 0), sem = stepWeeks(AG.lluv.slice(0, n), 7), fallas = [...AG.falla].filter(x => x <= d).length;
+  $("aStats").innerHTML = stat("Día", `${n} de ${AG.D}<i>humedad hoy ${fx(AG.H[d], 1)} %</i>`) + stat("Días con riego", `${rg}<i>esperado ≈ ${fx(n * pT, 1)} (Φ)</i>`) + stat("Lluvias", `${ll}<i>esperado λ·días/7 = ${fx(AG.lam * n / 7, 1)}</i>`)
+    + stat("Semanas sin lluvia", `${sem.filter(v => v === 0).length} de ${sem.length}<i>teórico e^(−λ) = ${fx(Math.exp(-AG.lam) * 100, 1)} %</i>`) + stat("Bomba en uso", `#${AG.bIdx[d] + 1}<i>${fx(AG.bHoras[d], 0)} h de uso · fallas: ${fallas}</i>`) + stat("Vida media (MTTF)", `${fx(AG.L * gfun(1 + 1 / AG.k), 0)} h<i>P(falla < 1000 h) = ${fx(DIST.weib.cdf(1000, { k: AG.k, l: AG.L }) * 100, 1)} %</i>`);
+}
+function agroChart() {
+  if (!AG.H) return; const { H, lluv, riego, umb, D } = AG, d = Math.min(D - 1, Math.floor(AG.d)), { ctx, w, h } = canvas("cvA1");
+  const lo = Math.min(umb - 3, ...H), hi = Math.max(...H) + 2, A = axes(ctx, w, h, 0, D - 1, lo, hi, "día", "humedad (%)", 0, 1);
+  ctx.strokeStyle = COL.coral; ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.moveTo(A.X(0), A.Y(umb)); ctx.lineTo(A.X(D - 1), A.Y(umb)); ctx.stroke(); ctx.setLineDash([]);
+  path(ctx, H.slice(0, d + 1).map((v, i) => [A.X(i), A.Y(v)]), COL.teal, 1.6);
+  ctx.fillStyle = COL.blue; for (let i = 0; i <= d; i++) if (lluv[i]) { const x = A.X(i); ctx.beginPath(); ctx.moveTo(x, P0.t + 2); ctx.lineTo(x - 3, P0.t + 8); ctx.lineTo(x + 3, P0.t + 8); ctx.fill(); }
+  for (let i = 0; i <= d; i++) { if (riego[i]) disc(ctx, A.X(i), A.Y(H[i]), 3.2, COL.coral); if (AG.falla.has(i)) { ctx.strokeStyle = COL.violet; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(A.X(i), P0.t + 10); ctx.lineTo(A.X(i), h - P0.b); ctx.stroke(); } }
+  disc(ctx, A.X(d), A.Y(H[d]), 5, COL.ink);
+}
+function plant(ctx, x, y, s, health, sway) {
+  const green = mixRGB([150, 110, 60], [46, 158, 91], health), dark = mixRGB([120, 85, 45], [30, 120, 70], health);
+  ctx.strokeStyle = dark; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + sway * 3, y - s * 0.5, x + sway * 6, y - s); ctx.stroke();
+  for (let i = 0; i < 4; i++) { const t = 0.3 + i * 0.18, lx = x + sway * 6 * t, ly = y - s * t, side = i % 2 ? 1 : -1, droop = (1 - health) * 6;
+    ctx.fillStyle = i % 2 ? green : dark; ctx.beginPath(); ctx.ellipse(lx + side * s * 0.22, ly + droop, s * 0.24, s * 0.09, side * (0.5 - (1 - health) * 0.8), 0, Math.PI * 2); ctx.fill(); }
+  if (health > 0.7 && s > 18) disc(ctx, x + sway * 6, y - s - 2, 3, "#E4572E");
+}
+function agroScene(dt) {
+  if (!AG.H) return; const { ctx, w, h } = canvas("cvA0"), D = AG.D, d = Math.min(D - 1, Math.floor(AG.d)), f = AG.d % 1, Hd = AG.H[d], rain = AG.lluv[d], irr = AG.riego[d] && f > 0.3 && f < 0.75;
+  const light = clamp(Math.sin(Math.PI * (f - 0.22) / 0.56), 0, 1), sky = rain ? mixRGB([40, 44, 60], [140, 152, 168], light) : mixRGB([26, 20, 51], [176, 220, 246], light);
+  ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h);
+  if (light < 0.3) for (let i = 0; i < 40; i++) disc(ctx, (i * 97) % w, (i * 53) % (h * 0.5), 1, `rgba(255,255,255,${0.8 - light * 2})`);
+  // sol / luna
+  const ang = Math.PI * (1 - clamp((f - 0.22) / 0.56, 0, 1)), sx = w * 0.5 + Math.cos(ang) * w * 0.42, sy = h * 0.62 - Math.sin(ang) * h * 0.5;
+  if (light > 0) disc(ctx, sx, sy, 16, rain ? "rgba(242,169,0,.35)" : "#F2A900"); else disc(ctx, w * 0.8, h * 0.15, 12, "#E9E6F5");
+  // nubes
+  const nC = rain ? 6 : 3; for (let i = 0; i < nC; i++) { const cx = ((i * 230 + TCLOCK * (12 + i * 3)) % (w + 200)) - 100, cy = 30 + (i % 3) * 22; ctx.fillStyle = rain ? "rgba(90,96,110,.9)" : "rgba(255,255,255,.85)"; [[0, 0, 22], [20, -8, 18], [40, 0, 20], [20, 6, 18]].forEach(([dx, dy, r]) => disc(ctx, cx + dx, cy + dy, r, ctx.fillStyle)); }
+  const y0 = h * 0.8, gx0 = w * 0.06, gx1 = w * 0.74, top = h * 0.2;
+  // suelo
+  const wet = clamp((Hd - 15) / 30, 0, 1); ctx.fillStyle = mixRGB([205, 172, 120], [88, 60, 38], wet); ctx.fillRect(0, y0, w, h - y0);
+  ctx.fillStyle = "rgba(0,0,0,.08)"; for (let x = 0; x < w; x += 18) ctx.fillRect(x, y0 + 6 + (x % 36 ? 8 : 0), 10, 3);
+  // plantas (3 surcos)
+  const growth = 0.45 + 0.55 * ((d % 90) / 90), health = clamp((Hd - AG.umb + 4) / 12, 0, 1);
+  for (let row = 0; row < 3; row++) { const yy = y0 + 4 + row * 8 - 6; for (let x = gx0 + 22 + row * 12; x < gx1 - 14; x += 34) plant(ctx, x, yy, (20 + row * 4) * growth * h / 300, health, Math.sin(TCLOCK * 1.6 + x * 0.05) * (rain ? 1.4 : 0.5)); }
+  // invernadero
+  ctx.fillStyle = "rgba(240,250,255,.22)"; ctx.beginPath(); ctx.moveTo(gx0, y0); ctx.lineTo(gx0, top + 40); ctx.quadraticCurveTo(gx0, top, gx0 + 60, top); ctx.lineTo(gx1 - 60, top); ctx.quadraticCurveTo(gx1, top, gx1, top + 40); ctx.lineTo(gx1, y0); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = "rgba(0,168,150,.9)"; ctx.lineWidth = 3; ctx.stroke(); ctx.lineWidth = 1.5; ctx.strokeStyle = "rgba(0,168,150,.5)";
+  for (let x = gx0 + 60; x < gx1 - 40; x += 60) { ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, y0); ctx.stroke(); }
+  // tubería y aspersores
+  const py = top + 34; ctx.strokeStyle = "#3A86C8"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(gx0 + 10, py); ctx.lineTo(w * 0.84, py); ctx.lineTo(w * 0.84, y0 - 30); ctx.stroke();
+  const noz = []; for (let x = gx0 + 40; x < gx1 - 20; x += 70) { noz.push(x); ctx.fillStyle = "#2D2357"; ctx.fillRect(x - 3, py, 6, 8); }
+  if (irr && AG.play) noz.forEach(x => { for (let k = 0; k < 2; k++) AG.spray.push({ x, y: py + 8, vx: (Math.random() - 0.5) * 70, vy: 20 + Math.random() * 40, life: 1.2 }); });
+  AG.spray = AG.spray.filter(p => (p.life -= dt) > 0 && p.y < y0); AG.spray.forEach(p => { p.vy += 160 * dt; p.x += p.vx * dt; p.y += p.vy * dt; disc(ctx, p.x, p.y, 1.8, "rgba(58,134,200,.8)"); });
+  // lluvia
+  if (rain && AG.play) for (let k = 0; k < 6 * rain; k++) AG.drops.push({ x: Math.random() * w, y: -10, v: 380 + Math.random() * 120 });
+  AG.drops = AG.drops.filter(p => (p.y += p.v * dt) < y0 + 4); ctx.strokeStyle = "rgba(200,220,255,.7)"; ctx.lineWidth = 1.2; AG.drops.forEach(p => { ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - 2, p.y - 9); ctx.stroke(); });
+  // caseta de bomba y tanque
+  const bx = w * 0.8, by = y0 - 64, falla = AG.falla.has(d), blink = Math.floor(TCLOCK * 4) % 2;
+  ctx.fillStyle = "#6B7280"; rr(ctx, bx + 46, by - 30, 40, 94, 6); ctx.fill(); ctx.fillStyle = "#3A86C8"; ctx.fillRect(bx + 50, by - 26 + 90 * (1 - 0.6), 32, 90 * 0.6 - 4); txt(ctx, "tanque", bx + 66, by - 36, { a: "center", s: 11, c: light > 0.4 ? COL.ink : "#fff" });
+  ctx.fillStyle = "#2D2357"; rr(ctx, bx - 14, by, 54, 64, 6); ctx.fill();
+  disc(ctx, bx + 13, by + 26, 13, "#4B5563"); ctx.save(); ctx.translate(bx + 13, by + 26); ctx.rotate(irr && !falla ? TCLOCK * 10 : 0); ctx.strokeStyle = "#D9D5EA"; ctx.lineWidth = 2; for (let k = 0; k < 4; k++) { ctx.rotate(Math.PI / 2); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(10, 0); ctx.stroke(); } ctx.restore();
+  disc(ctx, bx + 30, by + 8, 4, falla ? (blink ? COL.coral : "#5a1d10") : irr ? COL.teal : "#9CA3AF");
+  txt(ctx, `Bomba #${AG.bIdx[d] + 1}`, bx + 13, by + 52, { a: "center", s: 11, c: "#fff", b: true });
+  if (falla) label(ctx, "¡Falla! bomba reemplazada", bx - 70, by - 8, COL.coral);
+  // sensor
+  const sxp = gx0 + 30; ctx.fillStyle = "#4B5563"; ctx.fillRect(sxp, y0 - 46, 4, 52); ctx.fillStyle = "#0F0B22"; rr(ctx, sxp - 26, y0 - 76, 60, 30, 5); ctx.fill();
+  txt(ctx, `H ${fx(Hd, 1)}%`, sxp + 4, y0 - 56, { a: "center", s: 12, c: Hd < AG.umb ? "#FF8A65" : "#7CF2C9", mono: true, b: true });
+  // HUD
+  const hh = Math.floor(f * 24), mm = Math.floor((f * 24 % 1) * 60);
+  ctx.fillStyle = "rgba(15,11,34,.75)"; rr(ctx, 10, 10, 250, 64, 8); ctx.fill();
+  txt(ctx, `Día ${d + 1} · ${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}`, 20, 30, { c: "#F2A900", b: true, s: 14 });
+  txt(ctx, `Lluvias hoy: ${rain} · Bomba: ${fx(AG.bHoras[d], 0)} h de uso`, 20, 48, { c: "#E9E6F5", s: 12 });
+  txt(ctx, irr ? "RIEGO ACTIVO" : AG.riego[d] ? "Riego programado hoy" : "Riego en espera", 20, 65, { c: irr ? "#7CF2C9" : "#B9B3D6", s: 12, b: irr });
+  if (AG.d >= D - 1e-6) { ctx.fillStyle = "rgba(15,11,34,.7)"; ctx.fillRect(0, h / 2 - 22, w, 44); txt(ctx, "Temporada completa · pulsa «Reiniciar temporada» o cambia los parámetros", w / 2, h / 2 + 5, { a: "center", c: "#fff", b: true, s: 14 }); }
+}
+ANIM.agro = {
+  tick(dt) { AG.dt = AG.play ? dt : 0; if (!AG.H || !AG.play) return; AG.d = Math.min(AG.D, AG.d + dt * num("aSpd")); AG.lastStat += dt; if (AG.lastStat > 0.25) { AG.lastStat = 0; agroStats(); agroChart(); } },
+  draw() { agroScene(AG.dt || 0); }
+};
+
+
+/* ======================= 2. DOMÓTICA ======================= */
+const ROOMS = [{ n: "Habitación", f: 1, x: 0, w: 0.5, dev: ["lámpara", "sensor"] }, { n: "Estudio", f: 1, x: 0.5, w: 0.5, dev: ["lámpara", "PC"] },
+  { n: "Sala", f: 0, x: 0, w: 0.4, dev: ["TV", "lámpara", "cámara"] }, { n: "Cocina", f: 0, x: 0.4, w: 0.33, dev: ["nevera", "horno"] }, { n: "Entrada", f: 0, x: 0.73, w: 0.27, dev: ["puerta", "cámara"] }];
+const EVT = [["luz", 0.35, COL.amber], ["movimiento", 0.25, COL.teal], ["puerta", 0.1, COL.coral], ["termostato", 0.1, COL.blue], ["cámara", 0.1, COL.violet], ["electrodoméstico", 0.1, "#9CA3AF"]];
+const DMa = { play: true, t: 18, rooms: [], people: [], pops: [], log: [], cnt: new Array(24).fill(0), night: [], kwhDay: 10, setp: 22, door: 0, spike: 0, lastStat: 0 };
+const lamH = h => (h < 6 || h >= 22) ? num("dLam") : num("dLamD");
+function domoInit() {
+  reseedN(23); const mu = num("dMu"), s = num("dS");
+  DMa.rooms = ROOMS.map(() => ({ light: 0, ping: 0, glow: 0 })); DMa.people = [0, 2, 3].map((r, i) => ({ room: r, x: 0.3 + 0.2 * i, tx: 0.5, c: [COL.coral, COL.blue, COL.violet][i] }));
+  DMa.t = 18; DMa.t0 = 18; DMa.cnt = new Array(24).fill(0); DMa.log = []; DMa.pops = []; DMa.kwhDay = gen("logn", { mu, s });
+  DMa.night = []; for (let d = 0; d < 20; d++) for (let hh = 0; hh < 24; hh++) if (hh < 6 || hh >= 22) DMa.night.push(gen("poisson", { lam: num("dLam") })); // 20 noches previas
+  domoCharts(); $("dLog").innerHTML = "";
+}
+const hhmm = t => { const h = Math.floor(t % 24), m = Math.floor((t % 1) * 60); return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`; };
+function domoLog(s) { DMa.log.unshift(`<div><span class="t">${hhmm(DMa.t)}</span> · ${s}</div>`); DMa.log.length = Math.min(DMa.log.length, 60); $("dLog").innerHTML = DMa.log.join(""); }
+function domoEvent() {
+  let u = rnd(), a = 0, e = EVT[0]; for (const ev of EVT) { a += ev[1]; if (u < a) { e = ev; break; } }
+  let r = e[0] === "puerta" ? 4 : Math.floor(rnd() * ROOMS.length); const R = DMa.rooms[r], h = Math.floor(DMa.t % 24); DMa.cnt[h]++;
+  if (e[0] === "luz") { R.light = R.light > 0 ? 0 : 0.3 + rnd() * 0.7; domoLog(`${ROOMS[r].n} · luz ${R.light ? "encendida" : "apagada"}`); }
+  else if (e[0] === "movimiento") { R.ping = 1; const p = DMa.people[Math.floor(rnd() * 3)]; p.room = r; p.tx = 0.15 + rnd() * 0.7; domoLog(`${ROOMS[r].n} · movimiento detectado`); }
+  else if (e[0] === "puerta") { DMa.door = 1; domoLog("Entrada · puerta abierta"); }
+  else if (e[0] === "termostato") { DMa.setp = Math.round((21 + rnd() * 3) * 2) / 2; domoLog(`termostato ajustado a ${DMa.setp} °C`); }
+  else if (e[0] === "cámara") { R.glow = 1; domoLog(`${ROOMS[r].n} · cámara grabó un clip`); }
+  else { DMa.spike = 1; domoLog(`${ROOMS[r].n} · electrodoméstico encendido`); }
+  DMa.pops.push({ r, s: e[0], c: e[2], life: 1.6 });
+}
+function domoTick(dt) {
+  const dH = dt * num("dSpd"), prevDay = Math.floor(DMa.t / 24); DMa.t += dH;
+  const n = gen("poisson", { lam: lamH(Math.floor(DMa.t % 24)) * dH }); for (let i = 0; i < n; i++) domoEvent();
+  if (Math.floor(DMa.t / 24) > prevDay) { for (let hh = 0; hh < 24; hh++) if (hh < 6 || hh >= 22) DMa.night.push(DMa.cnt[hh]); DMa.cnt = new Array(24).fill(0); DMa.kwhDay = gen("logn", { mu: num("dMu"), s: num("dS") }); domoLog(`<b>Nuevo día</b> · consumo previsto ${fx(DMa.kwhDay, 1)} kWh`); }
+  DMa.rooms.forEach(R => { if (R.light > 0) R.light = Math.max(0, R.light - dH * 0.4); R.ping = Math.max(0, R.ping - dt * 1.2); R.glow = Math.max(0, R.glow - dt); });
+  DMa.door = Math.max(0, DMa.door - dt * 0.8); DMa.spike = Math.max(0, DMa.spike - dt * 0.5);
+  DMa.people.forEach(p => { p.x += (p.tx - p.x) * Math.min(1, dt * 1.5); if (Math.abs(p.tx - p.x) < 0.02 && rnd() < dt * 0.3) p.tx = 0.15 + rnd() * 0.7; });
+  DMa.pops = DMa.pops.filter(p => (p.life -= dt) > 0);
+  DMa.lastStat += dt; if (DMa.lastStat > 0.3) { DMa.lastStat = 0; domoLive(); domoCharts(); }
+}
+function domoPower() { const h = DMa.t % 24, prof = 0.5 + 0.7 * Math.exp(-((h - 20) ** 2) / 6) + 0.4 * Math.exp(-((h - 7.5) ** 2) / 3); return DMa.kwhDay / 24 * prof * (1 + 0.08 * Math.sin(TCLOCK * 3)) + DMa.spike * 1.8 + DMa.rooms.reduce((s, R) => s + (R.light > 0 ? 0.06 : 0), 0); }
+function domoExp() { const d0 = Math.floor(DMa.t / 24) * 24, a = Math.max(d0, DMa.t0 ?? 18); let e = 0; for (let x = a; x < DMa.t; x = Math.min(DMa.t, Math.floor(x) + 1)) { const nx = Math.min(DMa.t, Math.floor(x) + 1); e += lamH(Math.floor(x % 24)) * (nx - x); if (nx === DMa.t) break; } return e; }
+function domoLive() {
+  const h = Math.floor(DMa.t % 24), lam = lamH(h), hoy = DMa.cnt.reduce((s, v) => s + v, 0), luces = DMa.rooms.filter(R => R.light > 0).length, frac = (DMa.t % 24) / 24;
+  $("dLive").innerHTML = stat("Hora simulada", `${hhmm(DMa.t)}<i>día ${Math.floor(DMa.t / 24) + 1} · ${h < 6 || h >= 22 ? "noche" : "día"}</i>`) + stat("Eventos esta hora", `${DMa.cnt[h]}<i>λ = ${lam} por hora</i>`) + stat("Eventos hoy", `${hoy}<i>esperado hasta ahora ≈ ${fx(domoExp(), 1)}</i>`)
+    + stat("Luces encendidas", `${luces} de ${ROOMS.length}`) + stat("Consumo hoy", `${fx(DMa.kwhDay * frac, 2)} kWh<i>día completo ${fx(DMa.kwhDay, 1)} kWh (lognormal)</i>`) + stat("Potencia ahora", `${fx(domoPower(), 2)} kW`);
+}
+function domoCharts() {
+  const h = Math.floor(DMa.t % 24), lamA = Array.from({ length: 24 }, (_, i) => lamH(i));
+  const A = barsChart("cvD3", lamA.map((_, i) => i % 3 === 0 ? String(i) : ""), [DMa.cnt], [COL.blue], { yl: "eventos", yd: 0 });
+  const ctx = $("cvD3").getContext("2d"); lamA.forEach((l, i) => disc(ctx, A.X(i), A.Y(l), 3, COL.coral)); ctx.strokeStyle = COL.amber; ctx.lineWidth = 2; ctx.strokeRect(A.X(h) - 8, P0.t, 16, A.Y(0) - P0.t);
+  legend(ctx, [["eventos simulados hoy", COL.blue], ["λ de la hora", COL.coral]], P0.l + 10, P0.t + 10);
+  if (DMa.night.length > 20) { const lam = num("dLam"); histVsTheory("cvD5", DMa.night, "poisson", { lam }); const c = chiTest(DMa.night, "poisson", { lam }, 0.05, 0); $("dT5").innerHTML = `${DMa.night.length} horas nocturnas observadas. ${chiLine(c)}`; }
+}
+function domoScene() {
+  const { ctx, w, h } = canvas("cvD0"), hr = DMa.t % 24, light = clamp(Math.sin(Math.PI * (hr - 5.5) / 13.5), 0, 1);
+  ctx.fillStyle = mixRGB([20, 16, 44], [168, 214, 242], light); ctx.fillRect(0, 0, w, h);
+  if (light < 0.3) for (let i = 0; i < 50; i++) disc(ctx, (i * 131) % w, (i * 71) % (h * 0.45), 1, `rgba(255,255,255,${0.7 - light * 2})`);
+  const sa = Math.PI * (1 - clamp((hr - 5.5) / 13.5, 0, 1)); if (light > 0) disc(ctx, w * 0.5 + Math.cos(sa) * w * 0.45, h * 0.55 - Math.sin(sa) * h * 0.45, 15, "#F2A900"); else disc(ctx, w * 0.9, h * 0.12, 11, "#E9E6F5");
+  const gy = h - 34; ctx.fillStyle = "#5B8C51"; ctx.fillRect(0, gy, w, h - gy); ctx.fillStyle = "#9CA3AF"; ctx.fillRect(0, gy + 14, w, 6);
+  const hx0 = w * 0.05, hw = Math.min(w * 0.68, 720), fh = (gy - h * 0.3) / 2, f1y = gy - fh, f2y = gy - 2 * fh, roofY = f2y - fh * 0.75;
+  // techo con paneles solares
+  ctx.fillStyle = "#4B3B7A"; ctx.beginPath(); ctx.moveTo(hx0 - 14, f2y); ctx.lineTo(hx0 + hw / 2, roofY); ctx.lineTo(hx0 + hw + 14, f2y); ctx.closePath(); ctx.fill();
+  for (let i = 0; i < 4; i++) { const px = hx0 + hw * 0.55 + i * hw * 0.09, py = f2y - (px - hx0 - hw / 2) * (f2y - roofY) / (hw / 2 + 14) * -1; }
+  ctx.save(); ctx.beginPath(); ctx.moveTo(hx0 + hw / 2, roofY); ctx.lineTo(hx0 + hw + 14, f2y); ctx.lineTo(hx0 + hw / 2, f2y); ctx.closePath(); ctx.clip();
+  for (let i = 0; i < 5; i++) for (let j = 0; j < 2; j++) { ctx.fillStyle = light > 0.2 ? "#2E6FB0" : "#1E3A5F"; ctx.fillRect(hx0 + hw * 0.56 + i * hw * 0.075, roofY + (f2y - roofY) * (0.35 + j * 0.3) + i * (f2y - roofY) * 0.1, hw * 0.065, (f2y - roofY) * 0.22); }
+  ctx.restore();
+  if (light > 0.2) txt(ctx, `solar ${fx(light * 3.2, 1)} kW`, hx0 + hw * 0.78, roofY + 14, { s: 11, c: "#fff", b: true });
+  // habitaciones
+  ROOMS.forEach((R, i) => {
+    const S = DMa.rooms[i], x = hx0 + R.x * hw, y = R.f ? f2y : f1y, rw = R.w * hw;
+    ctx.fillStyle = S.light > 0 ? "#FFF3C4" : light > 0.3 ? "#E9E6F5" : "#3C3466"; ctx.fillRect(x, y, rw, fh);
+    if (S.light > 0) { const g = ctx.createRadialGradient(x + rw / 2, y + 8, 4, x + rw / 2, y + 8, rw * 0.7); g.addColorStop(0, "rgba(255,214,90,.75)"); g.addColorStop(1, "rgba(255,214,90,0)"); ctx.fillStyle = g; ctx.fillRect(x, y, rw, fh); }
+    ctx.strokeStyle = "#2D2357"; ctx.lineWidth = 3; ctx.strokeRect(x, y, rw, fh);
+    disc(ctx, x + rw / 2, y + 8, 5, S.light > 0 ? "#F2A900" : "#9CA3AF"); ctx.strokeStyle = "#6B7280"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x + rw / 2, y); ctx.lineTo(x + rw / 2, y + 4); ctx.stroke();
+    txt(ctx, R.n, x + 6, y + 18, { s: 12, b: true, c: S.light > 0 || light > 0.3 ? COL.ink : "#E9E6F5" });
+    R.dev.forEach((dv, k) => { const dx = x + 8 + k * 44, dy = y + fh - 26; ctx.fillStyle = "rgba(45,35,87,.85)"; rr(ctx, dx, dy, 40, 18, 4); ctx.fill(); txt(ctx, dv, dx + 20, dy + 13, { s: 9, a: "center", c: "#fff" }); });
+    if (S.ping > 0) { ctx.strokeStyle = `rgba(0,168,150,${S.ping})`; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x + rw - 16, y + 16, 6 + (1 - S.ping) * 20, 0, 7); ctx.stroke(); }
+    disc(ctx, x + rw - 16, y + 16, 3.5, COL.teal);
+    if (S.glow > 0) { ctx.fillStyle = `rgba(108,74,182,${S.glow * 0.35})`; ctx.fillRect(x, y, rw, fh); txt(ctx, "● REC", x + rw - 52, y + fh - 34, { s: 10, c: COL.coral, b: true }); }
+    S.box = [x, y, rw, fh];
+  });
+  // puerta
+  const R4 = DMa.rooms[4].box; if (R4) { const dw = 22, dx = R4[0] + R4[2] - 34, dy = gy - 44; ctx.fillStyle = "#7A5230"; ctx.fillRect(dx, dy, dw * (1 - DMa.door * 0.8), 44); ctx.strokeStyle = "#2D2357"; ctx.strokeRect(dx, dy, dw, 44); }
+  // personas
+  DMa.people.forEach(p => { const B = DMa.rooms[p.room].box; if (!B) return; const px = B[0] + B[2] * p.x, py = B[1] + B[3] - 30; disc(ctx, px, py - 14, 5, p.c); ctx.fillStyle = p.c; rr(ctx, px - 5, py - 9, 10, 16, 4); ctx.fill(); });
+  // eventos flotantes
+  DMa.pops.forEach(pp => { const B = DMa.rooms[pp.r].box; if (!B) return; ctx.globalAlpha = Math.min(1, pp.life); label(ctx, pp.s, B[0] + 10, B[1] + 44 - (1.6 - pp.life) * 18, pp.c); ctx.globalAlpha = 1; });
+  // panel del medidor
+  const mx = hx0 + hw + 30, mw = w - mx - 12;
+  if (mw > 140) {
+    ctx.fillStyle = "rgba(15,11,34,.85)"; rr(ctx, mx, 14, mw, gy - 24, 10); ctx.fill();
+    txt(ctx, "MEDIDOR INTELIGENTE", mx + 12, 34, { c: "#F2A900", b: true, s: 12 }); txt(ctx, hhmm(DMa.t), mx + 12, 58, { c: "#fff", b: true, s: 22, mono: true });
+    const pw = domoPower(), cx = mx + mw / 2, cy = 128, r = Math.min(52, mw * 0.32);
+    ctx.lineWidth = 10; ctx.strokeStyle = "#3C3466"; ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, 2 * Math.PI); ctx.stroke();
+    ctx.strokeStyle = pw > 1.2 ? COL.coral : COL.teal; ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, Math.PI + Math.PI * clamp(pw / 2.5, 0, 1)); ctx.stroke();
+    txt(ctx, `${fx(pw, 2)} kW`, cx, cy - 6, { a: "center", c: "#fff", b: true, s: 15 });
+    const frac = hr / 24, kwh = DMa.kwhDay * frac; txt(ctx, `Hoy: ${fx(kwh, 2)} / ${fx(DMa.kwhDay, 1)} kWh`, mx + 12, cy + 30, { c: "#E9E6F5", s: 12 });
+    ctx.fillStyle = "#3C3466"; ctx.fillRect(mx + 12, cy + 38, mw - 24, 8); ctx.fillStyle = DMa.kwhDay > num("dLim") ? COL.coral : COL.teal; ctx.fillRect(mx + 12, cy + 38, (mw - 24) * frac, 8);
+    txt(ctx, `Termostato ${DMa.setp} °C`, mx + 12, cy + 66, { c: "#E9E6F5", s: 12 }); txt(ctx, `λ ahora: ${lamH(Math.floor(hr))} eventos/h`, mx + 12, cy + 84, { c: "#E9E6F5", s: 12 });
+    txt(ctx, `Esta hora: ${DMa.cnt[Math.floor(hr)]} eventos`, mx + 12, cy + 102, { c: "#7CF2C9", s: 12, b: true });
+  }
+}
+function domoRun() { // barrio + tablas
+  reseedN(22);
+  const th = num("dTh"), N = clamp(Math.round(num("dN")), 20, 5000), lN = num("dLam"), mu = num("dMu"), s = num("dS"), lim = num("dLim"), tar = num("dTar");
+  if (!(th > 0 && th < 1 && s > 0 && lN > 0 && num("dLamD") > 0)) { $("dStats").innerHTML = '<div class="msg bad" style="grid-column:1/-1">θ debe estar entre 0 y 1; λ y σ deben ser positivos.</div>'; return; }
+  const dev = genN("logser", { th }, N), kwh = genN("logn", { mu, s }, N), noche = Array.from({ length: 400 }, () => gen("poisson", { lam: lN })), thHat = logserFit(meanOf(dev)), mT = DIST.logser.mean({ th });
+  DM = { dev, N };
+  $("dStats").innerHTML = stat("Dispositivos por hogar", `${fx(meanOf(dev), 2)}<i>teórico ${fx(mT, 2)}</i>`) + stat("Hogares con 1 dispositivo", `${fx(dev.filter(v => v === 1).length / N * 100, 1)} %<i>teórico ${fx(logserPmf(1, th) * 100, 1)} %</i>`)
+    + stat("θ estimado", `${fx(thHat, 3)}<i>verdadero ${th}</i>`) + stat("Consumo medio", `${fx(meanOf(kwh), 2)} kWh<i>teórico ${fx(Math.exp(mu + s * s / 2), 2)}</i>`)
+    + stat(`P(consumo > ${lim} kWh)`, `${fx(kwh.filter(v => v > lim).length / N * 100, 1)} %<i>teórico ${fx((1 - normCdf(Math.log(lim), mu, s)) * 100, 1)} %</i>`) + stat("Factura mensual media", `$${Math.round(meanOf(kwh) * 30 * tar).toLocaleString("es-CO")}`);
+  domoMap(); histVsTheory("cvD2", dev, "logser", { th });
+  const c = chiTest(dev, "logser", { th }, 0.05, 0); $("dT2").innerHTML = `χ² frente a la serie logarítmica (θ = ${th}): ${chiLine(c)}`;
+  histVsTheory("cvD4", kwh, "logn", { mu, s }, { xl: "kWh/día" });
+  const ks1 = ksTest(kwh, "logn", { mu, s }, 0.05); $("dT4").innerHTML = `K-S frente a Lognormal(${mu}, ${s}): D = ${fx(ks1.D, 4)} (crítico ${fx(ks1.crit, 4)}) ${tag(ks1.ok)}`;
+  $("dTab").innerHTML = momentsTable([["Dispositivos por hogar", "logser", { th }, dev], ["Eventos por hora (noche)", "poisson", { lam: lN }, noche], ["Consumo diario (kWh)", "logn", { mu, s }, kwh]]);
+}
+let DM = null;
+function domoMap() {
+  if (!DM) return; const { dev, N } = DM, { ctx, w, h } = canvas("cvD1"), cols = Math.ceil(Math.sqrt(N * w / h)), rows = Math.ceil(N / cols), cw = w / cols, ch = (h - 22) / rows, mx = Math.max(...dev);
+  const shd = v => mixRGB([233, 228, 246], [45, 35, 87], Math.min(1, Math.log(v) / Math.log(Math.max(8, mx))));
+  dev.forEach((v, i) => { const x = (i % cols) * cw, y = Math.floor(i / cols) * ch, s = Math.min(cw, ch) * 0.78, cx = x + cw / 2, cy = y + ch / 2 + s * 0.1;
+    ctx.fillStyle = shd(v); ctx.beginPath(); ctx.moveTo(cx - s / 2, cy); ctx.lineTo(cx, cy - s / 2); ctx.lineTo(cx + s / 2, cy); ctx.lineTo(cx + s / 2.6, cy); ctx.lineTo(cx + s / 2.6, cy + s / 2.4); ctx.lineTo(cx - s / 2.6, cy + s / 2.4); ctx.lineTo(cx - s / 2.6, cy); ctx.closePath(); ctx.fill(); });
+  txt(ctx, `${N} hogares · máximo ${mx} dispositivos · más oscuro = más dispositivos`, 4, h - 6, { s: 12, c: COL.muted });
+}
+ANIM.domo = { tick(dt) { if (DMa.play && DMa.rooms.length) domoTick(dt); }, draw() { if (DMa.rooms.length) domoScene(); } };
+
+function simMMc(lam, mu, c, T) { // tiempos en horas
+  const lleg = [], serv = []; let t = 0; for (;;) { t += -Math.log(1 - rnd()) / lam; if (t > T) break; lleg.push(t); serv.push(-Math.log(1 - rnd()) / mu); }
+  const libre = new Array(c).fill(0), ini = [], fin = [];
+  lleg.forEach((a, i) => { let j = 0; for (let q = 1; q < c; q++) if (libre[q] < libre[j]) j = q; ini[i] = Math.max(a, libre[j]); fin[i] = ini[i] + serv[i]; libre[j] = fin[i]; });
+  const esp = lleg.map((a, i) => ini[i] - a), ev = []; lleg.forEach((a, i) => { if (esp[i] > 1e-12) { ev.push([a, 1], [ini[i], -1]); } }); ev.sort((x, y) => x[0] - y[0] || y[1] - x[1]);
+  const q = [[0, 0]]; let n = 0; ev.forEach(([tt, d]) => { q.push([tt, n]); n += d; q.push([tt, n]); }); q.push([T, n]);
+  let area = 0; for (let i = 1; i < q.length; i++) area += (q[i][0] - q[i - 1][0]) * q[i - 1][1];
+  return { lleg, esp, q, Lq: area / T, ocup: serv.reduce((s, v) => s + v, 0) / (c * T) };
+}
+function inmoRun() {
+  reseedN(33);
+  const lam = num("iLam"), mu = num("iMu"), c = Math.max(1, Math.round(num("iC"))), TH = Math.max(1, num("iHoras")), ns = Math.max(1, Math.round(num("iSalas"))), p = num("iP"), tm = num("iT"), ts = num("iTs"), band = num("iBand"), cw = num("iCw");
+  if (!(lam > 0 && mu > 0 && p > 0 && p < 1 && ts > 0)) { $("iStats").innerHTML = '<div class="msg bad" style="grid-column:1/-1">Revisa los parámetros.</div>'; return; }
+  const e = erlangC(lam, mu, c), cMin = Math.floor(lam / mu) + 1;
+  const rows = []; for (let k = cMin; k < cMin + 6; k++) { const r = erlangC(lam, mu, k); rows.push([k, fx(r.rho, 3), fx(r.Pw * 100, 1) + " %", fx(r.Wq * 3600, 1), fx(r.Lq, 3), "$" + Math.round(cw * r.Lq).toLocaleString("es-CO")]); }
+  $("iTab").innerHTML = T(["Robots c", "ρ", "P(esperar)", "Wq (s)", "Lq", "Costo espera/h"], rows, c - cMin) + `<p class="cap" style="padding:0 10px">Mínimo estable: c = ${cMin} (se requiere λ < cμ).</p>`;
+  const salas = Array.from({ length: 500 }, () => gen("binom", { n: ns, p })), temp = genN("norm", { mu: tm, s: ts }, 1000), fuera = temp.filter(v => Math.abs(v - tm) > band).length / temp.length;
+  if (!e) {
+     $("iStats").innerHTML = `<div class="msg bad" style="grid-column:1/-1">Sistema inestable con estos robots: ρ = λ/(cμ) = ${fx(lam / (c * mu), 3)} ≥ 1. La cola crece sin límite; aumenta c a por lo menos ${cMin}.</div>`;
+    canvas("cvI2"); $("iT2").innerHTML = "";
+  } else {
+    const s = simMMc(lam, mu, c, TH), pos = s.esp.filter(v => v > 1e-12).map(v => v * 3600), pw = pos.length / s.esp.length;
+    
+    $("iStats").innerHTML = stat("Utilización ρ", `${fx(e.rho * 100, 1)} %<i>simulada ${fx(s.ocup * 100, 1)} %</i>`) + stat("P(esperar)", `${fx(e.Pw * 100, 1)} %<i>simulada ${fx(pw * 100, 1)} %</i>`) + stat("Espera media Wq", `${fx(e.Wq * 3600, 1)} s<i>simulada ${fx(meanOf(s.esp) * 3600, 1)} s</i>`)
+      + stat("Carrocerías en cola Lq", `${fx(e.Lq, 3)}<i>simulada ${fx(s.Lq, 3)}</i>`) + stat("Carrocerías atendidas", `${s.lleg.length}<i>esperado λT = ${fx(lam * TH, 0)}</i>`) + stat("P(todas las oficinas ocupadas)", `${fx(Math.pow(p, ns) * 100, 2)} %<i>p^n</i>`);
+    const rate = (c * mu - lam) / 3600; // por segundo
+    if (pos.length > 5) { const m = 1 / rate; histVsTheory("cvI2", pos, "expo", { m }, { xl: "segundos de espera (solo quienes esperan)" }); const kr = ksTest(pos, "expo", { m }, 0.05); $("iT2").innerHTML = `En M/M/c, quien espera lo hace un tiempo exponencial de media 1/(cμ − λ) = ${fx(m, 1)} s; media simulada ${fx(meanOf(pos), 1)} s. K-S: D = ${fx(kr.D, 4)} (crítico ${fx(kr.crit, 4)}) ${tag(kr.ok)}<br>Ojo: esperas consecutivas están correlacionadas (no son independientes), así que con muchos datos K-S puede rechazar aunque la forma sea exponencial.`; }
+    else { canvas("cvI2"); $("iT2").innerHTML = "Casi nadie espera: aumenta λ o reduce c para ver la distribución."; }
+  }
+  histVsTheory("cvI3", salas, "binom", { n: ns, p });
+  histVsTheory("cvI4", temp, "norm", { mu: tm, s: ts }, { xl: "°C" });
+  $("iT4").innerHTML = `HVAC actúa fuera de ${tm} ± ${band} °C: teórico 2(1 − Φ(${fx(band / ts, 2)})) = ${fx(2 * (1 - normCdf(band / ts)) * 100, 2)} %, simulado ${fx(fuera * 100, 2)} %.`;
+}
+
+
+/* ======================= 3. INMÓTICA INDUSTRIAL (en vivo) ======================= */
+const CARCOL = ["#3A86C8", "#E4572E", "#6C4AB6", "#00A896", "#9CA3AF", "#1F2937", "#F2A900", "#B91C1C"];
+const IMa = { play: true, t: 0, robots: [], queue: [], cars: [], next: 0, id: 0, waits: [], served: 0, busyAcc: 0, qHist: [], qT: 0, sparks: [], off: [], offT: -1, temp: 22, tempT: -1, lastStat: 0 };
+function inmoInit() {
+  reseedN(34); const c = clamp(Math.round(num("iC")), 1, 6);
+  Object.assign(IMa, { t: 0, robots: Array.from({ length: c }, () => ({ car: null, start: 0, end: 0, retire: false, busy: 0 })), queue: [], cars: [], id: 0, waits: [], served: 0, busyAcc: 0, qHist: [], qT: 0, sparks: [], offT: -1, tempT: -1 });
+  IMa.next = gen("expo", { m: 3600 / num("iLam") });
+}
+function inmoAssign(j, car) { const R = IMa.robots[j]; R.car = car; R.start = IMa.t; R.end = IMa.t + gen("expo", { m: 3600 / num("iMu") }); car.state = "robot"; car.robot = j; IMa.waits.push(IMa.t - car.arr); }
+function inmoStep(T1) {
+  for (let guard = 0; guard < 5000; guard++) {
+    let j = -1, tEnd = Infinity; IMa.robots.forEach((R, k) => { if (R.car && R.end < tEnd) { tEnd = R.end; j = k; } });
+    if (IMa.next <= T1 && IMa.next <= tEnd) {
+      IMa.t = IMa.next; const car = { id: ++IMa.id, arr: IMa.t, x: -80, col: CARCOL[IMa.id % CARCOL.length], state: "cola" }; IMa.cars.push(car);
+      const free = IMa.robots.findIndex(R => !R.car && !R.retire); if (free >= 0) inmoAssign(free, car); else IMa.queue.push(car);
+      IMa.next = IMa.t + gen("expo", { m: 3600 / num("iLam") });
+    } else if (tEnd <= T1) {
+      IMa.t = tEnd; const R = IMa.robots[j]; IMa.busyAcc += R.end - R.start; R.car.state = "sale"; R.car = null; IMa.served++;
+      if (R.retire) { IMa.robots.splice(j, 1); IMa.cars.forEach(c => { if (c.state === "robot" && c.robot > j) c.robot--; }); }
+      else if (IMa.queue.length) inmoAssign(j, IMa.queue.shift());
+    } else break;
+  }
+  IMa.t = T1;
+}
+function inmoTick(dt) {
+  const T1 = IMa.t + dt * num("iSpd"); inmoStep(T1);
+  while (IMa.qT <= IMa.t) { IMa.qHist.push(IMa.queue.length); IMa.qT += 10; } if (IMa.qHist.length > 360) IMa.qHist.splice(0, IMa.qHist.length - 360);
+  const sl = Math.floor(IMa.t / 900); if (sl !== IMa.offT) { IMa.offT = sl; const n = clamp(Math.round(num("iSalas")), 1, 24), p = num("iP"); IMa.off = Array.from({ length: n }, () => rnd() < p); }
+  const tl = Math.floor(IMa.t / 60); if (tl !== IMa.tempT) { IMa.tempT = tl; IMa.temp = num("iT") + num("iTs") * zBoxMuller(); }
+  IMa.robots.forEach(R => R.busy = R.car ? 1 : 0);
+  IMa.lastStat += dt; if (IMa.lastStat > 0.3) { IMa.lastStat = 0; inmoLive(); liveLine("cvI5", IMa.qHist, { yl: "en cola", xl: "últimos 60 min simulados (muestra cada 10 s)", noX: true, yd: 1, ref: (erlangC(num("iLam"), num("iMu"), IMa.robots.length) || {}).Lq, leg: [["carrocerías en cola", COL.violet], ["Lq teórica (Erlang C)", COL.amber]] }); }
+}
+function inmoLive() {
+  const lam = num("iLam"), mu = num("iMu"), c = IMa.robots.length, e = erlangC(lam, mu, c), part = IMa.robots.reduce((s, R) => s + (R.car ? IMa.t - R.start : 0), 0), util = IMa.t > 0 ? (IMa.busyAcc + part) / (c * IMa.t) : 0;
+  const hh = Math.floor(IMa.t / 3600), mm = Math.floor(IMa.t % 3600 / 60), occ = IMa.off.filter(Boolean).length, band = num("iBand"), hvac = Math.abs(IMa.temp - num("iT")) > band;
+  $("iLive").innerHTML = stat("Reloj simulado", `${hh} h ${String(mm).padStart(2, "0")} min<i>${IMa.served} carrocerías terminadas</i>`) + stat("En cola ahora", `${IMa.queue.length}<i>Lq teórica ${e ? fx(e.Lq, 2) : "∞"}</i>`)
+    + stat("Robots ocupados", `${IMa.robots.filter(R => R.car).length} de ${c}<i>utilización ${fx(util * 100, 1)} % · ρ = ${fx(lam / (c * mu) * 100, 1)} %</i>`) + stat("Espera media", `${IMa.waits.length ? fx(meanOf(IMa.waits), 1) : "—"} s<i>Erlang C: ${e ? fx(e.Wq * 3600, 1) + " s" : "inestable"}</i>`)
+    + stat("Oficinas ocupadas", `${occ} de ${IMa.off.length}<i>esperado np = ${fx(IMa.off.length * num("iP"), 1)}</i>`) + stat("Temperatura", `${fx(IMa.temp, 1)} °C<i>HVAC ${hvac ? "ACTIVO" : "en reposo"}</i>`);
+}
+function arm(ctx, bx, by, tx, ty, L1, L2, col, i) {
+  let dx = tx - bx, dy = ty - by, d = Math.hypot(dx, dy); const dm = L1 + L2 - 1; if (d > dm) { dx *= dm / d; dy *= dm / d; d = dm; }
+  const a = Math.atan2(dy, dx), cb = clamp((L1 * L1 + d * d - L2 * L2) / (2 * L1 * d), -1, 1), sh = a - Math.acos(cb), ex = bx + L1 * Math.cos(sh), ey = by + L1 * Math.sin(sh), px = bx + dx, py = by + dy;
+  ctx.fillStyle = "#2D2357"; rr(ctx, bx - 18, by, 36, 16, 4); ctx.fill(); ctx.fillRect(bx - 8, by - 6, 16, 8);
+  ctx.lineCap = "round"; ctx.strokeStyle = shade(col, 0.75); ctx.lineWidth = 13; ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(ex, ey); ctx.stroke();
+  ctx.strokeStyle = col; ctx.lineWidth = 10; ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(ex, ey); ctx.lineTo(px, py); ctx.stroke(); ctx.lineCap = "butt";
+  disc(ctx, bx, by, 7, "#1A1433"); disc(ctx, ex, ey, 6, "#1A1433"); disc(ctx, px, py, 4, "#4B5563");
+  ctx.strokeStyle = "#1A1433"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + 6, py + 8); ctx.moveTo(px, py); ctx.lineTo(px - 6, py + 8); ctx.stroke();
+  return [px, py];
+}
+function carBody(ctx, x, y, w, col, stage) {
+  const h = w * 0.32; ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + w * 0.05, y - h * 0.55); ctx.lineTo(x + w * 0.28, y - h * 0.6); ctx.lineTo(x + w * 0.4, y - h); ctx.lineTo(x + w * 0.75, y - h); ctx.lineTo(x + w * 0.88, y - h * 0.6); ctx.lineTo(x + w, y - h * 0.5); ctx.lineTo(x + w, y); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "rgba(255,255,255,.6)"; ctx.fillRect(x + w * 0.44, y - h * 0.9, w * 0.14, h * 0.32); ctx.fillRect(x + w * 0.61, y - h * 0.9, w * 0.13, h * 0.32);
+  if (stage) { disc(ctx, x + w * 0.22, y + 2, w * 0.09, "#111"); disc(ctx, x + w * 0.78, y + 2, w * 0.09, "#111"); disc(ctx, x + w * 0.22, y + 2, w * 0.04, "#9CA3AF"); disc(ctx, x + w * 0.78, y + 2, w * 0.04, "#9CA3AF"); }
+  else { ctx.strokeStyle = "rgba(0,0,0,.35)"; ctx.setLineDash([3, 3]); ctx.strokeRect(x + w * 0.14, y - 6, w * 0.16, 10); ctx.strokeRect(x + w * 0.7, y - 6, w * 0.16, 10); ctx.setLineDash([]); }
+}
+function inmoScene(dtR) {
+  const { ctx, w, h } = canvas("cvI0"); ctx.fillStyle = "#E6E9EF"; ctx.fillRect(0, 0, w, h);
+  // edificio inteligente
+  const bh = 112, bw = w - 24; ctx.fillStyle = "#2D2357"; rr(ctx, 12, 10, bw, bh, 8); ctx.fill(); txt(ctx, "EDIFICIO INTELIGENTE · OFICINAS", 24, 28, { c: "#F2A900", b: true, s: 12 });
+  const n = IMa.off.length, ww = Math.min(42, (bw * 0.62) / Math.max(1, Math.ceil(n / 2)) - 6);
+  IMa.off.forEach((o, k) => { const x = 24 + (k % Math.ceil(n / 2)) * (ww + 6), y = 38 + Math.floor(k / Math.ceil(n / 2)) * 36; ctx.fillStyle = o ? "#FFD66B" : "#3C3466"; ctx.fillRect(x, y, ww, 28); if (o) { disc(ctx, x + ww / 2, y + 16, 4, "#2D2357"); ctx.fillStyle = "#2D2357"; ctx.fillRect(x + ww / 2 - 4, y + 20, 8, 8); } });
+  const hx = 24 + bw * 0.66, temp = IMa.temp, band = num("iBand"), tm = num("iT"), hv = Math.abs(temp - tm) > band;
+  ctx.fillStyle = "#1A1433"; rr(ctx, hx, 36, bw * 0.32 - 10, 70, 8); ctx.fill();
+  txt(ctx, `${fx(temp, 1)} °C`, hx + 12, 62, { c: hv ? "#FF8A65" : "#7CF2C9", b: true, s: 20, mono: true }); txt(ctx, `banda ${tm} ± ${band}`, hx + 12, 80, { c: "#B9B3D6", s: 11 });
+  txt(ctx, hv ? (temp > tm ? "HVAC: enfriando" : "HVAC: calentando") : "HVAC en reposo", hx + 12, 97, { c: hv ? "#FFD66B" : "#B9B3D6", s: 12, b: hv });
+  const fx0 = hx + bw * 0.32 - 50; ctx.save(); ctx.translate(fx0, 70); ctx.rotate(hv ? TCLOCK * 9 : TCLOCK * 0.3); ctx.fillStyle = hv ? COL.teal : "#6B7280"; for (let k = 0; k < 3; k++) { ctx.rotate(2 * Math.PI / 3); ctx.beginPath(); ctx.ellipse(10, 0, 11, 4, 0, 0, 7); ctx.fill(); } ctx.restore(); disc(ctx, fx0, 70, 4, "#E9E6F5");
+  // planta
+  const fy = h - 40, cy = fy - 6; ctx.fillStyle = "#4B5563"; ctx.fillRect(0, fy, w, h - fy); ctx.fillStyle = "#9CA3AF"; ctx.fillRect(0, cy, w, 8);
+  ctx.strokeStyle = "#6B7280"; ctx.lineWidth = 2; for (let x = -(TCLOCK * 40 % 24); x < w; x += 24) { ctx.beginPath(); ctx.moveTo(x, cy); ctx.lineTo(x + 8, cy + 8); ctx.stroke(); }
+  txt(ctx, "BANDA DE ENTRADA", 12, fy + 24, { c: "#E9E6F5", b: true, s: 11 }); txt(ctx, "SALIDA →", w - 12, fy + 24, { c: "#E9E6F5", b: true, s: 11, a: "right" });
+  const c = IMa.robots.length, qx1 = w * 0.27, cx0 = w * 0.3, cx1 = w * 0.9, cw = (cx1 - cx0) / Math.max(1, c), carW = Math.min(120, cw * 0.66);
+  // celdas
+  IMa.robots.forEach((R, j) => {
+    const x = cx0 + j * cw; ctx.strokeStyle = R.car ? COL.amber : "#C9C3DD"; ctx.setLineDash([6, 4]); ctx.lineWidth = 2; ctx.strokeRect(x + 4, bh + 30, cw - 8, cy - bh - 34); ctx.setLineDash([]);
+    txt(ctx, `Robot ${j + 1}${R.retire ? " (sale)" : ""}`, x + cw / 2, bh + 46, { a: "center", b: true, s: 12, c: COL.ink });
+    if (R.car) { const pr = clamp((IMa.t - R.start) / (R.end - R.start), 0, 1); ctx.fillStyle = "#D9D5EA"; ctx.fillRect(x + 12, bh + 52, cw - 24, 6); ctx.fillStyle = COL.teal; ctx.fillRect(x + 12, bh + 52, (cw - 24) * pr, 6); }
+    else txt(ctx, "libre", x + cw / 2, bh + 64, { a: "center", s: 11, c: COL.muted });
+  });
+  // carros: posiciones objetivo
+  IMa.queue.forEach((car, k) => { car.tx = qx1 - carW - k * (carW + 10); });
+  IMa.cars.forEach(car => { if (car.state === "robot") car.tx = cx0 + car.robot * cw + cw * 0.58 - carW / 2; if (car.state === "sale") car.tx = w + 200; car.x += (car.tx - car.x) * Math.min(1, dtR * 3.5); });
+  IMa.cars = IMa.cars.filter(car => !(car.state === "sale" && car.x > w + 100));
+  IMa.cars.forEach(car => { if (car.x > -carW - 20 && car.x < w + 20) carBody(ctx, car.x, cy - 2, carW, car.col, car.state === "sale"); });
+  const hidden = IMa.queue.filter(car => car.tx < -carW).length; if (hidden) label(ctx, `+${hidden} en cola`, 8, cy - carW * 0.45, COL.coral);
+  // brazos robóticos
+  IMa.robots.forEach((R, j) => {
+    const x = cx0 + j * cw, bx = x + cw * 0.13, by = cy - 14 - Math.min(10, cw * 0.05), L = Math.min(95, Math.max(cw * 0.4, 40), (cy - bh - 60) * 0.5);
+    let tx, ty; if (R.car && Math.abs(R.car.x - R.car.tx) < 40) { const ph = TCLOCK * 2.2 + j; tx = R.car.x + carW * (0.3 + 0.3 * Math.sin(ph)); ty = cy - carW * 0.36 + Math.cos(ph * 1.7) * 6; }
+    else { tx = bx + L * 0.4; ty = by - L * 1.35; }
+    const [px, py] = arm(ctx, bx, by, tx, ty, L, L * 0.9, "#F2A900", j);
+    if (R.car && Math.abs(R.car.x - R.car.tx) < 40 && IMa.play) for (let k = 0; k < 3; k++) IMa.sparks.push({ x: px, y: py + 8, vx: (Math.random() - 0.5) * 160, vy: -Math.random() * 120, life: 0.4 + Math.random() * 0.3 });
+  });
+  IMa.sparks = IMa.sparks.filter(s => (s.life -= dtR) > 0); IMa.sparks.forEach(s => { s.vy += 400 * dtR; s.x += s.vx * dtR; s.y += s.vy * dtR; disc(ctx, s.x, s.y, 1.6, s.life > 0.3 ? "#FFE08A" : "#F2A900"); });
+  if (!erlangC(num("iLam"), num("iMu"), c)) { ctx.fillStyle = "rgba(228,87,46,.9)"; rr(ctx, w / 2 - 190, bh + 70, 380, 30, 6); ctx.fill(); txt(ctx, `Inestable: λ ≥ cμ. Agrega robots (mínimo ${Math.floor(num("iLam") / num("iMu")) + 1}).`, w / 2, bh + 90, { a: "center", c: "#fff", b: true, s: 13 }); }
+}
+function inmoSetC(c) { c = clamp(c, 1, 6); $("iC").value = c; const R = IMa.robots;
+  while (R.filter(r => !r.retire).length < c) { const k = R.findIndex(r => r.retire); if (k >= 0) R[k].retire = false; else { R.push({ car: null, start: 0, end: 0, retire: false }); if (IMa.queue.length) inmoAssign(R.length - 1, IMa.queue.shift()); } }
+  while (R.filter(r => !r.retire).length > c) { let k = -1; for (let i = R.length - 1; i >= 0; i--) if (!R[i].retire) { k = i; break; } if (!R[k].car) { R.splice(k, 1); IMa.cars.forEach(cc => { if (cc.state === "robot" && cc.robot > k) cc.robot--; }); } else R[k].retire = true; }
+}
+ANIM.inmo = { tick(dt) { IMa.dt = IMa.play ? dt : 0; if (IMa.play && IMa.robots.length) inmoTick(dt); }, draw() { if (IMa.robots.length) inmoScene(IMa.dt || 0); } };
+
+
+/* ======================= 4. CÁMARA · YOLO ======================= */
+const LETRAS = "ABCDEFGHJKLMNPRSTUVWXYZ";
+const CLS = {
+  auto: { n: "auto", lam: "yLa", len: 120, wid: 52, kmh: [32, 5], af: 1, col: "#3A86C8", veh: true },
+  moto: { n: "moto", lam: "yLm2", len: 60, wid: 24, kmh: [36, 6], af: 0.75, col: "#F2A900", veh: true },
+  bus: { n: "bus", lam: "yLb", len: 250, wid: 64, kmh: [28, 4], af: 1.25, col: "#00A896", veh: true },
+  camion: { n: "camión", lam: "yLc", len: 205, wid: 60, kmh: [26, 4], af: 1.1, col: "#E4572E", veh: true },
+  peaton: { n: "persona", lam: "yLp", len: 14, wid: 14, kmh: [4.5, 0.8], af: 0.7, col: "#C084FC", veh: false },
+};
+const CK = Object.keys(CLS);
+const Y = { play: true, t: 0, objs: [], recs: [], arrV: [], arrP: [], pool: {}, next: {}, id: 0, sel: null, heat: null, var: "min", counts: {}, lastStat: 0, cond: "día" };
+const yPar = () => ({ umb: num("yUmb"), a: num("yA"), b: num("yB"), p: num("yP"), mx: Math.max(1, Math.round(num("yMax"))), lmu: Math.log(Math.max(1, num("yLm"))), ls: num("yLs"), e: num("yE"), th: num("yTh"), lamV: CK.filter(k => CLS[k].veh).reduce((s, k) => s + num(CLS[k].lam), 0), lamP: num("yLp") });
+function yValid(P) { return P.umb > 0 && P.umb < 1 && P.a > 0 && P.b > 0 && P.p > 0 && P.p < 1 && P.ls > 0 && P.e > 0 && P.th > 0 && P.th < 1 && CK.every(k => num(CLS[k].lam) >= 0); }
+function placaDe(k) { let s = ""; for (let i = 0; i < 3; i++) s += LETRAS[Math.floor(rnd() * LETRAS.length)]; if (k === "moto") return s + Math.floor(rnd() * 10) + Math.floor(rnd() * 10) + LETRAS[Math.floor(rnd() * LETRAS.length)]; for (let i = 0; i < 3; i++) s += Math.floor(rnd() * 10); return s; }
+function yPlaca(k, P) { // jornada: cada placa pasa un número de veces ~ serie logarítmica
+  const pl = Y.pool[k] || (Y.pool[k] = { lista: [], cola: [] });
+  if (!pl.cola.length) { for (let i = 0; i < 40; i++) { const p = placaDe(k), v = gen("logser", { th: P.th }); pl.lista.push(v); for (let j = 0; j < v; j++) pl.cola.push(p); } for (let i = pl.cola.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [pl.cola[i], pl.cola[j]] = [pl.cola[j], pl.cola[i]]; } }
+  return pl.cola.pop();
+}
+function yCondF() { return ($("yNight").checked ? 0.7 : 1) * ($("yRain").checked ? 0.8 : 1); }
+function yNew(k, t, P, visual) {
+  const C = CLS[k], a = P.a * C.af * yCondF(), conf = gen("beta", { a, b: P.b }), kmh = Math.max(2, gen("norm", { mu: C.kmh[0], s: C.kmh[1] }));
+  const o = { id: ++Y.id, k, t, conf, kmh, a, cond: ($("yNight").checked ? "noche" : "día") + ($("yRain").checked ? " + lluvia" : ""), trail: [], err: [0, 0], errT: 0, done: false };
+  if (C.veh) { o.placa = yPlaca(k, P); o.intentos = gen("geom", { p: P.p }); o.lat = gen("logn", { mu: P.lmu, s: P.ls }); o.e = gen("norm", { mu: 0, s: P.e }); Y.arrV.push(t); }
+  else Y.arrP.push(t);
+  if (visual) {
+    if (C.veh) { o.lane = rnd() < 0.5 ? 0 : 1; o.dir = o.lane ? 1 : -1; o.x = o.dir > 0 ? -C.len : 1000 + C.len; o.y = o.lane ? 0.62 : 0.38; o.sp = 0; }
+    else { const top = rnd() < 0.5, left = rnd() < 0.5; o.y = top ? 0.15 : 0.86; o.x = left ? -10 : 1010; o.wp = rnd() < 0.55 ? [[480 + rnd() * 40, o.y], [480 + rnd() * 40, top ? 0.86 : 0.15], [left ? 1020 : -20, top ? 0.86 : 0.15]] : [[left ? 1020 : -20, o.y]]; o.cross = o.wp.length > 1; }
+    Y.objs.push(o);
+  }
+  return o;
+}
+function yRecord(o, P) { // cruza la línea de conteo: lectura OCR
+  const C = CLS[o.k]; Y.counts[o.k] = (Y.counts[o.k] || 0) + 1; o.done = true; o.readT = Y.t;
+  if (C.veh) { o.aceptada = o.conf >= P.umb; o.leida = o.aceptada && o.intentos <= P.mx; Y.recs.push({ id: o.id, t: o.t, cls: o.k, placa: o.placa, conf: o.conf, aceptada: o.aceptada, intentos: o.intentos, leida: o.leida, lat: o.lat, err: o.e, kmh: o.kmh, cond: o.cond }); }
+}
+function yReset(batch) {
+  reseedN(batch ? 45 : 44); Object.assign(Y, { t: 0, objs: [], recs: [], arrV: [], arrP: [], pool: {}, next: {}, id: 0, sel: null, counts: {}, heat: new Float32Array(50 * 25) });
+  CK.forEach(k => { const l = num(CLS[k].lam); Y.next[k] = l > 0 ? gen("expo", { m: 60 / l }) : Infinity; });
+}
+function yBatch() {
+  const P = yPar(); if (!yValid(P)) { $("yStats").innerHTML = '<div class="msg bad" style="grid-column:1/-1">Revisa los parámetros (probabilidades entre 0 y 1, valores positivos).</div>'; return; }
+  yReset(true); const T = 4 * 3600;
+  CK.forEach(k => { const l = num(CLS[k].lam); if (!(l > 0)) return; let t = gen("expo", { m: 60 / l }); while (t < T) { const o = yNew(k, t, P, false); yRecord(o, P); t += gen("expo", { m: 60 / l }); } });
+  Y.arrV.sort((a, b) => a - b); Y.arrP.sort((a, b) => a - b); Y.recs.sort((a, b) => a.t - b.t); Y.t = T;
+  CK.forEach(k => { const l = num(CLS[k].lam); Y.next[k] = l > 0 ? T + gen("expo", { m: 60 / l }) : Infinity; });
+  yUpdate(); yAnalyze(); yClassChart();
+}
+function yStep(dt) {
+  const P = yPar(); if (!yValid(P)) return; Y.t += dt;
+  CK.forEach(k => { const l = num(CLS[k].lam); if (!(l > 0)) { Y.next[k] = Infinity; return; } if (Y.next[k] === Infinity) Y.next[k] = Y.t + gen("expo", { m: 60 / l }); while (Y.next[k] <= Y.t) { yNew(k, Y.next[k], P, true); Y.next[k] += gen("expo", { m: 60 / l }); } });
+  const peds = Y.objs.filter(o => o.k === "peaton"), onRoad = peds.some(p => p.x > 455 && p.x < 545 && p.y > 0.21 && p.y < 0.79);
+  [0, 1].forEach(lane => {
+    const vs = Y.objs.filter(o => CLS[o.k].veh && o.lane === lane).sort((a, b) => lane ? b.x - a.x : a.x - b.x);
+    vs.forEach((o, i) => {
+      const C = CLS[o.k], des = o.kmh * 3.2; let v = des;
+      if (i > 0) { const L = vs[i - 1], gap = lane ? (L.x - CLS[L.k].len / 2) - (o.x + C.len / 2) : (o.x - C.len / 2) - (L.x + CLS[L.k].len / 2); v = Math.min(v, Math.max(0, (gap - 14) * 2.5)); }
+      const front = o.x + o.dir * C.len / 2, stopX = lane ? 448 : 552; if (onRoad && (lane ? front < stopX && front > stopX - 70 : front > stopX && front < stopX + 70)) v = Math.min(v, Math.max(0, Math.abs(stopX - front) - 4) * 2);
+      o.sp += (v - o.sp) * Math.min(1, dt * 3); o.x += o.dir * o.sp * dt;
+      if (!o.done && (lane ? o.x > 500 : o.x < 500)) yRecord(o, P);
+    });
+  });
+  peds.forEach(o => { const [tx, ty] = o.wp[0], sp = o.kmh * 3.2 * dt, dx = tx - o.x, dy = (ty - o.y) * 430, d = Math.hypot(dx, dy); if (d < sp + 0.5) { o.x = tx; o.y = ty; o.wp.shift(); if (o.cross && !o.done && o.wp.length === 1) yRecord(o, P); } else { o.x += dx / d * sp; o.y += dy / d * sp / 430; } });
+  Y.objs = Y.objs.filter(o => o.k === "peaton" ? o.wp.length > 0 : o.x > -220 && o.x < 1220);
+  Y.objs.forEach(o => { o.trail.push([o.x, o.y]); if (o.trail.length > 40) o.trail.shift(); if ((o.errT -= dt) < 0) { o.errT = 0.35; o.err = [gen("norm", { mu: 0, s: num("yE") }), gen("norm", { mu: 0, s: num("yE") })]; }
+    if (Y.heat) { const gx = Math.floor(clamp(o.x, 0, 999) / 20), gy = Math.floor(clamp(o.y, 0, 0.999) * 25); Y.heat[gy * 50 + gx] += dt; } });
+}
+function drawVeh(ctx, o, X, Yp, s, night) {
+  const C = CLS[o.k], L = C.len * s, W = C.wid * s; ctx.save(); ctx.translate(X, Yp); ctx.scale(o.dir || 1, 1);
+  if (night && C.veh) { const g = ctx.createLinearGradient(L / 2, 0, L / 2 + 110 * s, 0); g.addColorStop(0, "rgba(255,240,180,.45)"); g.addColorStop(1, "rgba(255,240,180,0)"); ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(L / 2, -W * 0.3); ctx.lineTo(L / 2 + 110 * s, -W * 0.9); ctx.lineTo(L / 2 + 110 * s, W * 0.9); ctx.lineTo(L / 2, W * 0.3); ctx.fill(); }
+  const col = o.col || (o.col = { auto: CARCOL[o.id % CARCOL.length], moto: ["#1F2937", "#B91C1C", "#3A86C8"][o.id % 3], bus: ["#00A896", "#F2A900"][o.id % 2], camion: "#E4572E" }[o.k]);
+  if (o.k === "moto") { ctx.fillStyle = "#111"; rr(ctx, -L / 2, -W * 0.25, L, W * 0.5, 4); ctx.fill(); ctx.fillStyle = col; rr(ctx, -L * 0.2, -W * 0.4, L * 0.5, W * 0.8, 5); ctx.fill(); disc(ctx, -L * 0.05, 0, W * 0.42, "#E9E6F5"); disc(ctx, -L * 0.05, 0, W * 0.25, "#2D2357"); }
+  else if (o.k === "bus") { ctx.fillStyle = col; rr(ctx, -L / 2, -W / 2, L, W, 6); ctx.fill(); ctx.fillStyle = "rgba(255,255,255,.75)"; for (let x = -L / 2 + 10 * s; x < L / 2 - 20 * s; x += 18 * s) { ctx.fillRect(x, -W / 2 + 2, 12 * s, 4 * s); ctx.fillRect(x, W / 2 - 2 - 4 * s, 12 * s, 4 * s); } ctx.fillStyle = "#1F2937"; ctx.fillRect(L / 2 - 14 * s, -W / 2 + 4, 10 * s, W - 8); ctx.fillStyle = shade(col, 0.8); ctx.fillRect(-L * 0.2, -W * 0.2, L * 0.25, W * 0.4); }
+  else if (o.k === "camion") { ctx.fillStyle = "#D9D5EA"; rr(ctx, -L / 2, -W / 2, L * 0.72, W, 3); ctx.fill(); ctx.strokeStyle = "#9CA3AF"; ctx.strokeRect(-L / 2, -W / 2, L * 0.72, W); ctx.fillStyle = col; rr(ctx, L * 0.24, -W / 2 + 2, L * 0.26, W - 4, 5); ctx.fill(); ctx.fillStyle = "#1F2937"; ctx.fillRect(L * 0.4, -W / 2 + 5, 6 * s, W - 10); }
+  else { ctx.fillStyle = col; rr(ctx, -L / 2, -W / 2, L, W, 9 * s); ctx.fill(); ctx.fillStyle = "#1F2937"; rr(ctx, L * 0.12, -W / 2 + 4, L * 0.16, W - 8, 3); ctx.fill(); rr(ctx, -L * 0.36, -W / 2 + 5, L * 0.12, W - 10, 3); ctx.fill(); ctx.fillStyle = shade(col, 1.18); rr(ctx, -L * 0.22, -W / 2 + 5, L * 0.32, W - 10, 3); ctx.fill(); }
+  if (C.veh) { ctx.fillStyle = "#FFF3B0"; ctx.fillRect(L / 2 - 3, -W / 2 + 3, 3, 5); ctx.fillRect(L / 2 - 3, W / 2 - 8, 3, 5); ctx.fillStyle = "#F7D33B"; ctx.fillRect(-L / 2 - 1, -5 * s, 3, 10 * s); }
+  ctx.restore();
+}
+function drawPed(ctx, o, X, Yp, s) { const bob = Math.sin(TCLOCK * 9 + o.id) * 2 * s, col = ["#C084FC", "#F472B6", "#60A5FA", "#34D399", "#FBBF24"][o.id % 5]; ctx.fillStyle = col; ctx.beginPath(); ctx.ellipse(X, Yp, 8 * s, 5 * s, 0, 0, 7); ctx.fill(); disc(ctx, X + bob * 0.3, Yp, 4 * s, "#3F2A1D"); ctx.fillStyle = "#1F2937"; ctx.fillRect(X - 2 * s + bob, Yp + 4 * s, 3 * s, 4 * s); ctx.fillRect(X - 2 * s - bob, Yp - 8 * s, 3 * s, 4 * s); }
+function yBox(o, s, h) { const C = CLS[o.k], L = (C.veh ? C.len : 30) * s, W = (C.veh ? C.wid : 30) * s, X = o.x * s, Yp = o.y * h; return [X - L / 2 + o.err[0], Yp - W / 2 + o.err[1], L, W]; }
+function yScene() {
+  const { ctx, w, h } = canvas("cvY0"), s = w / 1000, night = $("yNight").checked, rain = $("yRain").checked, P = yPar();
+  ctx.fillStyle = "#5E7F4F"; ctx.fillRect(0, 0, w, h); ctx.fillStyle = "#B8B2A6"; ctx.fillRect(0, 0.08 * h, w, 0.13 * h); ctx.fillRect(0, 0.79 * h, w, 0.13 * h);
+  ctx.fillStyle = "#8D867A"; for (let x = 0; x < w; x += 40 * s) { ctx.fillRect(x, 0.08 * h, 1, 0.13 * h); ctx.fillRect(x, 0.79 * h, 1, 0.13 * h); }
+  ctx.fillStyle = rain ? "#2F3640" : "#3E444C"; ctx.fillRect(0, 0.21 * h, w, 0.58 * h);
+  if (rain) { ctx.fillStyle = "rgba(160,190,220,.08)"; for (let i = 0; i < 12; i++) ctx.fillRect((i * 137) % w, 0.25 * h + (i * 41) % (0.5 * h), 80 * s, 6); }
+  ctx.strokeStyle = "#F2A900"; ctx.lineWidth = 3; ctx.setLineDash([30 * s, 22 * s]); ctx.beginPath(); ctx.moveTo(0, 0.5 * h); ctx.lineTo(w, 0.5 * h); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = "#EDEDED"; for (let y = 0.22 * h; y < 0.78 * h; y += 18) ctx.fillRect(460 * s, y, 80 * s, 9);
+  ctx.fillStyle = "#2D2357"; ctx.fillRect(0, 0, w, 0.08 * h); ctx.fillStyle = "#1A1433"; ctx.fillRect(0, 0.92 * h, w, 0.08 * h);
+  for (let i = 0; i < 9; i++) { ctx.fillStyle = (i * 7) % 3 ? "#3C3466" : "#4B3B7A"; ctx.fillRect(i * 118 * s, 0, 100 * s, 0.07 * h); ctx.fillRect(i * 118 * s + 30 * s, 0.93 * h, 90 * s, 0.07 * h); }
+  // línea de conteo
+  ctx.strokeStyle = "rgba(0,255,190,.7)"; ctx.lineWidth = 2; ctx.setLineDash([8, 6]); ctx.beginPath(); ctx.moveTo(500 * s, 0.21 * h); ctx.lineTo(500 * s, 0.79 * h); ctx.stroke(); ctx.setLineDash([]); txt(ctx, "línea de conteo · OCR", 506 * s, 0.24 * h + 4, { c: "#7CF2C9", s: 11, b: true });
+  // mapa de calor
+  if ($("yHeat").checked && Y.heat) { const mx = Math.max(...Y.heat) || 1; for (let gy = 0; gy < 25; gy++) for (let gx = 0; gx < 50; gx++) { const v = Y.heat[gy * 50 + gx] / mx; if (v > 0.02) { ctx.fillStyle = `rgba(${Math.round(255 * Math.min(1, v * 2))},${Math.round(200 * (1 - v))},40,${0.15 + v * 0.45})`; ctx.fillRect(gx * 20 * s, gy / 25 * h, 20 * s, h / 25); } } }
+  // trayectorias
+  if ($("yTrail").checked) Y.objs.forEach(o => { if (o.trail.length < 2) return; ctx.strokeStyle = CLS[o.k].col + "88"; ctx.lineWidth = 2; ctx.beginPath(); o.trail.forEach(([x, y], i) => i ? ctx.lineTo(x * s, y * h) : ctx.moveTo(x * s, y * h)); ctx.stroke(); });
+  Y.objs.filter(o => o.k === "peaton").forEach(o => drawPed(ctx, o, o.x * s, o.y * h, s * 1.8));
+  Y.objs.filter(o => CLS[o.k].veh).forEach(o => drawVeh(ctx, o, o.x * s, o.y * h, s, night));
+  if (night) { ctx.fillStyle = "rgba(0,30,15,.55)"; ctx.fillRect(0, 0, w, h); }
+  if (rain) { ctx.strokeStyle = "rgba(200,220,255,.35)"; ctx.lineWidth = 1; for (let i = 0; i < 120; i++) { const x = (i * 97 + TCLOCK * 600) % w, y = (i * 53 + TCLOCK * 900) % h; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - 4, y + 12); ctx.stroke(); } }
+  // detecciones
+  if ($("yBoxes").checked) Y.objs.forEach(o => {
+    if (!$("yc_" + o.k).checked) return; const C = CLS[o.k], [bx, by, bw, bh] = yBox(o, s, h), sel = Y.sel === o.id, cf = clamp(o.conf + Math.sin(TCLOCK * 7 + o.id) * 0.008, 0, 0.999), low = cf < P.umb;
+    ctx.strokeStyle = low ? "#FF5A5A" : C.col; ctx.lineWidth = sel ? 3.5 : 2; if (low) ctx.setLineDash([5, 3]); ctx.strokeRect(bx, by, bw, bh); ctx.setLineDash([]);
+    label(ctx, `${C.n} ${cf.toFixed(2)} #${o.id}`, bx, by - 1, low ? "#B91C1C" : shade(C.col, 0.8), "#fff", 11);
+    if (C.veh && o.done && Y.t - o.readT < 3) { const t2 = o.leida ? `${o.placa} ✓ ${o.intentos} int.` : o.aceptada ? `sin lectura (${P.mx} int.)` : "descartada"; ctx.font = "bold 12px Consolas, monospace"; const tw = ctx.measureText(t2).width + 10; ctx.fillStyle = "rgba(10,8,25,.85)"; ctx.fillRect(bx, by + bh + 2, tw, 17); ctx.fillStyle = o.leida ? "#7CF2C9" : "#FF8A65"; ctx.textAlign = "left"; ctx.fillText(t2, bx + 5, by + bh + 15); }
+    if (sel) { ctx.strokeStyle = "#fff"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(bx + bw / 2, 0); ctx.lineTo(bx + bw / 2, h); ctx.moveTo(0, by + bh / 2); ctx.lineTo(w, by + bh / 2); ctx.stroke(); }
+  });
+  // capa de cámara
+  ctx.fillStyle = "rgba(255,255,255,.03)"; for (let y = 0; y < h; y += 3) ctx.fillRect(0, y, w, 1);
+  for (let i = 0; i < 120; i++) { ctx.fillStyle = `rgba(255,255,255,${rnd2() * 0.12})`; ctx.fillRect(rnd2() * w, rnd2() * h, 1.5, 1.5); }
+  const g = ctx.createRadialGradient(w / 2, h / 2, h * 0.4, w / 2, h / 2, w * 0.7); g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,.45)"); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+  const hh = 14 + Math.floor(Y.t / 3600), mm = Math.floor(Y.t % 3600 / 60), ss = Math.floor(Y.t % 60), lat = Y.recs.length ? meanOf(Y.recs.slice(-50).map(r => r.lat)) : Math.exp(P.lmu);
+  txt(ctx, `CAM-01 · PORTERÍA NORTE   2026-10-27 ${String(hh % 24).padStart(2, "0")}:${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}`, 12, h - 10, { c: "#E9E6F5", s: 12, mono: true, b: true });
+  if (Math.floor(TCLOCK * 2) % 2 || !Y.play) disc(ctx, w - 70, 18, 6, Y.play ? "#FF3B30" : "#9CA3AF"); txt(ctx, Y.play ? "REC" : "PAUSA", w - 58, 23, { c: "#fff", b: true, s: 12, mono: true });
+  txt(ctx, `YOLO · ${fx(1000 / lat, 1)} FPS · ${Y.objs.length} objetos`, w - 12, h - 10, { c: "#7CF2C9", s: 12, mono: true, a: "right" });
+  if (night) txt(ctx, "IR", 14, 24, { c: "#7CF2C9", b: true, s: 14, mono: true });
+}
+let SEED2 = 1; const rnd2 = () => { SEED2 = (SEED2 * 16807) % 2147483647; return SEED2 / 2147483647; };
+function yInspector() {
+  const o = Y.objs.find(q => q.id === Y.sel), P = yPar(); if (!o) { $("yInsp").innerHTML = "<h4>Inspector</h4><p>Haz clic sobre un objeto de la escena para ver sus variables.</p><p class='mini' style='color:#B9B3D6'>Cada objeto lleva su propia confianza (beta), velocidad (normal) y, si es vehículo, intentos de OCR (geométrica) y latencia (lognormal).</p>"; return; }
+  const C = CLS[o.k], rows = [["Clase", C.n], ["ID de seguimiento", "#" + o.id], ["Confianza", `${o.conf.toFixed(3)} ${o.conf >= P.umb ? "✓" : "(bajo el umbral)"}`], ["Beta usada", `α = ${fx(o.a, 1)}, β = ${P.b}`], ["Condición", o.cond], ["Velocidad", `${fx(o.kmh, 1)} km/h`], ["En escena", `${fx(Y.t - o.t, 1)} s`]];
+  if (C.veh) rows.push(["Placa (sintética)", o.done ? (o.leida ? o.placa : "no leída") : "aún no cruza la línea"], ["Intentos OCR", o.done ? o.intentos : "—"], ["Latencia", `${fx(o.lat, 1)} ms`]);
+  $("yInsp").innerHTML = `<h4>${C.n} #${o.id}</h4><div class="kv">${rows.map(([a, b]) => `<b>${a}</b><span>${b}</span>`).join("")}</div>` + (C.veh ? '<canvas id="cvYP" data-h="70"></canvas>' : "");
+  if (C.veh) { const { ctx, w, h } = canvas("cvYP"); ctx.fillStyle = "#111"; ctx.fillRect(0, 0, w, h); ctx.fillStyle = "#F7D33B"; rr(ctx, 10, 10, w - 20, h - 20, 6); ctx.fill(); ctx.strokeStyle = "#111"; ctx.lineWidth = 3; rr(ctx, 13, 13, w - 26, h - 26, 5); ctx.stroke();
+    const shown = o.done && o.leida ? o.placa : o.placa.split("").map((c, i) => i < Math.floor((Y.t * 3 + o.id) % 7) ? c : "?").join(""); txt(ctx, shown.slice(0, 3) + " " + shown.slice(3), w / 2, h / 2 + 10, { a: "center", b: true, s: 28, mono: true, c: "#111" }); }
+}
+function yUpdate() {
+  const R = Y.recs, n = R.length, P = yPar();
+  const cnt = CK.map(k => `${CLS[k].n}: ${Y.counts[k] || 0}`).join(" · ");
+  if (!n) { $("yStats").innerHTML = stat("Vehículos leídos", `0<i>${cnt}</i>`); $("yLog").innerHTML = ""; return; }
+  const acc = R.filter(r => r.aceptada), le = R.filter(r => r.leida), lat = meanOf(R.map(r => r.lat)), mins = Y.t / 60;
+  $("yStats").innerHTML = stat("Vehículos en la línea", `${n}<i>esperados ${fx(P.lamV * mins, 0)} en ${fx(mins, 1)} min</i>`) + stat("Peatones que cruzaron", `${Y.counts.peaton || 0}<i>llegadas: ${Y.arrP.length}</i>`)
+    + stat("Detecciones aceptadas", `${fx(acc.length / n * 100, 1)} %<i>umbral ${P.umb}</i>`) + stat("Placas leídas", `${fx(le.length / n * 100, 1)} %<i>${le.length} de ${n}</i>`)
+    + stat("Intentos de OCR (media)", `${fx(meanOf(R.map(r => r.intentos)), 3)}<i>teórico 1/p = ${fx(1 / P.p, 3)}</i>`) + stat("Latencia media", `${fx(lat, 1)} ms<i>teórica ${fx(Math.exp(P.lmu + P.ls * P.ls / 2), 1)} ms</i>`);
+  const hms = t => `${String(14 + Math.floor(t / 3600)).padStart(2, "0")}:${String(Math.floor(t % 3600 / 60)).padStart(2, "0")}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
+  $("yLog").innerHTML = T(["#", "hora", "clase", "placa", "conf.", "int.", "km/h", "estado"], R.slice(-14).reverse().map(r => [r.id, hms(r.t), CLS[r.cls].n, `<span class="plate">${r.placa}</span>`, fx(r.conf, 3), r.intentos, fx(r.kmh, 0), r.leida ? '<span class="tag ok">leída</span>' : r.aceptada ? '<span class="tag mid">sin lectura</span>' : '<span class="tag bad">descartada</span>']));
+}
+function yClassChart() {
+  const P = yPar(), ks = CK, obs = ks.map(k => Y.counts[k] || 0), tot = obs.reduce((a, b) => a + b, 0), lam = ks.map(k => num(CLS[k].lam)), L = lam.reduce((a, b) => a + b, 0);
+  barsChart("cvY2", ks.map(k => CLS[k].n), [obs, lam.map(l => tot * l / L)], [COL.violet, COL.amber], { yl: "conteo", yd: 0, leg: ["observado", "esperado (λ_k/Σλ)"] });
+}
+const YVARS = {
+  min: { n: "Vehículos por minuto", k: "poisson", unidad: "vehículos", data: () => yPerMin(Y.arrV), fit: xs => ({ lam: meanOf(xs) }), teo: P => ({ lam: P.lamV }), nEst: 1, por: "La suma de procesos de Poisson independientes (autos, motos, buses, camiones) también es Poisson, con λ = suma de las tasas." },
+  ped: { n: "Peatones por minuto", k: "poisson", unidad: "peatones", data: () => yPerMin(Y.arrP), fit: xs => ({ lam: meanOf(xs) }), teo: P => ({ lam: P.lamP }), nEst: 1, por: "Llegadas independientes a tasa constante." },
+  ia: { n: "Tiempo entre vehículos (s)", k: "expo", unidad: "segundos", data: () => { const a = [...Y.arrV].sort((x, y) => x - y); return a.slice(1).map((t, i) => t - a[i]); }, fit: xs => ({ m: meanOf(xs) }), teo: P => ({ m: 60 / P.lamV }), nEst: 1, ad: [0.6, 1.321], por: "Si los conteos son Poisson(λ), los tiempos entre llegadas son exponenciales con media 1/λ." },
+  conf: { n: "Confianza (autos de día)", k: "beta", unidad: "confianza", data: () => Y.recs.filter(r => r.cls === "auto" && r.cond === "día").map(r => r.conf), fit: xs => { const m = meanOf(xs), v = varOf(xs), c = m * (1 - m) / v - 1; return { a: m * c, b: (1 - m) * c }; }, teo: P => ({ a: P.a, b: P.b }), nEst: 2, por: "Una probabilidad vive en [0, 1]; la beta se concentra cerca de 1 cuando el detector es bueno. De noche o con lluvia baja α." },
+  int: { n: "Intentos de OCR", k: "geom", unidad: "intentos", data: () => Y.recs.map(r => r.intentos), fit: xs => ({ p: 1 / meanOf(xs) }), teo: P => ({ p: P.p }), nEst: 1, por: "Intentos independientes con la misma probabilidad de éxito: ensayos hasta el primer éxito." },
+  lat: { n: "Latencia (ms)", k: "logn", unidad: "ms", data: () => Y.recs.map(r => r.lat), fit: xs => { const l = xs.map(Math.log), mu = meanOf(l); return { mu, s: Math.sqrt(l.reduce((s, v) => s + (v - mu) ** 2, 0) / l.length) }; }, teo: P => ({ mu: P.lmu, s: P.ls }), nEst: 2, por: "Tiempo positivo y asimétrico, producto de muchos factores." },
+  err: { n: "Error del recuadro (px)", k: "norm", unidad: "píxeles", data: () => Y.recs.map(r => r.err), fit: xs => { const mu = meanOf(xs); return { mu, s: Math.sqrt(varOf(xs)) }; }, teo: P => ({ mu: 0, s: P.e }), nEst: 2, ad: "norm", por: "Suma de muchos errores pequeños: teorema central del límite." },
+  vel: { n: "Velocidad de autos (km/h)", k: "norm", unidad: "km/h", data: () => Y.recs.filter(r => r.cls === "auto").map(r => r.kmh), fit: xs => { const mu = meanOf(xs); return { mu, s: Math.sqrt(varOf(xs)) }; }, teo: () => ({ mu: 32, s: 5 }), nEst: 2, ad: "norm", por: "Velocidades alrededor de un valor típico con dispersión simétrica." },
+  rep: { n: "Pasos por placa", k: "logser", unidad: "pasos", data: () => Object.values(Y.pool).flatMap(p => p.lista), fit: xs => ({ th: logserFit(meanOf(xs)) }), teo: P => ({ th: P.th }), nEst: 1, por: "Muchos visitantes pasan una vez y pocos residentes muchas: conteo con cola larga." },
+};
+function yPerMin(arr) { const m = Math.floor(Y.t / 60), c = new Array(m).fill(0); arr.forEach(t => { const i = Math.floor(t / 60); if (i < m) c[i]++; }); return c; }
+function yAnalyze() {
+  const v = YVARS[Y.var], P = yPar(), xs = v.data(); $("yVar").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === Y.var));
+  if (xs.length < 20) { canvas("cvY1"); $("yPar").innerHTML = '<div class="msg">Se necesitan al menos 20 datos: pulsa <b>Simular 4 horas</b> o deja correr la cámara.</div>'; $("yTest").innerHTML = ""; $("yCap").textContent = ""; return; }
+  const k = v.k, pe = v.fit(xs), pt = v.teo(P), te = theo(k, pt), sm = sampleMoments(xs);
+  histVsTheory("cvY1", xs, k, pe, { xl: v.unidad, range: k === "beta" ? [Math.max(0, Math.min(...xs) - 0.02), 1] : undefined });
+  $("yCap").innerHTML = `<b>${DIST[k].n}.</b> ${v.por} La curva usa los parámetros estimados.`;
+  const rows = [["Parámetros", parStr(k, pt), parStr(k, pe)], ["Media", fx(te.mean, 4), fx(sm.mean, 4)], ["Varianza", fx(te.var, 4), fx(sm.var, 4)], ["Desviación estándar", fx(te.sd, 4), fx(sm.sd, 4)], ["Coef. de variación", fx(te.cv, 4), fx(sm.cv, 4)], ["Asimetría", fx(te.sk, 4), fx(sm.sk, 4)], ["Curtosis (exceso)", fx(te.ku, 4), fx(sm.ku, 4)], ["Mediana", fx(te.med, 4), fx(sm.med, 4)], ["n", "—", sm.n]];
+  $("yPar").innerHTML = T(["", "Teórico (entrada)", "Estimado de los datos"], rows) + `<div class="formula" style="margin:10px 0 0;font-size:15px">${pretty(DIST[k].form)}</div>`;
+  const c = chiTest(xs, k, pe, 0.05, v.nEst); let html = `<div class="msg"><b>χ²</b> (${c.cl.length} clases, ${v.nEst} parámetro(s) estimado(s)): ${chiLine(c)}</div>`;
+  if (!isD(k)) { const kr = ksTest(xs, k, pe, 0.05), ad = adTest(xs, k, pe, 0.05); let A = ad.A2, crit = 2.492, nota = "crítico del caso especificado (aproximado al estimar parámetros)";
+    if (v.ad === "norm") { A = ad.A2 * (1 + 0.75 / xs.length + 2.25 / xs.length ** 2); crit = 0.752; nota = "A* = A²(1 + 0.75/n + 2.25/n²), normal con μ y σ estimados"; } else if (v.ad) { A = ad.A2 * (1 + v.ad[0] / xs.length); crit = v.ad[1]; nota = "A²(1 + 0.6/n), exponencial con media estimada"; }
+    html += `<div class="msg"><b>K-S</b>: D = ${fx(kr.D, 4)}, crítico ${fx(kr.crit, 4)} ${tag(kr.ok)}<br><span class="cap">Con parámetros estimados la tabla K-S es permisiva (Lilliefors).</span></div><div class="msg"><b>A-D</b>: ${fx(A, 4)} frente a ${crit} ${tag(A <= crit)}<br><span class="cap">${nota}</span></div>`; }
+  $("yTest").innerHTML = html;
+}
+function yCsv() {
+  if (!Y.recs.length) return; const head = "id,segundo,clase,placa_sintetica,confianza,aceptada,intentos_ocr,leida,latencia_ms,error_px,km_h,condicion\n";
+  const body = Y.recs.map(r => [r.id, r.t.toFixed(2), CLS[r.cls].n, r.placa, r.conf.toFixed(4), r.aceptada ? 1 : 0, r.intentos, r.leida ? 1 : 0, r.lat.toFixed(2), r.err.toFixed(3), r.kmh.toFixed(1), r.cond].join(",")).join("\n");
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([head + body], { type: "text/csv" })); a.download = "camara_yolo_sintetica.csv"; document.body.appendChild(a); a.click(); a.remove();
+}
+ANIM.yolo = {
+  tick(dt) { if (!Y.heat) return; if (Y.play) yStep(dt * num("ySpd")); Y.lastStat += dt; if (Y.lastStat > 0.5) { Y.lastStat = 0; if (Y.play) { yUpdate(); yClassChart(); } yInspector(); } },
+  draw() { if (Y.heat) yScene(); }
+};
+
+const ESTR = ["1-2", "3-4", "5-6"], LIK_COL = ["#E4572E", "#F2A900", "#C9C3DD", "#3A86C8", "#00A896"], LIK_TXT = ["1 Nunca", "2 Poco probable", "3 Tal vez", "4 Probable", "5 Seguro"];
+const BARR = { "costo inicial": ["es muy caro instalarlo", "no tengo el dinero ahora", "la inversión inicial es alta"], "no sabe cómo": ["no sé a quién acudir", "no conozco proveedores", "me falta información"], "vive en arriendo": ["la casa no es mía", "el dueño no lo permitiría"], "desconfía": ["no creo que funcione bien", "dicen que se dañan rápido"], "ninguna": ["lo haría ya", "solo espero la oportunidad"] };
+function encGen() {
+  reseedN(55); const N = Math.max(30, Math.min(5000, Math.round(num("eN")))), ef = num("eEf") / 10, base = [0.05, 0.09, 0.2, 0.37, 0.29], pm = num("ePay"), ps = num("ePaySd");
+  const pb = { "1-2": [0.5, 0.18, 0.2, 0.05, 0.07], "3-4": [0.42, 0.18, 0.15, 0.1, 0.15], "5-6": [0.25, 0.15, 0.08, 0.17, 0.35] }, bk = Object.keys(BARR);
+  const pick = pr => { let u = rnd(), a = 0; for (let i = 0; i < pr.length; i++) { a += pr[i]; if (u < a) return i; } return pr.length - 1; };
+  const data = [];
+  for (let i = 0; i < N; i++) {
+    const e = ESTR[pick([0.35, 0.4, 0.25])], j = ESTR.indexOf(e) - 1, w = base.map((b, q) => b * Math.exp(ef * 1.2 * j * (q - 2) / 2)), s = w.reduce((x, y) => x + y, 0), lik = pick(w.map(v => v / s)) + 1;
+    const bar = bk[pick(pb[e])], frases = BARR[bar];
+    data.push({ estrato: e, likert: lik, pagar: Math.max(0, pm + 0.4 * (lik - 3) + ps * zBoxMuller()), barrera: bar, texto: frases[Math.floor(rnd() * frases.length)] });
+  }
+  return data;
+}
+function encUse() {
+  const lines = $("eTxt").value.split(/\r?\n/).map(l => l.trim()).filter(Boolean), data = [];
+  lines.forEach(l => { const [e, v] = l.split(/[,;\t]/).map(s => s.trim()); const lk = Math.round(+v); if (ESTR.includes(e) && lk >= 1 && lk <= 5) data.push({ estrato: e, likert: lk }); });
+  if (data.length < 10) { $("eStats").innerHTML = `<div class="msg bad" style="grid-column:1/-1">Se encontraron ${data.length} filas válidas; se necesitan al menos 10 con el formato <code>estrato,likert</code>.</div>`; return; }
+  EN.data = data; EN.n = data.length; EN.play = false; $("ePlay").textContent = "Continuar"; encAnalyze(data); encScene();
+}
+let ENC_LAST = null;
+function encAnalyze(data) {
+  ENC_LAST = data;
+  const N = data.length, conf = +$("eConf").value, z = normInv(1 - (1 - conf) / 2), err = num("eErr") / 100, p0 = num("eP");
+  const fav = data.filter(d => d.likert >= 4).length / N, e = z * Math.sqrt(fav * (1 - fav) / N), nReq = Math.ceil(z * z * p0 * (1 - p0) / (err * err)), mL = meanOf(data.map(d => d.likert));
+  $("eStats").innerHTML = stat("Encuestados", `${N}`) + stat("Media Likert", `${fx(mL, 2)}<i>escala 1 a 5</i>`) + stat("Favorables (4 o 5)", `${fx(fav * 100, 1)} %<i>IC ${Math.round(conf * 100)} %: ${fx((fav - e) * 100, 1)} – ${fx((fav + e) * 100, 1)} %</i>`)
+    + stat("Margen de error actual", `± ${fx(e * 100, 1)} %<i>z = ${fx(z, 3)}</i>`) + stat(`n para e = ${fx(err * 100, 1)} %`, `${nReq}<i>n = z²p(1 − p)/e²</i>`);
+  // apilado por estrato
+  { const { ctx, w, h } = canvas("cvE1"), rows = ESTR.map(s => { const g = data.filter(d => d.estrato === s); return [1, 2, 3, 4, 5].map(v => g.length ? g.filter(d => d.likert === v).length / g.length : 0); });
+    const x0 = 46, x1 = w - 12, bh = (h - 30) / 3 * 0.7; rows.forEach((r, i) => { let acc = 0; const y = 10 + i * (h - 30) / 3; ctx.fillStyle = COL.ink; ctx.textAlign = "right"; ctx.fillText(ESTR[i], x0 - 6, y + bh / 2 + 4);
+      r.forEach((v, q) => { ctx.fillStyle = LIK_COL[q]; ctx.fillRect(x0 + acc * (x1 - x0), y, v * (x1 - x0), bh); if (v > 0.07) { ctx.fillStyle = q === 2 ? COL.ink : "#fff"; ctx.textAlign = "center"; ctx.fillText(Math.round(v * 100) + "%", x0 + (acc + v / 2) * (x1 - x0), y + bh / 2 + 4); } acc += v; }); });
+    ctx.fillStyle = COL.muted; ctx.textAlign = "center"; ctx.fillText("proporción dentro del estrato", (x0 + x1) / 2, h - 4); }
+  $("eLeg").innerHTML = LIK_TXT.map((t, i) => `<span><i style="background:${LIK_COL[i]}"></i>${t}</span>`).join("");
+  // independencia
+  const G = ["No (1-2)", "Indeciso (3)", "Sí (4-5)"], gi = v => v <= 2 ? 0 : v === 3 ? 1 : 2, O = ESTR.map(s => [0, 0, 0]); data.forEach(d => O[ESTR.indexOf(d.estrato)][gi(d.likert)]++);
+  const rT = O.map(r => r.reduce((a, b) => a + b, 0)), cT = [0, 1, 2].map(j => O.reduce((a, r) => a + r[j], 0)), Ex = O.map((r, i) => r.map((_, j) => rT[i] * cT[j] / N));
+  let chi = 0; O.forEach((r, i) => r.forEach((o, j) => { if (Ex[i][j] > 0) chi += (o - Ex[i][j]) ** 2 / Ex[i][j]; }));
+  const gl = 4, crit = chi2inv(0.95, gl), pv = 1 - chi2cdf(chi, gl), V = Math.sqrt(chi / (N * 2)), minE = Math.min(...Ex.flat());
+  $("eTab").innerHTML = T(["Estrato", ...G, "Total"], O.map((r, i) => [ESTR[i], ...r.map((o, j) => `${o} <span class="cap">(${fx(Ex[i][j], 1)})</span>`), rT[i]]).concat([["Total", ...cT, N]])) + '<p class="cap" style="padding:0 10px">Observado (esperado = fila × columna / n).</p>';
+  $("eChi").innerHTML = `<div class="msg">χ²₀ = ${fx(chi, 3)}, gl = 4, crítico ${fx(crit, 3)}, p = ${fx(pv, 4)} ${tag(chi <= crit, "Independientes", "Hay asociación")}<br>V de Cramér = ${fx(V, 3)} ${V < 0.1 ? "(muy débil)" : V < 0.3 ? "(débil)" : "(moderada o fuerte)"}${minE < 5 ? `<br><span class="cap">Atención: hay esperados menores que 5 (${fx(minE, 1)}); aumenta n.</span>` : ""}</div>`;
+  // pago y barreras
+  const pay = data.filter(d => d.pagar !== undefined).map(d => d.pagar);
+  if (pay.length >= 10) { const mu = meanOf(pay), s = Math.sqrt(varOf(pay)); histVsTheory("cvE3", pay, "norm", { mu, s }, { xl: "millones COP" }); const ad = adTest(pay, "norm", { mu, s }, 0.05), A = ad.A2 * (1 + 0.75 / pay.length + 2.25 / pay.length ** 2); $("eT3").innerHTML = `Normal(${fx(mu, 2)}, ${fx(s, 2)}) estimada. A-D: A* = ${fx(A, 3)} frente a 0.752 ${tag(A <= 0.752)}. Es una mezcla (depende del Likert), por eso puede rechazarse con n grande.`;
+    const bk = Object.keys(BARR), cnt = bk.map(b => data.filter(d => d.barrera === b).length / N); barsChart("cvE2", bk.map(b => b.length > 12 ? b.slice(0, 11) + "…" : b), [cnt], [COL.violet], { yl: "proporción" });
+  } else { canvas("cvE2"); canvas("cvE3"); $("eT3").innerHTML = "Tus datos no incluyen montos ni respuestas abiertas."; }
+}
+
+
+
+/* ======================= 5. ENCUESTA (en vivo) ======================= */
+const EN = { data: [], n: 0, play: true, last: 0, lastShown: -1, sel: -1, pos: [] };
+function encStart() { EN.data = encGen(); EN.n = 0; EN.lastShown = -1; EN.sel = -1; EN.play = true; $("ePlay").textContent = "Pausar"; $("eBub").innerHTML = "Las primeras personas están respondiendo…"; }
+function encScene() {
+  const { ctx, w, h } = canvas("cvE0"), N = EN.data.length, n = Math.floor(EN.n); ctx.fillStyle = "#FBFAFF"; ctx.fillRect(0, 0, w, h);
+  if (!N) return; const cols = Math.ceil(Math.sqrt(N * (w - 20) / (h - 40))), rows = Math.ceil(N / cols), cs = Math.min((w - 20) / cols, (h - 40) / rows), x0 = (w - cols * cs) / 2;
+  EN.pos = []; EN.cs = cs;
+  for (let i = 0; i < N; i++) {
+    const cx = x0 + (i % cols) * cs + cs / 2, cy = 8 + Math.floor(i / cols) * cs + cs / 2; EN.pos.push([cx, cy]);
+    if (i >= n) { disc(ctx, cx, cy, cs * 0.12, "#E9E6F5"); continue; }
+    const d = EN.data[i], age = EN.n - i, sc = clamp(age / 3, 0, 1), pop = 1 + 0.6 * Math.max(0, 1 - age / 4) * (age < 4 ? 1 : 0), r = cs * 0.2 * (0.4 + 0.6 * sc) * pop, col = LIK_COL[d.likert - 1];
+    disc(ctx, cx, cy - r * 0.9, r * 0.75, col); ctx.fillStyle = col; rr(ctx, cx - r * 0.95, cy - r * 0.1, r * 1.9, r * 1.4, r * 0.5); ctx.fill();
+    if (i === EN.sel) { ctx.strokeStyle = COL.ink; ctx.lineWidth = 2; ctx.strokeRect(cx - cs / 2 + 1, cy - cs / 2 + 1, cs - 2, cs - 2); }
+  }
+  const fav = n ? EN.data.slice(0, n).filter(d => d.likert >= 4).length / n : 0;
+  ctx.fillStyle = "#E9E6F5"; ctx.fillRect(10, h - 24, w - 20, 12); ctx.fillStyle = COL.violet; ctx.fillRect(10, h - 24, (w - 20) * n / N, 12);
+  txt(ctx, `${n} de ${N} encuestados · ${fx(fav * 100, 1)} % favorables`, w / 2, h - 30, { a: "center", s: 12, b: true });
+}
+function encCI(data) {
+  const { ctx, w, h } = canvas("cvE4"), n = data.length; if (n < 5) return; const z = normInv(1 - (1 - +$("eConf").value) / 2);
+  const A = axes(ctx, w, h, 0, Math.max(n, 10), 0, 1, "encuestados n", "proporción favorable", 0, 1); let k = 0; const p = [], lo = [], hi = [];
+  data.forEach((d, i) => { if (d.likert >= 4) k++; const m = i + 1; if (m >= 5) { const ph = k / m, e = z * Math.sqrt(ph * (1 - ph) / m); p.push([A.X(m), A.Y(ph)]); lo.push([A.X(m), A.Y(clamp(ph - e, 0, 1))]); hi.push([A.X(m), A.Y(clamp(ph + e, 0, 1))]); } });
+  ctx.fillStyle = "rgba(0,168,150,.18)"; ctx.beginPath(); hi.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); lo.slice().reverse().forEach(([x, y]) => ctx.lineTo(x, y)); ctx.closePath(); ctx.fill();
+  path(ctx, p, COL.teal, 2); legend(ctx, [["p̂ (favorables)", COL.teal], [`IC ${Math.round(+$("eConf").value * 100)} %`, "rgba(0,168,150,.4)"]], w - 150, P0.t + 10);
+}
+ANIM.enc = {
+  tick(dt) { if (!EN.data.length || !EN.play) return; const N = EN.data.length; EN.n = Math.min(N, EN.n + dt * num("eSpd")); const n = Math.floor(EN.n);
+    if (n !== EN.lastShown && n > 0) { const d = EN.data[n - 1]; EN.lastShown = n; $("eBub").innerHTML = `<b>Persona ${n}</b> (estrato ${d.estrato}, Likert ${d.likert}): «${d.texto}» <span class="mini">→ código: ${d.barrera}</span>`; }
+    EN.last += dt; if (EN.last > 0.25 || n === N) { EN.last = 0; const sl = EN.data.slice(0, n); if (n >= 10) encAnalyze(sl); encCI(sl); }
+    if (n === N) { EN.play = false; $("ePlay").textContent = "Repetir"; } },
+  draw() { encScene(); }
+};
+
+
+/* ======================= 6. ANALIZADOR INTERACTIVO ======================= */
+const ORDEN = ["norm", "expo", "logn", "unif", "tri", "gamma", "weib", "beta", "poisson", "binom", "geom", "logser"];
+const PR = { // [mín, máx, paso] de cada deslizador
+  norm: { mu: [-10, 40, 0.5], s: [0.2, 10, 0.1] }, expo: { m: [0.2, 20, 0.1] }, logn: { mu: [-1, 4, 0.05], s: [0.05, 1.5, 0.05] }, unif: { a: [-5, 10, 0.5], b: [0, 20, 0.5] }, tri: { a: [0, 10, 0.5], c: [0, 15, 0.5], b: [1, 20, 0.5] },
+  gamma: { k: [0.5, 15, 0.05], t: [0.1, 5, 0.05] }, weib: { k: [0.5, 6, 0.05], l: [0.5, 20, 0.1] }, beta: { a: [0.5, 30, 0.1], b: [0.5, 30, 0.1] }, poisson: { lam: [0.2, 30, 0.1] }, binom: { n: [1, 60, 1], p: [0.01, 0.99, 0.01] }, geom: { p: [0.02, 0.98, 0.01] }, logser: { th: [0.05, 0.97, 0.01] },
+};
+const NA = { xs: [], k: "norm", p: {}, A1: null, A2: null, anim: null };
+function nFill() {
+  const k = $("nDist").value;
+  $("nPars").innerHTML = DIST[k].pars.map(([id, l, d]) => { const [a, b, st] = PR[k][id]; return `<label for="np_${id}">${l}: <b id="npv_${id}">${d}</b></label><input type="range" id="np_${id}" min="${a}" max="${b}" step="${st}" value="${d}">`; }).join("");
+  DIST[k].pars.forEach(([id]) => $("np_" + id).oninput = () => { $("npv_" + id).textContent = $("np_" + id).value; nRunSoon(); });
+  $("nForm").innerHTML = `<b>${isD(k) ? "Discreta" : "Continua"}</b><br>` + pretty(DIST[k].form); $("nMet").innerHTML = "<b>Método de generación:</b> " + pretty(METODO[k]);
+  const p = readPars(k, "np_"), m = DIST[k].mean(p), sd = Math.sqrt(DIST[k].var(p)); $("nA").value = +(m - sd).toFixed(2); $("nB").value = +(m + sd).toFixed(2);
+}
+let nTimer = null; const nRunSoon = () => { clearTimeout(nTimer); nTimer = setTimeout(nRun, 40); };
+function nDraw() {
+  const { xs, k, p } = NA; if (!xs.length) return; const d = DIST[k];
+  const A = NA.A1 = histVsTheory("cvN1", xs, k, p), ctx = $("cvN1").getContext("2d"), a = +$("nA").value, b = +$("nB").value;
+  // área de probabilidad
+  if (Number.isFinite(a) && Number.isFinite(b) && b >= a) {
+    if (isD(k)) { ctx.fillStyle = "rgba(0,168,150,.25)"; const x0 = Math.ceil(a), x1 = Math.floor(b); if (x1 >= x0) ctx.fillRect(A.X(Math.max(A.x0, x0 - 0.5)), P0.t, A.X(Math.min(A.x1, x1 + 0.5)) - A.X(Math.max(A.x0, x0 - 0.5)), A.Y(0) - P0.t); }
+    else { const lo = Math.max(a, A.x0), hi = Math.min(b, A.x1); if (hi > lo) { ctx.fillStyle = "rgba(0,168,150,.3)"; ctx.beginPath(); ctx.moveTo(A.X(lo), A.Y(0)); for (let i = 0; i <= 80; i++) { const x = lo + (hi - lo) * i / 80; ctx.lineTo(A.X(x), A.Y(Math.min(A.y1, d.pdf(x, p)))); } ctx.lineTo(A.X(hi), A.Y(0)); ctx.closePath(); ctx.fill(); } }
+  }
+  if ($("nNorm").checked) { const m = d.mean(p), s = Math.sqrt(d.var(p)), pts = []; for (let i = 0; i <= 200; i++) { const x = A.x0 + (A.x1 - A.x0) * i / 200; pts.push([A.X(x), A.Y(Math.min(A.y1, Math.exp(-((x - m) ** 2) / (2 * s * s)) / (s * Math.sqrt(2 * Math.PI))))]); } path(ctx, pts, COL.coral, 2, [6, 4]); legend(ctx, [["normal (misma μ, σ)", COL.coral]], w0(A) - 160, P0.t + 44); }
+  // acumulada
+  { const { ctx: c2, w, h } = canvas("cvN2"), [lo, hi] = isD(k) ? [A.x0 + 0.5, A.x1 - 0.5] : [A.x0, A.x1], A2 = NA.A2 = axes(c2, w, h, lo, hi, 0, 1, "x", "F(x)", hi - lo > 20 ? 0 : 1, 1), pts = [];
+    if (isD(k)) { for (let x = Math.floor(lo); x <= hi; x++) { const F0 = cdfOf(k, x - 1, p), F1 = cdfOf(k, x, p); pts.push([A2.X(x), A2.Y(F0)], [A2.X(x), A2.Y(F1)], [A2.X(Math.min(hi, x + 1)), A2.Y(F1)]); } }
+    else for (let i = 0; i <= 200; i++) { const x = lo + (hi - lo) * i / 200; pts.push([A2.X(x), A2.Y(cdfOf(k, x, p))]); }
+    path(c2, pts, COL.teal, 2.5); const s = [...xs].sort((u, v) => u - v), e = []; s.forEach((v, i) => { if (v >= lo && v <= hi) e.push([A2.X(v), A2.Y((i + 1) / s.length)]); }); path(c2, e, COL.violet, 1.2, [3, 3]);
+    legend(c2, [["F(x) teórica", COL.teal], ["acumulada de la muestra", COL.violet]], P0.l + 10, P0.t + 10); }
+}
+const w0 = A => A.w;
+function nProb() {
+  const { xs, k, p } = NA, a = +$("nA").value, b = +$("nB").value; if (!xs.length) return;
+  if (!(Number.isFinite(a) && Number.isFinite(b) && b >= a)) { $("nProb").innerHTML = "Escribe a ≤ b."; return; }
+  const th = isD(k) ? cdfOf(k, Math.floor(b), p) - cdfOf(k, Math.ceil(a) - 1, p) : cdfOf(k, b, p) - cdfOf(k, a, p), sm = xs.filter(v => v >= a && v <= b).length / xs.length;
+  $("nProb").innerHTML = `P(${a} ≤ X ≤ ${b}) teórica = <b>${fx(th, 4)}</b> · en la muestra = <b>${fx(sm, 4)}</b>`;
+}
+function nRun() {
+  const k = $("nDist").value, p = readPars(k, "np_"), errm = validPars2(k, p), alfa = +$("nAlfa").value, d = DIST[k];
+  if (errm) { $("nTest").innerHTML = `<div class="msg bad">${errm}</div>`; return; }
+  reseedN(67 + (NA.extra || 0)); const n = clamp(Math.round(num("nN")), 20, 20000), xs = genN(k, p, n), te = theo(k, p), sm = sampleMoments(xs); $("nNv").textContent = n;
+  Object.assign(NA, { xs, k, p, anim: null });
+  $("nT1").textContent = isD(k) ? "p(x): muestra frente a teoría" : "f(x): histograma frente a densidad";
+  nDraw(); nProb();
+  $("nPar").innerHTML = T(["Parámetro", "Teórico", "Muestra"], [["Media", fx(te.mean, 4), fx(sm.mean, 4)], ["Varianza", fx(te.var, 4), fx(sm.var, 4)], ["Desviación estándar", fx(te.sd, 4), fx(sm.sd, 4)], ["Coef. de variación", fx(te.cv, 4), fx(sm.cv, 4)], ["Asimetría", fx(te.sk, 4), fx(sm.sk, 4)], ["Curtosis (exceso)", fx(te.ku, 4), fx(sm.ku, 4)], ["Mediana", fx(te.med, 4), fx(sm.med, 4)], ["Mínimo / máximo", "—", `${fx(sm.min, 3)} / ${fx(sm.max, 3)}`]]);
+  const c = chiTest(xs, k, p, alfa, 0); let html = `<div class="msg"><b>Chi-cuadrada</b> (${c.cl.length} clases${isD(k) ? ", extremos agrupados con E ≥ 5" : " equiprobables"}):<br>${chiLine(c)}</div>`;
+  if (!isD(k)) { const kr = ksTest(xs, k, p, alfa), ad = adTest(xs, k, p, alfa); html += `<div class="msg"><b>Kolmogorov-Smirnov</b>: D⁺ = ${fx(kr.Dp, 4)}, D⁻ = ${fx(kr.Dm, 4)}, D = ${fx(kr.D, 4)}, crítico ${fx(kr.crit, 4)} ${tag(kr.ok)}</div><div class="msg"><b>Anderson-Darling</b>: A² = ${fx(ad.A2, 4)}, crítico ${ad.crit} ${tag(ad.ok)}</div>`; }
+  else html += '<div class="msg"><span class="cap">K-S y A-D se diseñaron para variables continuas; en discretas son conservadoras, por eso aquí solo se usa χ².</span></div>';
+  html += `<p class="cap">H₀: los datos provienen de ${d.n}(${parStr(k, p)}). Como la muestra se generó con esa distribución, se rechaza alrededor del ${alfa * 100} % de las veces: pulsa «Nueva muestra» varias veces para comprobarlo.</p>`;
+  $("nTest").innerHTML = html;
+}
+function nAnimStart() { if (!NA.xs.length) return; NA.anim = { pts: [], cur: null, t: 0, n: 0 }; }
+function nAnimTick(dt) {
+  const an = NA.anim; if (!an) return; an.t += dt;
+  if (an.n < 60 && (!an.cur || an.t > 0.55)) { const u = Math.random(), x = invOf(NA.k, u, NA.p); an.cur = { u, x, t0: 0 }; an.pts.push(x); an.n++; an.t = 0; }
+  if (an.cur) an.cur.t0 += dt;
+}
+function nAnimDraw() {
+  const an = NA.anim; if (!an || !NA.A2) return; nDraw(); const A2 = NA.A2, c2 = $("cvN2").getContext("2d"), cur = an.cur, k = NA.k;
+  if (cur) { const ph = clamp(cur.t0 / 0.4, 0, 1), xr = clamp(cur.x, A2.x0, A2.x1), xEnd = lerp(A2.x0, xr, Math.min(1, ph * 2)), yEnd = ph < 0.5 ? cur.u : lerp(cur.u, 0, (ph - 0.5) * 2);
+    c2.strokeStyle = COL.coral; c2.lineWidth = 2; c2.beginPath(); c2.moveTo(A2.X(A2.x0), A2.Y(cur.u)); c2.lineTo(A2.X(xEnd), A2.Y(cur.u)); if (ph >= 0.5) { c2.lineTo(A2.X(xr), A2.Y(yEnd)); } c2.stroke();
+    disc(c2, A2.X(A2.x0), A2.Y(cur.u), 5, COL.coral); txt(c2, `r = ${cur.u.toFixed(3)}`, A2.X(A2.x0) + 8, A2.Y(cur.u) - 6, { c: COL.coral, b: true });
+    if (ph >= 1) { disc(c2, A2.X(xr), A2.Y(0), 5, COL.coral); txt(c2, `x = F⁻¹(r) = ${fx(cur.x, 3)}`, A2.X(xr) + 6, A2.Y(0) - 8, { c: COL.coral, b: true }); } }
+  // pila de puntos sobre la gráfica de densidad
+  const A = NA.A1, c1 = $("cvN1").getContext("2d"); c1.fillStyle = "rgba(255,255,255,.65)"; c1.fillRect(P0.l, P0.t, A.w - P0.l - P0.r, A.h - P0.t - P0.b);
+  const bw = isD(k) ? 1 : (A.x1 - A.x0) / 20, stacks = {}; an.pts.forEach((x, i) => { const b = isD(k) ? Math.round(x) : Math.floor((x - A.x0) / bw); stacks[b] = (stacks[b] || 0) + 1; const cx = isD(k) ? A.X(b) : A.X(A.x0 + (b + 0.5) * bw), cy = A.Y(0) - 6 - (stacks[b] - 1) * 11;
+    disc(c1, cx, i === an.pts.length - 1 ? lerp(P0.t, cy, clamp((cur ? cur.t0 : 1) / 0.4, 0, 1)) : cy, 5, i === an.pts.length - 1 ? COL.coral : COL.violet); });
+  txt(c1, `transformada inversa: ${an.pts.length} de 60 valores`, P0.l + 8, P0.t + 14, { b: true, c: COL.ink });
+  if (an.n >= 60 && cur && cur.t0 > 1.5) { NA.anim = null; nDraw(); }
+}
+function nHover(ev, which) {
+  const { k, p, xs } = NA, A = which === 1 ? NA.A1 : NA.A2; if (!A || !xs.length) return; const [mx] = canvasPos(ev, which === 1 ? "cvN1" : "cvN2"), d = DIST[k];
+  if (mx < P0.l || mx > A.w - P0.r) { hideTip(); return; } let x = A.x0 + (mx - P0.l) / (A.w - P0.l - P0.r) * (A.x1 - A.x0);
+  if (isD(k)) { x = Math.round(x); showTip(ev, `x = ${x}<br>p(x) = ${fx(d.pmf(x, p), 4)}<br>F(x) = ${fx(cdfOf(k, x, p), 4)}<br>muestra: ${fx(xs.filter(v => v === x).length / xs.length, 4)}`); }
+  else showTip(ev, `x = ${fx(x, 3)}<br>f(x) = ${fx(d.pdf(x, p), 4)}<br>F(x) = ${fx(cdfOf(k, x, p), 4)}<br>F empírica = ${fx(xs.filter(v => v <= x).length / xs.length, 4)}`);
+}
+ANIM.ana = { tick(dt) { nAnimTick(dt); }, draw() { if (NA.anim) nAnimDraw(); } };
+
+
+/* ======================= 7. PROMODEL · FLEXSIM ======================= */
+const PSTEPS = [
+  ["Locations: crear Fila y Caseta", "Build → Locations\n\nNombre    Capacidad   Unidades\nFila      INF         1\nCaseta    1           c   (un carril por unidad)\n\nLa Fila guarda los vehículos que esperan; la Caseta es el servidor."],
+  ["Entities: crear Vehiculo", "Build → Entities\n\nNombre     Velocidad (fpm)\nVehiculo   150\n\nLa entidad es lo que fluye por el modelo."],
+  ["Path Networks: dibujar la ruta", "Build → Path Networks\n\nRed1: Entrada → Fila → Caseta.1 … Caseta.c → Salida\nTipo: Passing (los vehículos no se bloquean en la vía)."],
+  ["Arrivals: llegadas de Poisson", "Build → Arrivals\n\nEntidad    Ubicación  Qty  First  Occurrences  Frequency\nVehiculo   Fila       1    0      INF          E(1.2) min\n\nλ = 50/h  ⇒  tiempo entre llegadas medio = 60/50 = 1.2 min"],
+  ["Processing: atención y salida", "Build → Processing\n\nEntidad   Ubicación  Operación   Destino  Regla\nVehiculo  Fila                    Caseta   FIRST 1\nVehiculo  Caseta     WAIT E(1)   EXIT     FIRST 1\n\nμ = 60/h por carril ⇒ servicio medio = 1 min"],
+  ["Simulation → Options y resultados", "Simulation → Options\nRun length: 9 h · Warm-up: 1 h · Replications: 10\n\nOutput Viewer → Locations\nFila:   Avg Contents = Lq · Avg Time Per Entry = Wq\nCaseta: % Utilization = ρ\n\nCompara con Erlang C en la hoja 1 de la plantilla de Excel."],
+];
+const FSTEPS = [
+  ["Arrastrar objetos desde la Library", "Library → Fixed Resources\n\nSource, Queue1, Processor «Corte», Queue2,\nProcessor «Ensamble», Queue3, Processor «Pintura», Sink\n\nUnidades del modelo: minutos. El modelo usa 8 objetos (cabe en modo Express: máx. 30)."],
+  ["Conectar con la tecla A", "Mantén pulsada la tecla A y arrastra de un objeto al siguiente:\n\nSource → Queue1 → Corte → Queue2 → Ensamble → Queue3 → Pintura → Sink\n\nLas líneas negras son los puertos de salida y entrada."],
+  ["Source: tiempo entre llegadas", "Doble clic en Source → Inter-Arrivaltime:\n\nexponential(0, 5.5, getstream(current))\n\n(ubicación 0, media 5.5 min)"],
+  ["Processors: tiempos de proceso", "Doble clic en cada Processor → Process Time:\n\nCorte     triangular(3, 6, 4, getstream(current))\nEnsamble  triangular(4, 7, 5, getstream(current))\nPintura   triangular(2, 5, 3, getstream(current))\n\nOjo: FlexSim pide (mín, máx, moda); ProModel pide T(mín, moda, máx)."],
+  ["Correr y observar estados", "Reset → Run. Colores de los Processor:\n\nverde  = procesando\namarillo = ocioso, esperando pieza\n\nLa cola antes del cuello de botella crece."],
+  ["Dashboard: indicadores", "Dashboards → Add → State bar (Processors), Average content (Queues), Throughput (Sink).\n\nLa gráfica de abajo es el equivalente en vivo."],
+  ["Experimenter: réplicas", "Statistics → Experimenter\nRun time 3000 min · Warm-up 300 min · Replications 10\n\nAbajo: resumen de 10 réplicas calculado aquí mismo (media e IC 95 %)."],
+];
+const PM = { play: true, step: 5, t: 0, next: 0, cars: [], fila: [], cas: [], id: 0, area: 0, lastQ: 0, waits: [], exits: 0, busy: 0 };
+const FS = { play: true, step: 5, t: 0, next: 0, items: [], st: [], q: [[], [], []], id: 0, done: 0, busy: [0, 0, 0], ct: [], qa: [0, 0, 0] };
+function pmInit() {
+  reseedN(77); const c = num("pC"); $("pCv").textContent = c;
+  Object.assign(PM, { t: 0, cars: [], fila: [], cas: Array.from({ length: c }, () => ({ car: null, end: 0, start: 0 })), id: 0, area: 0, lastQ: 0, waits: [], exits: 0, busy: 0, next: gen("expo", { m: 72 }) });
+  Object.assign(FS, { t: 0, items: [], st: [0, 1, 2].map(() => ({ it: null, end: 0, start: 0 })), q: [[], [], []], id: 0, done: 0, busy: [0, 0, 0], ct: [], qa: [0, 0, 0], next: gen("expo", { m: 5.5 }) });
+  stepsHTML("pSteps", PSTEPS, PM.step, "pCode"); stepsHTML("fSteps", FSTEPS, FS.step, "fCode");
+}
+function stepsHTML(id, list, cur, codeId) { $(id).innerHTML = list.map(([t], i) => `<li data-i="${i}" class="${i === cur ? "on" : i < cur ? "done" : ""}">${t}</li>`).join("") + ""; $(codeId).textContent = list[cur][1]; }
+// ---- ProModel: M/M/c (segundos)
+function pmStep(T1) {
+  const mu = 60;
+  for (let g = 0; g < 2000; g++) {
+    let j = -1, tEnd = Infinity; PM.cas.forEach((C, k) => { if (C.car && C.end < tEnd) { tEnd = C.end; j = k; } });
+    const tn = Math.min(PM.next, tEnd); if (tn > T1) break;
+    PM.area += PM.fila.length * (tn - PM.lastQ); PM.lastQ = tn; PM.t = tn;
+    if (PM.next <= tEnd) { const car = { id: ++PM.id, arr: PM.t, st: "fila", col: CARCOL[PM.id % CARCOL.length], tx: 0, ty: 0 }; PM.cars.push(car); PM.fila.push(car); PM.next = PM.t + gen("expo", { m: 72 }); }
+    else { const C = PM.cas[j]; PM.busy += C.end - C.start; C.car.st = "sale"; C.car = null; PM.exits++; }
+    PM.cas.forEach(C => { if (!C.car && PM.fila.length) { const car = PM.fila.shift(); C.car = car; C.start = PM.t; C.end = PM.t + gen("expo", { m: 60 }); car.st = "caseta"; car.cas = PM.cas.indexOf(C); PM.waits.push(PM.t - car.arr); } });
+  }
+  PM.area += PM.fila.length * (T1 - PM.lastQ); PM.lastQ = T1; PM.t = T1;
+}
+function pmScene(dtR) {
+  const { ctx, w, h } = canvas("cvP1"), st = PM.step, c = PM.cas.length; ctx.fillStyle = "#F7FAFE"; ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = "#E1E9F3"; ctx.lineWidth = 1; for (let x = 0; x < w; x += 20) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); } for (let y = 0; y < h; y += 20) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+  const fx0 = w * 0.12, fx1 = w * 0.48, fy = h * 0.5, cxs = w * 0.62, cyTop = h * 0.18, cyBot = h * 0.82, exitX = w * 0.92, cy = k => c === 1 ? fy : lerp(cyTop, cyBot, k / (c - 1));
+  if (st >= 2) { ctx.strokeStyle = "#3A86C8"; ctx.setLineDash([6, 5]); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, fy); ctx.lineTo(fx1, fy); for (let k = 0; k < c; k++) { ctx.moveTo(fx1, fy); ctx.lineTo(cxs, cy(k)); ctx.lineTo(exitX, fy); } ctx.stroke(); ctx.setLineDash([]); [[0, fy], [fx1, fy], [exitX, fy]].forEach(([x, y]) => disc(ctx, x, y, 4, "#3A86C8")); }
+  const hl = (on) => on && Math.floor(TCLOCK * 2) % 2 ? COL.amber : COL.ink2;
+  if (st >= 0) { ctx.fillStyle = "#E6F6F3"; ctx.strokeStyle = hl(st === 0); ctx.lineWidth = 2; rr(ctx, fx0, fy - 24, fx1 - fx0, 48, 6); ctx.fill(); ctx.stroke(); txt(ctx, `Fila  (Contents ${PM.fila.length})`, fx0 + 4, fy - 30, { b: true, s: 12 });
+    for (let k = 0; k < c; k++) { const y = cy(k); ctx.fillStyle = "#EAF2FB"; ctx.strokeStyle = hl(st === 0); rr(ctx, cxs - 26, y - 22, 52, 44, 6); ctx.fill(); ctx.stroke(); ctx.fillStyle = PM.cas[k].car ? COL.teal : "#9CA3AF"; ctx.fillRect(cxs - 6, y - 18, 12, 10);
+      const up = PM.cas[k].car && PM.t > PM.cas[k].end - 6; ctx.strokeStyle = COL.coral; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(cxs + 28, y + 18); ctx.lineTo(cxs + 28 + (up ? 6 : 30), y + 18 - (up ? 26 : 0)); ctx.stroke(); txt(ctx, `Caseta.${k + 1}`, cxs, y + 34, { a: "center", s: 11, b: true }); } }
+  if (st >= 3) { ctx.fillStyle = COL.teal; rr(ctx, 6, fy - 46, 76, 18, 4); ctx.fill(); txt(ctx, "Arrival E(1.2)", 12, fy - 33, { c: "#fff", s: 11, b: true }); }
+  txt(ctx, "EXIT", exitX, fy - 12, { a: "center", b: true, c: COL.coral });
+  if (st >= 1) { // entidades
+    PM.fila.forEach((car, k) => { car.tx = fx1 - 30 - k * 30; car.ty = fy; });
+    PM.cars.forEach(car => { if (car.st === "caseta") { car.tx = cxs - 10; car.ty = cy(car.cas) + 6; } if (car.st === "sale") { car.tx = w + 60; car.ty = fy; }
+      if (car.px === undefined) { car.px = -20; car.py = fy; } const k = Math.min(1, dtR * 4); car.px += (car.tx - car.px) * k; car.py += (car.ty - car.py) * k; });
+    PM.cars = PM.cars.filter(car => !(car.st === "sale" && car.px > w + 40));
+    PM.cars.forEach(car => { const X = car.px, Yp = car.py; ctx.fillStyle = car.col; rr(ctx, X - 12, Yp - 7, 24, 14, 4); ctx.fill(); ctx.fillStyle = "rgba(255,255,255,.7)"; ctx.fillRect(X + 2, Yp - 5, 5, 10); });
+    if (st === 1) { ctx.fillStyle = "rgba(255,255,255,.85)"; rr(ctx, w * 0.3, h - 50, w * 0.4, 36, 6); ctx.fill(); txt(ctx, "Entidad «Vehiculo» (icono del gráfico)", w / 2, h - 27, { a: "center", b: true }); }
+  }
+  if (st < 3) { ctx.fillStyle = "rgba(26,20,51,.75)"; rr(ctx, w / 2 - 170, 8, 340, 26, 6); ctx.fill(); txt(ctx, "Completa los pasos 4 y 5 para que el modelo corra", w / 2, 26, { a: "center", c: "#fff", b: true }); }
+}
+function pmStats() {
+  const c = PM.cas.length, e = erlangC(50, 60, c), part = PM.cas.reduce((s, C) => s + (C.car ? PM.t - C.start : 0), 0);
+  $("pStats").innerHTML = stat("Reloj", `${fx(PM.t / 3600, 2)} h<i>${PM.exits} vehículos salieron</i>`) + stat("Fila · Avg Contents", `${fx(PM.t ? PM.area / PM.t : 0, 3)}<i>Lq teórica ${e ? fx(e.Lq, 3) : "∞"}</i>`)
+    + stat("Fila · Avg Time Per Entry", `${PM.waits.length ? fx(meanOf(PM.waits) / 60, 3) : "—"} min<i>Wq teórica ${e ? fx(e.Wq * 60, 3) : "∞"} min</i>`) + stat("Caseta · % Utilization", `${fx(PM.t ? (PM.busy + part) / (c * PM.t) * 100 : 0, 1)} %<i>ρ = ${fx(50 / (60 * c) * 100, 1)} %</i>`);
+}
+// ---- FlexSim: línea en serie (minutos)
+const FTRI = [[3, 4, 6], [4, 5, 7], [2, 3, 5]];
+function fsStep(T1) {
+  const tri = j => inv_tri(rnd(), ...FTRI[j]);
+  for (let g = 0; g < 2000; g++) {
+    let j = -1, tEnd = Infinity; FS.st.forEach((S, k) => { if (S.it && S.end < tEnd) { tEnd = S.end; j = k; } });
+    const tn = Math.min(FS.next, tEnd); if (tn > T1) break; FS.q.forEach((q, k) => FS.qa[k] += q.length * (tn - FS.t)); FS.t = tn;
+    if (FS.next <= tEnd) { const it = { id: ++FS.id, arr: FS.t, at: "src", pos: "q0", col: ["#F2A900", "#3A86C8", "#E4572E", "#00A896"][FS.id % 4] }; FS.items.push(it); FS.q[0].push(it); FS.next = FS.t + gen("expo", { m: 5.5 }); }
+    else { const S = FS.st[j], it = S.it; FS.busy[j] += S.end - S.start; S.it = null; if (j < 2) { FS.q[j + 1].push(it); it.pos = "q" + (j + 1); } else { it.pos = "sink"; FS.done++; FS.ct.push(FS.t - it.arr); } }
+    FS.st.forEach((S, k) => { if (!S.it && FS.q[k].length) { const it = FS.q[k].shift(); S.it = it; S.start = FS.t; S.end = FS.t + tri(k); it.pos = "p" + k; } });
+  }
+  FS.q.forEach((q, k) => FS.qa[k] += q.length * (T1 - FS.t)); FS.t = T1;
+}
+const inv_tri = (u, a, c, b) => { const F = (c - a) / (b - a); return u < F ? a + Math.sqrt(u * (b - a) * (c - a)) : b - Math.sqrt((1 - u) * (b - a) * (b - c)); };
+function iso(ox, oy, sc) { return (x, y, z = 0) => [ox + (x - y) * 0.866 * sc, oy + (x + y) * 0.5 * sc - z * sc]; }
+function cube(ctx, P, x, y, z, dx, dy, dz, col) {
+  const p = (a, b, c) => P(x + a, y + b, z + c), poly = (pts, f) => { ctx.fillStyle = f; ctx.beginPath(); pts.forEach(([u, v], i) => i ? ctx.lineTo(u, v) : ctx.moveTo(u, v)); ctx.closePath(); ctx.fill(); ctx.strokeStyle = "rgba(0,0,0,.25)"; ctx.lineWidth = 1; ctx.stroke(); };
+  poly([p(0, 0, dz), p(dx, 0, dz), p(dx, dy, dz), p(0, dy, dz)], shade(col, 1.15)); poly([p(0, dy, 0), p(dx, dy, 0), p(dx, dy, dz), p(0, dy, dz)], shade(col, 0.85)); poly([p(dx, 0, 0), p(dx, dy, 0), p(dx, dy, dz), p(dx, 0, dz)], shade(col, 0.7));
+}
+const FOBJ = [["Source", "src", 0], ["Queue1", "q0", 2], ["Corte", "p0", 4], ["Queue2", "q1", 6], ["Ensamble", "p1", 8], ["Queue3", "q2", 10], ["Pintura", "p2", 12], ["Sink", "sink", 14]];
+function fsScene(dtR) {
+  const { ctx, w, h } = canvas("cvP2"), sc = Math.min(w * 0.9 / 17, 60), P = iso(w * 0.05, h * 0.32, sc), st = FS.step; ctx.fillStyle = "#DCE3EA"; ctx.fillRect(0, 0, w, h);
+  const pos = x => [x, -x * 0.3]; ctx.strokeStyle = "#C3CDD8"; ctx.lineWidth = 1;
+  for (let g = -2; g <= 17; g += 1) { const a = P(g, -7), b = P(g, 4); ctx.beginPath(); ctx.moveTo(...a); ctx.lineTo(...b); ctx.stroke(); } for (let g = -7; g <= 4; g += 1) { const a = P(-2, g), b = P(17, g); ctx.beginPath(); ctx.moveTo(...a); ctx.lineTo(...b); ctx.stroke(); }
+  if (st >= 1) { ctx.strokeStyle = "#111"; ctx.lineWidth = 2; for (let i = 0; i < FOBJ.length - 1; i++) { const [x1, y1] = pos(FOBJ[i][2]), [x2, y2] = pos(FOBJ[i + 1][2]); ctx.beginPath(); ctx.moveTo(...P(x1 + 0.5, y1 + 0.5, 0.02)); ctx.lineTo(...P(x2 + 0.5, y2 + 0.5, 0.02)); ctx.stroke(); } }
+  const hl = i => (st === 0 || (st === 3 && i % 2 === 0 && i > 0 && i < 7) || (st === 2 && i === 0)) && Math.floor(TCLOCK * 2) % 2;
+  FOBJ.forEach(([nm, key, xx], i) => {
+    const [x, y] = pos(xx); let col = "#9CA3AF";
+    if (key === "src") col = "#00A896"; else if (key === "sink") col = "#E4572E"; else if (key[0] === "q") col = "#C9C3DD"; else { const S = FS.st[+key[1]]; col = st >= 2 ? (S.it ? "#22C55E" : "#FACC15") : "#3A86C8"; }
+    const ht = key[0] === "p" ? 0.9 : key[0] === "q" ? 0.12 : 0.6; cube(ctx, P, x, y, 0, 1, 1, ht, col);
+    if (hl(i)) { ctx.strokeStyle = COL.amber; ctx.lineWidth = 3; const a = P(x - 0.1, y - 0.1), b = P(x + 1.1, y + 1.1); ctx.strokeRect(Math.min(a[0], b[0]) - 20, Math.min(a[1], b[1]) - 40, Math.abs(b[0] - a[0]) + 40, 60); }
+    const [lx, ly] = P(x + 0.5, y + 0.5, ht + 0.6); txt(ctx, nm, lx, ly, { a: "center", s: 11, b: true });
+    if (key[0] === "q" && st >= 2) FS.q[+key[1]].slice(0, 12).forEach((it, k) => cube(ctx, P, x + 0.08 + (k % 3) * 0.3, y + 0.08 + Math.floor(k / 3) % 3 * 0.3, 0.12 + Math.floor(k / 9) * 0.25, 0.22, 0.22, 0.22, it.col));
+    if (key[0] === "q" && FS.q[+key[1]].length > 12) { const [ux, uy] = P(x + 0.5, y + 0.5, 1.2); label(ctx, `+${FS.q[+key[1]].length - 12}`, ux - 12, uy, COL.coral); }
+    if (key[0] === "p" && st >= 2) { const S = FS.st[+key[1]]; if (S.it) { cube(ctx, P, x + 0.35, y + 0.35, ht, 0.3, 0.3, 0.3, S.it.col); const pr = clamp((FS.t - S.start) / (S.end - S.start), 0, 1), [bx, by] = P(x + 0.5, y + 0.5, ht + 1.1); ctx.fillStyle = "#fff"; ctx.fillRect(bx - 20, by, 40, 5); ctx.fillStyle = "#22C55E"; ctx.fillRect(bx - 20, by, 40 * pr, 5); } }
+  });
+  if (st >= 2) { const [sx, sy] = P(14.5, -14 * 0.3 + 0.5, 0.9); label(ctx, `${FS.done} piezas`, sx - 30, sy - 4, COL.ink2); }
+  ctx.fillStyle = "rgba(26,20,51,.8)"; rr(ctx, 10, 10, 210, 26, 6); ctx.fill(); txt(ctx, `Tiempo del modelo: ${fx(FS.t, 1)} min`, 18, 28, { c: "#fff", b: true });
+  if (st < 2) { ctx.fillStyle = "rgba(26,20,51,.75)"; rr(ctx, w / 2 - 160, h - 40, 320, 26, 6); ctx.fill(); txt(ctx, "Completa el paso 3 para que lleguen piezas", w / 2, h - 22, { a: "center", c: "#fff", b: true }); }
+}
+function fsDash() {
+  if (FS.step < 5) { const { ctx, w, h } = canvas("cvP3"); txt(ctx, "El dashboard aparece en el paso 6.", w / 2, h / 2, { a: "center", c: COL.muted }); return; }
+  const util = FS.st.map((S, k) => FS.t ? (FS.busy[k] + (S.it ? FS.t - S.start : 0)) / FS.t : 0), qa = FS.qa.map(v => FS.t ? v / FS.t : 0);
+  barsChart("cvP3", ["Corte", "Ensamble", "Pintura"], [util, FTRI.map(t => (t[0] + t[1] + t[2]) / 3 / 5.5)], [COL.teal, COL.amber], { yl: "utilización", leg: ["simulada", "ρ teórica"] });
+  const ctx = $("cvP3").getContext("2d"); txt(ctx, `Cola promedio: ${qa.map(v => fx(v, 1)).join(" · ")}   Throughput: ${fx(FS.t ? FS.done / FS.t * 60 : 0, 2)} piezas/h   Ciclo medio: ${FS.ct.length ? fx(meanOf(FS.ct), 1) : "—"} min`, P0.l + 4, 12, { s: 11, b: true });
+}
+function fsExperimenter() {
+  const res = []; reseedN(99);
+  for (let r = 0; r < 10; r++) { const S = { t: 0, next: gen("expo", { m: 5.5 }), q: [[], [], []], st: [0, 1, 2].map(() => ({ it: null, end: 0, start: 0 })), busy: [0, 0, 0], ct: [] };
+    for (let g = 0; g < 200000; g++) { let j = -1, tEnd = Infinity; S.st.forEach((x, k) => { if (x.it && x.end < tEnd) { tEnd = x.end; j = k; } }); const tn = Math.min(S.next, tEnd); if (tn > 3000) break; S.t = tn;
+      if (S.next <= tEnd) { S.q[0].push({ arr: S.t }); S.next = S.t + gen("expo", { m: 5.5 }); } else { const X = S.st[j], it = X.it; if (S.t > 300) S.busy[j] += X.end - Math.max(300, X.start); X.it = null; if (j < 2) S.q[j + 1].push(it); else if (it.arr > 300) S.ct.push(S.t - it.arr); }
+      S.st.forEach((X, k) => { if (!X.it && S.q[k].length) { X.it = S.q[k].shift(); X.start = S.t; X.end = S.t + inv_tri(rnd(), ...FTRI[k]); } }); }
+    res.push([...S.busy.map(b => b / 2700), meanOf(S.ct), S.ct.length / 2700 * 60]); }
+  const ci = j => { const v = res.map(r => r[j]), m = meanOf(v), e = 2.262 * Math.sqrt(varOf(v) / v.length); return [m, e]; };
+  return T(["Indicador (10 réplicas)", "Media", "± IC 95 %"], [["Utilización Corte", 0, true], ["Utilización Ensamble", 1, true], ["Utilización Pintura", 2, true], ["Tiempo de ciclo (min)", 3], ["Throughput (piezas/h)", 4]].map(([n, j, pct]) => { const [m, e] = ci(j); return [n, pct ? fx(m * 100, 1) + " %" : fx(m, 2), pct ? fx(e * 100, 1) + " %" : fx(e, 2)]; }));
+}
+// ---- traductor
+const TR = {
+  expo: ["Exponencial", [["m", "media", 1.2]], p => [`E(${p.m})`, `exponential(0, ${p.m}, getstream(current))`, `=-${p.m}*LN(1-RAND())`, `rng.exponential(${p.m})`], "expo", p => ({ m: p.m })],
+  norm: ["Normal", [["mu", "μ", 24], ["s", "σ", 2]], p => [`N(${p.mu}, ${p.s})`, `normal(${p.mu}, ${p.s}, getstream(current))`, `=NORM.INV(RAND(),${p.mu},${p.s})`, `rng.normal(${p.mu}, ${p.s})`], "norm", p => ({ mu: p.mu, s: p.s })],
+  tri: ["Triangular", [["a", "mínimo a", 3], ["c", "moda c", 4], ["b", "máximo b", 6]], p => [`T(${p.a}, ${p.c}, ${p.b})`, `triangular(${p.a}, ${p.b}, ${p.c}, getstream(current))`, `=IF(r<${fx((p.c - p.a) / (p.b - p.a), 4)},${p.a}+SQRT(r*${p.b - p.a}*${p.c - p.a}),${p.b}-SQRT((1-r)*${p.b - p.a}*${p.b - p.c}))   (r = celda con RAND())`, `rng.triangular(${p.a}, ${p.c}, ${p.b})`], "tri", p => p],
+  unif: ["Uniforme", [["a", "mínimo a", 2], ["b", "máximo b", 8]], p => [`U(${(p.a + p.b) / 2}, ${(p.b - p.a) / 2})   (media, semirrango)`, `uniform(${p.a}, ${p.b}, getstream(current))`, `=${p.a}+${p.b - p.a}*RAND()`, `rng.uniform(${p.a}, ${p.b})`], "unif", p => p],
+  gamma: ["Gamma", [["k", "forma α", 2.55], ["t", "escala β", 1.77]], p => [`G(${p.k}, ${p.t})`, `gamma(0, ${p.t}, ${p.k}, getstream(current))`, `=GAMMA.INV(RAND(),${p.k},${p.t})`, `rng.gamma(${p.k}, ${p.t})`], "gamma", p => p],
+  weib: ["Weibull", [["k", "forma k", 1.8], ["l", "escala λ", 900]], p => [`W(${p.k}, ${p.l})`, `weibull(0, ${p.l}, ${p.k}, getstream(current))`, `=${p.l}*(-LN(1-RAND()))^(1/${p.k})`, `${p.l} * rng.weibull(${p.k})`], "weib", p => p],
+  logn: ["Lognormal (μ, σ de ln X)", [["mu", "μ de ln X", 3.33], ["s", "σ de ln X", 0.25]], p => { const m = Math.exp(p.mu + p.s * p.s / 2), sd = m * Math.sqrt(Math.exp(p.s * p.s) - 1); return [`L(${fx(m, 3)}, ${fx(sd, 3)})   (media y desv. de X)*`, `lognormal2(0, ${fx(Math.exp(p.mu), 3)}, ${p.s}, getstream(current))*`, `=LOGNORM.INV(RAND(),${p.mu},${p.s})`, `rng.lognormal(${p.mu}, ${p.s})`]; }, "logn", p => p],
+  erl: ["Erlang", [["k", "fases k", 3], ["m", "media total", 6]], p => [`ER(${p.m}, ${p.k})*`, `erlang(0, ${fx(p.m / p.k, 4)}, ${p.k}, getstream(current))`, `=GAMMA.INV(RAND(),${p.k},${fx(p.m / p.k, 4)})`, `rng.gamma(${p.k}, ${fx(p.m / p.k, 4)})`], "gamma", p => ({ k: p.k, t: p.m / p.k })],
+  beta: ["Beta en [a, b]", [["al", "α", 2], ["be", "β", 5], ["a", "mínimo a", 0], ["b", "máximo b", 1]], p => [`B(${p.al}, ${p.be}, ${p.a}, ${p.b})`, `beta(${p.a}, ${p.b}, ${p.al}, ${p.be}, getstream(current))`, `=${p.a}+${p.b - p.a}*BETA.INV(RAND(),${p.al},${p.be})`, `${p.a} + ${p.b - p.a} * rng.beta(${p.al}, ${p.be})`], "beta", p => ({ a: p.al, b: p.be })],
+  poisson: ["Poisson", [["lam", "λ", 3]], p => [`P(${p.lam})`, `poisson(${p.lam}, getstream(current))`, "búsqueda en la acumulada (hoja 5 de la plantilla)", `rng.poisson(${p.lam})`], "poisson", p => p],
+  binom: ["Binomial", [["n", "ensayos n", 12], ["p", "p", 0.65]], p => [`BI(${p.n}, ${p.p})`, `binomial(${p.n}, ${p.p}, getstream(current))`, `=BINOM.INV(${p.n},${p.p},RAND())`, `rng.binomial(${p.n}, ${p.p})`], "binom", p => p],
+  geom: ["Geométrica (intentos hasta el éxito)", [["p", "p", 0.85]], p => [`GEO(${p.p})*  (puede contar fracasos: suma 1)`, `geometric(${p.p}, getstream(current))*  (puede contar fracasos: suma 1)`, `=ROUNDUP(LN(1-RAND())/LN(1-${p.p}),0)`, `rng.geometric(${p.p})`], "geom", p => p],
+};
+function trFill() { const k = $("tDist").value; $("tPars").innerHTML = '<div class="row">' + TR[k][1].map(([id, l, d]) => `<div><label for="tp_${id}">${l}</label><input type="number" step="any" id="tp_${id}" value="${d}"></div>`).join("") + "</div>"; TR[k][1].forEach(([id]) => $("tp_" + id).oninput = trRun); trRun(); }
+function trRun() {
+  const k = $("tDist").value, D0 = TR[k], p = {}; D0[1].forEach(([id]) => p[id] = +$("tp_" + id).value); const out = D0[2](p);
+  $("tOut").innerHTML = T(["Herramienta", "Expresión"], [["ProModel", out[0]], ["FlexSim", out[1]], ["Excel", out[2]], ["Python (NumPy)", out[3]]].map(([a, b]) => [a, `<code style="white-space:pre-wrap">${b}</code>`]));
+  $("tNote").innerHTML = "<b>Cuidado:</b> la triangular va (mín, moda, máx) en ProModel y (mín, máx, moda) en FlexSim; la uniforme de ProModel usa media y semirrango; gamma y Weibull en FlexSim van (ubicación, escala, forma). Las expresiones marcadas con * deben confirmarse en la ayuda de tu versión.";
+  const dk = D0[3], dp = D0[4](p); if (validPars2(dk, dp)) return; reseedN(5); const xs = genN(dk, dp, 2000); histVsTheory("cvT", xs, dk, dp);
+}
+ANIM.pm = {
+  tick(dt) {
+    PM.dt = PM.play ? dt : 0; FS.dt = FS.play ? dt : 0;
+    if (PM.play && PM.step >= 3) pmStep(PM.t + dt * num("pSpd")); if (FS.play && FS.step >= 2) fsStep(FS.t + dt * num("fSpd") / 60);
+    PM.ls = (PM.ls || 0) + dt; if (PM.ls > 0.4) { PM.ls = 0; pmStats(); if (PMTAB === "flex") fsDash(); }
+  },
+  draw() { if (PMTAB === "pro") pmScene(PM.dt || 0); if (PMTAB === "flex") fsScene(FS.dt || 0); }
+};
+let PMTAB = "pro";
+
+
+/* ======================= arranque ======================= */
+const DONE = {};
+function refresh() {
+  const t = document.querySelector("section.on").id;
+  if (t === "agro") { if (!DONE.agro) { DONE.agro = 1; agroRun(); } agroChart(); }
+  if (t === "domo") { if (!DONE.domo) { DONE.domo = 1; domoInit(); domoRun(); } else { domoRun(); domoCharts(); } }
+  if (t === "inmo") { if (!DONE.inmo) { DONE.inmo = 1; inmoInit(); } inmoRun(); }
+  if (t === "yolo") { if (!DONE.yolo) { DONE.yolo = 1; yBatch(); for (let k = 0; k < 1500; k++) yStep(0.05); } yAnalyze(); yClassChart(); yUpdate(); }
+  if (t === "enc") { if (!DONE.enc) { DONE.enc = 1; encStart(); } else if (ENC_LAST) { encAnalyze(ENC_LAST); encCI(ENC_LAST); } }
+  if (t === "ana") { nRun(); }
+  if (t === "pm") { if (!DONE.pm) { DONE.pm = 1; pmInit(); trFill(); } pmStats(); fsDash(); }
+}
+function goTab(id) { document.querySelectorAll("nav button").forEach(x => x.classList.toggle("on", x.dataset.t === id)); document.querySelectorAll("section").forEach(s => s.classList.toggle("on", s.id === id)); hideTip(); refresh(); }
+$("nav").addEventListener("click", ev => { const b = ev.target.closest("button"); if (b) goTab(b.dataset.t); });
+$("cases").addEventListener("click", ev => { const c = ev.target.closest("[data-go]"); if (c) { goTab(c.dataset.go); window.scrollTo({ top: 0, behavior: "smooth" }); } });
+$("seed").onchange = () => { Object.keys(DONE).forEach(k => delete DONE[k]); };
+// agro
+$("aRun").onclick = () => { agroRun(); AG.play = true; $("aPlay").textContent = "Pausar"; }; playBtn("aPlay", AG); $("aBack").onclick = () => { AG.d = 0; AG.drops = []; AG.spray = []; agroStats(); agroChart(); };
+// domo
+$("dRun").onclick = () => { domoRun(); domoCharts(); }; playBtn("dPlay", DMa);
+$("cvD0").addEventListener("click", ev => { const [x, y] = canvasPos(ev, "cvD0"); DMa.rooms.forEach((R, i) => { const B = R.box; if (B && x >= B[0] && x <= B[0] + B[2] && y >= B[1] && y <= B[1] + B[3]) { R.light = R.light > 0 ? 0 : 1; domoLog(`${ROOMS[i].n} · luz ${R.light ? "encendida" : "apagada"} (manual)`); } }); });
+// inmo
+$("iRun").onclick = () => { inmoInit(); inmoRun(); }; playBtn("iPlay", IMa);
+$("iAdd").onclick = () => { inmoSetC(IMa.robots.filter(r => !r.retire).length + 1); inmoRun(); }; $("iDel").onclick = () => { inmoSetC(IMa.robots.filter(r => !r.retire).length - 1); inmoRun(); };
+// yolo
+$("yCls").innerHTML = '<span class="sp">Recuadros de:</span>' + CK.map(k => `<label class="chk"><input type="checkbox" id="yc_${k}" checked><span style="color:${CLS[k].col}">■</span> ${CLS[k].n}</label>`).join("");
+playBtn("yPlay", Y); $("yBatch").onclick = yBatch; $("yCsv").onclick = yCsv; $("yReset").onclick = () => { yReset(false); yUpdate(); yAnalyze(); yClassChart(); };
+$("cvY0").addEventListener("click", ev => { const [x, y] = canvasPos(ev, "cvY0"), c = $("cvY0"), w = c.clientWidth, h = +c.dataset.h, s = w / 1000; let best = null;
+  Y.objs.forEach(o => { const [bx, by, bw, bh] = yBox(o, s, h); if (x >= bx - 4 && x <= bx + bw + 4 && y >= by - 4 && y <= by + bh + 4) best = o; }); Y.sel = best ? best.id : null; yInspector(); });
+$("yVar").innerHTML = Object.entries(YVARS).map(([k, v]) => `<button class="chipbtn" data-v="${k}">${v.n}</button>`).join("");
+$("yVar").addEventListener("click", ev => { const b = ev.target.closest("button"); if (!b) return; Y.var = b.dataset.v; yAnalyze(); });
+["yNight", "yRain"].forEach(id => $(id).onchange = () => yInspector());
+// encuesta
+$("eRun").onclick = encStart; $("eUse").onclick = encUse; $("eAll").onclick = () => { if (!EN.data.length) encStart(); EN.n = EN.data.length; EN.play = true; };
+$("ePlay").onclick = () => { if (EN.data.length && Math.floor(EN.n) >= EN.data.length) { EN.n = 0; EN.play = true; $("ePlay").textContent = "Pausar"; return; } EN.play = !EN.play; $("ePlay").textContent = EN.play ? "Pausar" : "Continuar"; };
+$("eEf").onchange = encStart; $("eConf").onchange = () => { if (ENC_LAST) { encAnalyze(ENC_LAST); encCI(ENC_LAST); } };
+$("eLeg").innerHTML = LIK_TXT.map((t, i) => `<span><i style="background:${LIK_COL[i]}"></i>${t}</span>`).join("");
+$("cvE0").addEventListener("click", ev => { const [x, y] = canvasPos(ev, "cvE0"); let k = -1, dm = 1e9; EN.pos.forEach(([px, py], i) => { const d = Math.hypot(px - x, py - y); if (d < dm && i < Math.floor(EN.n)) { dm = d; k = i; } });
+  if (k >= 0 && dm < (EN.cs || 20)) { EN.sel = k; const d = EN.data[k]; $("eBub").innerHTML = `<b>Persona ${k + 1}</b> · estrato ${d.estrato} · Likert ${d.likert} (${LIK_TXT[d.likert - 1].slice(2)})${d.pagar !== undefined ? ` · pagaría ${fx(d.pagar, 2)} millones` : ""}${d.texto ? `<br>«${d.texto}» <span class="mini">→ código: ${d.barrera}</span>` : ""}`; } });
+// analizador
+$("nDist").innerHTML = ORDEN.map(k => `<option value="${k}">${DIST[k].n}</option>`).join(""); $("nDist").onchange = () => { nFill(); nRun(); };
+$("nRun").onclick = () => { NA.extra = (NA.extra || 0) + 1; nRun(); }; $("nAnim").onclick = nAnimStart; $("nN").oninput = () => { $("nNv").textContent = $("nN").value; nRunSoon(); };
+$("nNorm").onchange = nDraw; $("nA").oninput = () => { nDraw(); nProb(); }; $("nB").oninput = () => { nDraw(); nProb(); }; $("nAlfa").onchange = nRun; nFill();
+$("cvN1").addEventListener("mousemove", ev => nHover(ev, 1)); $("cvN2").addEventListener("mousemove", ev => nHover(ev, 2)); ["cvN1", "cvN2"].forEach(id => $(id).addEventListener("mouseleave", hideTip));
+// promodel / flexsim
+$("pmNav").addEventListener("click", ev => { const b = ev.target.closest("button"); if (!b) return; PMTAB = b.dataset.p; $("pmNav").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); ["pro", "flex", "cmp", "tr"].forEach(p => $("pm_" + p).style.display = p === PMTAB ? "" : "none"); if (PMTAB === "flex") fsDash(); if (PMTAB === "tr") trRun(); });
+playBtn("pPlay", PM); playBtn("fPlay", FS);
+$("pC").oninput = () => { $("pCv").textContent = $("pC").value; const c = +$("pC").value; while (PM.cas.length < c) PM.cas.push({ car: null, end: 0, start: 0 }); while (PM.cas.length > c && !PM.cas[PM.cas.length - 1].car) PM.cas.pop(); pmStats(); };
+$("pSteps").addEventListener("click", ev => { const li = ev.target.closest("li[data-i]"); if (!li) return; PM.step = +li.dataset.i; stepsHTML("pSteps", PSTEPS, PM.step, "pCode"); });
+$("fSteps").addEventListener("click", ev => { const li = ev.target.closest("li[data-i]"); if (!li) return; FS.step = +li.dataset.i; stepsHTML("fSteps", FSTEPS, FS.step, "fCode"); if (FS.step === 6) $("fCode").innerHTML = FSTEPS[6][1].replace(/&/g, "&amp;").replace(/</g, "&lt;") + '<div style="background:#fff;color:#1A1433;border-radius:8px;margin-top:10px">' + fsExperimenter() + "</div>"; fsDash(); });
+$("pmCmp").innerHTML = T(["", "ProModel", "FlexSim"], [["Empresa", "BigBear.ai", "Autodesk (desde 2023)"], ["Cómo se construye", "Tablas: Locations, Entities, Path Networks, Arrivals, Processing", "Objetos 3D arrastrados y conectados (tecla A) + Process Flow"],
+  ["Lógica", "Lenguaje propio en Processing (WAIT, ROUTE, IF…)", "Plantillas (pick lists), FlexScript y Process Flow"], ["Distribuciones", "E(1.2), N(24,2), T(3,4,6)…", "exponential(0,1.2,stream), normal(24,2,stream)…"],
+  ["Ajuste de datos", "Stat::Fit incluido", "ExpertFit / importar desde Stat::Fit"], ["Resultados", "Output Viewer: Locations, Entities, Variables", "Dashboards en vivo y Experimenter"], ["Versión gratuita", "Estudiantil (McGraw-Hill)", "Modo Express (30 objetos) o prueba de 30 días"], ["Sistema", "Windows", "Windows"]]);
+$("tDist").innerHTML = Object.entries(TR).map(([k, v]) => `<option value="${k}">${v[0]}</option>`).join(""); $("tDist").onchange = trFill;
+let rsz = null; window.addEventListener("resize", () => { clearTimeout(rsz); rsz = setTimeout(refresh, 150); });
+document.querySelectorAll("canvas").forEach(c => c.addEventListener("contextrestored", refresh));
+requestAnimationFrame(mainLoop);
+
+</script>
+</body>
+</html>
