@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laboratorio de Dinámica de Sistemas · Unidad III</title>
+<style>
+
+:root{--ink:#1A1433;--ink2:#2D2357;--tint:#F2F0F9;--line:#D9D5EA;--muted:#6B7280;--bg:#FFFFFF;--teal:#00A896;--amber:#F2A900;--coral:#E4572E;--violet:#6C4AB6;--blue:#3A86C8;--okbg:#E8F8F5;--badbg:#FDF0EC;--serif:Cambria,Georgia,"Times New Roman",serif;--sans:Calibri,"Segoe UI",system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--bg);font-size:16px;line-height:1.45}
+header{background:var(--ink);color:#fff;padding:22px 24px 0}
+.wrap{max-width:1240px;margin:0 auto}
+.over{color:var(--amber);font-weight:700;letter-spacing:.18em;font-size:12px}
+h1{font-family:var(--serif);font-size:30px;margin:6px 0 4px}
+header p{margin:0 0 18px;color:#D9D5EA;max-width:90ch}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav button{font:inherit;font-weight:700;border:0;background:var(--ink2);color:#D9D5EA;padding:11px 14px;border-radius:10px 10px 0 0;cursor:pointer}
+nav button .n{display:inline-block;background:var(--ink);color:var(--amber);border-radius:5px;width:22px;height:22px;line-height:22px;text-align:center;font-family:var(--serif);margin-right:7px}
+nav button.on{background:var(--bg);color:var(--ink)} nav button.on .n{background:var(--amber);color:var(--ink)}
+main{padding:24px} section{display:none} section.on{display:block}
+h2{font-family:var(--serif);font-size:24px;margin:0 0 4px} h3{margin:0 0 10px;font-size:17px}
+.lead{color:var(--ink2);margin:0 0 18px;max-width:90ch}
+.grid{display:grid;gap:18px;grid-template-columns:330px minmax(0,1fr);align-items:start}
+.two{display:grid;gap:18px;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.three{display:grid;gap:18px;grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid>*,.two>*,.three>*{min-width:0}
+.stack{display:grid;gap:18px}.stack>*{min-width:0}
+@media(max-width:1000px){.three{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:900px){.grid,.two{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--tint);border-radius:14px;padding:18px}
+.card.w{background:#fff;border:1px solid var(--line)}
+label{display:block;font-size:13px;font-weight:700;color:var(--ink2);margin:10px 0 4px}
+input[type=text],input[type=number],select,textarea{width:100%;font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+input[type=range]{width:100%}
+textarea{min-height:110px;font-size:14px;font-family:Consolas,monospace}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 40%;min-width:0}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+button.b{font:inherit;font-weight:700;border:0;border-radius:8px;padding:9px 14px;cursor:pointer;background:var(--violet);color:#fff}
+button.b.alt{background:#fff;color:var(--ink);border:1px solid var(--line)} button.b.go{background:var(--teal)} button.b.warn{background:var(--coral)}
+.chipbtn{font:inherit;font-size:13px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 11px;cursor:pointer;color:var(--ink)}
+.chipbtn.on{background:var(--ink2);color:#fff;border-color:var(--ink2)}
+.subnav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.formula{background:var(--ink2);color:#fff;border-radius:12px;padding:12px 14px;font-family:var(--serif);font-size:16px;text-align:center;line-height:1.7}
+.tablewrap{overflow:auto;max-height:380px;border:1px solid var(--line);border-radius:10px;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{position:sticky;top:0;background:var(--ink2);color:#fff;padding:7px 9px;text-align:center;font-weight:700}
+td{padding:6px 9px;text-align:center;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+td.l,th.l{text-align:left}
+tr:nth-child(even) td{background:var(--tint)} td.hi{background:#FBEFC9 !important;font-weight:700}
+.msg{margin-top:12px;padding:10px 14px;border-radius:10px;background:#fff;border:1px solid var(--line);font-size:15px}
+.msg.bad{border-color:var(--coral);background:var(--badbg)}.msg.ok{border-color:var(--teal);background:var(--okbg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:12px;margin:0 0 16px}
+.stat{background:var(--ink2);color:#fff;border-radius:12px;padding:11px 13px}
+.stat b{display:block;font-family:var(--serif);font-size:22px;color:var(--amber);font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:#D9D5EA}
+.stat i{display:block;font-style:normal;font-size:12px;color:#B9B3D6}
+.tag{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700;color:#fff}
+.tag.ok{background:var(--teal)}.tag.bad{background:var(--coral)}.tag.mid{background:var(--amber);color:var(--ink)}
+canvas{width:100%;display:block;background:#fff;border-radius:10px;border:1px solid var(--line)}
+.cap{font-size:13px;color:var(--muted);margin:6px 0 0}
+.plate{display:inline-block;background:#F7D33B;color:#111;border:2px solid #111;border-radius:5px;padding:0 6px;font-family:Consolas,monospace;font-weight:700;letter-spacing:.06em}
+.note{border-left:4px solid var(--amber);background:#FFF8E5;padding:10px 14px;border-radius:0 10px 10px 0;font-size:14px;margin:12px 0}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}.kv b{color:var(--ink2)}
+.legend-inline span{display:inline-flex;align-items:center;gap:5px;margin-right:12px;font-size:13px;color:var(--muted)}
+.legend-inline i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.case{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:6px}
+.case .card h3{display:flex;gap:10px;align-items:center}
+.case .ico{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:#fff;font-weight:700;font-family:var(--serif)}
+code{background:var(--tint);border-radius:5px;padding:1px 5px;font-size:14px}
+pre{background:var(--ink);color:#EDEAF7;border-radius:10px;padding:12px 14px;overflow:auto;font-size:13px}
+footer{padding:0 24px 30px;color:var(--muted);font-size:13px}
+
+
+.scenebar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0 0}
+.scenebar .sp{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)} .scenebar input[type=range]{width:120px}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:#fff;cursor:pointer;user-select:none}
+.chk input{margin:0}
+.camwrap{display:grid;gap:14px;grid-template-columns:minmax(0,1fr) 260px} @media(max-width:1100px){.camwrap{grid-template-columns:minmax(0,1fr)}}
+.insp{background:var(--ink);color:#E9E6F5;border-radius:12px;padding:14px;font-size:13px;min-height:200px}
+.insp h4{margin:0 0 8px;font-family:var(--serif);color:var(--amber);font-size:16px}
+.insp .kv{grid-template-columns:auto 1fr;color:#E9E6F5} .insp .kv b{color:#B9B3D6;font-weight:400}
+.insp canvas{border:0;background:#111;margin:8px 0}
+.log{font-family:Consolas,monospace;font-size:12px;background:#0F0B22;color:#C9F2E9;border-radius:10px;padding:8px 10px;height:150px;overflow:auto}
+.log div{white-space:nowrap}.log .t{color:#F2A900}
+.cardimg{display:block;width:100%;height:auto;border-radius:10px;margin-bottom:10px;background:#fff}
+.case .card{cursor:pointer;transition:transform .15s, box-shadow .15s}.case .card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(26,20,51,.12)}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;padding:6px 9px;border-radius:7px;z-index:20;display:none;white-space:nowrap}
+.bubble{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 14px;font-style:italic;min-height:44px;position:relative;margin-bottom:10px}
+.pmgrid{display:grid;gap:18px;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)} @media(max-width:1000px){.pmgrid{grid-template-columns:minmax(0,1fr)}}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+.steps li{counter-increment:s;padding:8px 10px 8px 44px;position:relative;border-radius:10px;margin-bottom:6px;background:#fff;border:1px solid var(--line);cursor:pointer;font-size:14px}
+.steps li:before{content:counter(s);position:absolute;left:10px;top:8px;width:24px;height:24px;border-radius:6px;background:var(--line);color:var(--ink);display:grid;place-items:center;font-weight:700;font-family:var(--serif)}
+.steps li.on{border-color:var(--violet);background:#F4F0FF}.steps li.on:before{background:var(--violet);color:#fff}
+.steps li.done:before{background:var(--teal);color:#fff}
+.codebox{background:#0F0B22;color:#E9E6F5;border-radius:10px;padding:12px 14px;font-family:Consolas,monospace;font-size:13px;white-space:pre-wrap;margin-top:10px}
+.pill2{display:inline-block;background:var(--tint);border-radius:999px;padding:2px 10px;font-size:12px;margin:2px}
+.mini{font-size:12px;color:var(--muted)}
+
+.mode{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px}
+.mode button{font:inherit;font-size:14px;font-weight:700;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 10px;cursor:pointer;color:var(--ink);text-align:left}
+.mode button.on{background:var(--ink2);color:#fff;border-color:var(--ink2)}
+.tool{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tool button.on{background:var(--amber);color:var(--ink)}
+.eq{font-family:Consolas,monospace;font-size:13px;background:#0F0B22;color:#E9E6F5;border-radius:10px;padding:10px 12px;white-space:pre-wrap;line-height:1.55}
+.eq .v{color:#7CF2C9}
+.loopitem{display:flex;gap:8px;align-items:center;padding:7px 10px;border-radius:10px;background:#fff;border:1px solid var(--line);margin-bottom:6px;cursor:pointer;font-size:14px}
+.loopitem.on{border-color:var(--amber);background:#FFF8E5}
+.loopitem .tag{flex:none}
+.stepper{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-bottom:14px}
+.stepper button{font:inherit;font-size:13px;font-weight:700;border:0;border-radius:10px;padding:10px 6px;cursor:pointer;background:var(--tint);color:var(--ink)}
+.stepper button.on{background:var(--violet);color:#fff}.stepper button.done{background:#D5F2EC}
+@media(max-width:700px){.stepper{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.check{display:flex;gap:10px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--line);font-size:14px}
+.check .ic{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;background:var(--line)}
+.check .ic.ok{background:var(--teal)}.check .ic.bad{background:var(--coral)}
+</style>
+</head>
+<body>
+<div class="tip" id="tip"></div>
+<header><div class="wrap">
+  <div class="over">SIMULACIÓN · UNIDAD MODULAR III</div>
+  <h1>Laboratorio de dinámica de sistemas</h1>
+  <p>Niveles y flujos, modos de comportamiento, retratos de fase, bifurcaciones, catástrofes, diagramas causales, diagramas de Forrester y las etapas para construir un modelo. Todo se simula en vivo en tu navegador.</p>
+  <nav id="nav">
+    <button class="on" data-t="ini"><span class="n">0</span>Inicio</button>
+    <button data-t="sis"><span class="n">1</span>Niveles y flujos</button>
+    <button data-t="modos"><span class="n">2</span>Modos</button>
+    <button data-t="fase"><span class="n">3</span>Fase y equilibrios</button>
+    <button data-t="bif"><span class="n">4</span>Bifurcaciones</button>
+    <button data-t="cat"><span class="n">5</span>Catástrofes</button>
+    <button data-t="cld"><span class="n">6</span>Diagramas causales</button>
+    <button data-t="frr"><span class="n">7</span>Forrester</button>
+    <button data-t="eta"><span class="n">8</span>Etapas</button>
+  </nav>
+</div></header>
+<main><div class="wrap">
+
+<section id="ini" class="on">
+  <h2>La estructura determina el comportamiento</h2>
+  <p class="lead">La dinámica de sistemas estudia cómo las acumulaciones (niveles), sus tasas de cambio (flujos), los bucles de realimentación y los retardos producen el comportamiento de un sistema en el tiempo. Elige una pestaña para explorar cada idea.</p>
+  <div class="case" id="cases"></div>
+</section>
+
+<!-- 1 NIVELES Y FLUJOS -->
+<section id="sis">
+  <h2>Niveles y flujos: la bañera</h2>
+  <p class="lead">El agua acumulada es un <b>nivel</b>: solo cambia por los <b>flujos</b> de entrada (grifo) y de salida (desagüe). La salida depende del propio nivel (más agua, más presión), lo que forma un bucle de balance. Mueve el grifo y observa: el nivel nunca salta, se acerca a su equilibrio.</p>
+  <div class="grid">
+    <div class="card">
+      <h3>Controles</h3>
+      <label for="sIn">Caudal de entrada (grifo): <b id="sInV">5</b> L/min</label><input id="sIn" type="range" min="0" max="15" step="0.5" value="5">
+      <label for="sTau">Constante del desagüe τ: <b id="sTauV">4</b> min</label><input id="sTau" type="range" min="1" max="10" step="0.5" value="4">
+      <label for="sSpd">Velocidad: <b id="sSpdV">2</b> min/s</label><input id="sSpd" type="range" min="0.5" max="8" step="0.5" value="2">
+      <div class="btns"><button class="b go" id="sPlay">Pausar</button><button class="b alt" id="sStep">Escalón: +5 L/min</button><button class="b alt" id="sReset">Reiniciar</button></div>
+      <label class="chk" style="margin-top:12px"><input type="checkbox" id="sSym" checked>Mostrar símbolos de Forrester y frontera</label>
+      <div class="formula" style="margin-top:14px">d Agua/dt = Entrada − Salida<br>Salida = Agua / τ<br>Equilibrio: Agua* = Entrada × τ</div>
+    </div>
+    <div class="stack">
+      <div class="card w"><canvas id="cvS0" data-h="330"></canvas></div>
+      <div class="stats" id="sStats"></div>
+      <div class="card w"><h3>Nivel y flujos en el tiempo</h3><canvas id="cvS1" data-h="220"></canvas></div>
+      <div class="note" id="sNote"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 MODOS -->
+<section id="modos">
+  <h2>Los seis modos fundamentales de comportamiento</h2>
+  <p class="lead">Cada modo nace de una estructura de bucles distinta. Elige uno, mira cómo evoluciona la población animada y compara con el diagrama causal que lo produce.</p>
+  <div class="mode" id="mBtns"></div>
+  <div class="grid">
+    <div class="card">
+      <h3 id="mTit"></h3><p id="mDesc" style="font-size:14px;margin:0 0 8px"></p>
+      <div id="mPars"></div>
+      <div class="btns"><button class="b go" id="mPlay">Pausar</button><button class="b alt" id="mReset">Reiniciar</button></div>
+      <label for="mSpd">Velocidad</label><input id="mSpd" type="range" min="1" max="20" value="6">
+      <div class="formula" id="mForm" style="margin-top:12px"></div>
+    </div>
+    <div class="stack">
+      <div class="two">
+        <div class="card w"><h3>Sistema en vivo</h3><canvas id="cvM0" data-h="260"></canvas></div>
+        <div class="card w"><h3>Estructura de bucles</h3><canvas id="cvM1" data-h="260"></canvas></div>
+      </div>
+      <div class="card w"><h3>Trayectoria</h3><canvas id="cvM2" data-h="230"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 FASE -->
+<section id="fase">
+  <h2>Espacio de fase, equilibrios y estabilidad</h2>
+  <p class="lead">Cada punto del plano es un estado del sistema (x, y) y las flechas indican hacia dónde se mueve. Las partículas siguen el campo. Haz clic para lanzar una trayectoria desde ese punto.</p>
+  <div class="grid">
+    <div class="card">
+      <label for="fPre">Sistema</label><select id="fPre"></select>
+      <div id="fMat"></div>
+      <div class="btns"><button class="b go" id="fPlay">Pausar</button><button class="b alt" id="fClear">Borrar trayectorias</button></div>
+      <div class="stats" id="fStats" style="margin-top:14px"></div>
+      <h3 style="margin-top:6px">Mapa traza-determinante</h3><canvas id="cvF1" data-h="220"></canvas>
+      <p class="cap">Abajo de la parábola τ² = 4Δ: nodos; arriba: focos; Δ &lt; 0: sillas; τ = 0 con Δ &gt; 0: centros.</p>
+    </div>
+    <div class="stack">
+      <div class="card w"><canvas id="cvF0" data-h="470" style="cursor:crosshair"></canvas></div>
+      <div class="card w"><h3>x(t) e y(t) de la última trayectoria</h3><canvas id="cvF2" data-h="190"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 BIFURCACIONES -->
+<section id="bif">
+  <h2>Bifurcaciones</h2>
+  <p class="lead">Al mover el parámetro μ cambia el número o la estabilidad de los equilibrios. A la izquierda, el diagrama de bifurcación; a la derecha, el sistema en vivo con el μ elegido.</p>
+  <div class="mode" id="bBtns"></div>
+  <div class="grid">
+    <div class="card">
+      <label for="bMu">Parámetro <span id="bMuName">μ</span> = <b id="bMuV"></b></label><input id="bMu" type="range" step="0.01">
+      <div class="btns"><button class="b go" id="bSweep">Barrido automático</button></div>
+      <div class="formula" id="bForm" style="margin-top:12px"></div>
+      <div class="msg" id="bInfo" style="font-size:14px"></div>
+    </div>
+    <div class="stack">
+      <div class="two">
+        <div class="card w"><h3>Diagrama de bifurcación</h3><canvas id="cvB0" data-h="320"></canvas></div>
+        <div class="card w"><h3 id="bT1">Sistema en vivo</h3><canvas id="cvB1" data-h="320"></canvas></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 CATÁSTROFES -->
+<section id="cat">
+  <h2>Catástrofes: saltos bruscos e histéresis</h2>
+  <p class="lead">En la catástrofe en cúspide el estado es una esfera que rueda por un paisaje de potencial V(x) = x⁴/4 + a x²/2 + b x. Cuando un valle desaparece la esfera salta al otro. Arrastra el punto en el plano de control o usa el barrido automático.</p>
+  <div class="subnav" id="cNav"><button class="chipbtn on" data-c="cusp">Cúspide</button><button class="chipbtn" data-c="bud">Caso: gusano del abeto</button></div>
+  <div id="c_cusp">
+    <div class="grid">
+      <div class="card">
+        <label for="cA">a = <b id="cAV"></b></label><input id="cA" type="range" min="-3" max="1" step="0.02" value="-2">
+        <label for="cB">b = <b id="cBV"></b></label><input id="cB" type="range" min="-2" max="2" step="0.01" value="-1">
+        <label class="chk" style="margin-top:10px"><input type="checkbox" id="cNoise">Ruido (perturbaciones aleatorias)</label>
+        <div class="btns"><button class="b go" id="cSweep">Barrido de b (ida y vuelta)</button><button class="b alt" id="cClr">Borrar rastro</button></div>
+        <div class="stats" id="cStats" style="margin-top:14px"></div>
+      </div>
+      <div class="stack">
+        <div class="card w"><h3>Paisaje de potencial y estado</h3><canvas id="cvC0" data-h="280"></canvas></div>
+        <div class="two">
+          <div class="card w"><h3>Plano de control (a, b)</h3><canvas id="cvC1" data-h="260" style="cursor:pointer"></canvas><p class="cap">Zona sombreada: dos estados estables. Arrastra el punto.</p></div>
+          <div class="card w"><h3>Equilibrios x* frente a b (histéresis)</h3><canvas id="cvC2" data-h="260"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="c_bud" style="display:none">
+    <div class="grid">
+      <div class="card">
+        <p style="font-size:14px;margin-top:0">Ludwig, Jones y Holling (1978): dx/dt = r x (1 − x/10) − x²/(1 + x²). Al crecer el follaje del bosque, r aumenta y la plaga puede saltar a un brote.</p>
+        <label for="uR">r (tasa de crecimiento) = <b id="uRV"></b></label><input id="uR" type="range" min="0.3" max="0.7" step="0.002" value="0.35">
+        <div class="btns"><button class="b go" id="uSweep">Ciclo: crece y se tala el bosque</button><button class="b alt" id="uClr">Borrar rastro</button></div>
+        <div class="stats" id="uStats" style="margin-top:14px"></div>
+      </div>
+      <div class="stack">
+        <div class="card w"><h3>El bosque</h3><canvas id="cvU0" data-h="260"></canvas></div>
+        <div class="card w"><h3>Equilibrios y trayectoria del sistema</h3><canvas id="cvU1" data-h="260"></canvas></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 DIAGRAMAS CAUSALES -->
+<section id="cld">
+  <h2>Editor de diagramas causales</h2>
+  <p class="lead">Construye tu diagrama: agrega variables, conéctalas y cambia los signos. El laboratorio encuentra todos los bucles y su polaridad. Elige un bucle para ver cómo se propaga un aumento: si vuelve como aumento es de refuerzo (R); si vuelve como disminución, de balance (B).</p>
+  <div class="grid">
+    <div class="card">
+      <label for="gPre">Ejemplos</label><select id="gPre"></select>
+      <h3 style="margin-top:14px">Herramientas</h3>
+      <div class="tool" id="gTools"><button class="chipbtn on" data-k="move">Mover</button><button class="chipbtn" data-k="add">Agregar variable</button><button class="chipbtn" data-k="link">Conectar</button><button class="chipbtn" data-k="sign">Cambiar signo</button><button class="chipbtn" data-k="delay">Retardo ||</button><button class="chipbtn" data-k="del">Borrar</button></div>
+      <label for="gName">Nombre de la nueva variable</label><input id="gName" type="text" value="Nueva variable">
+      <p class="cap" id="gHelp"></p>
+      <h3 style="margin-top:14px">Bucles encontrados</h3><div id="gLoops"></div>
+    </div>
+    <div class="stack">
+      <div class="card w"><canvas id="cvG0" data-h="480"></canvas></div>
+      <div class="msg" id="gMsg"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 FORRESTER -->
+<section id="frr">
+  <h2>Diagramas de Forrester en movimiento</h2>
+  <p class="lead">Niveles (rectángulos que se llenan), flujos (tuberías con válvula), nubes (fuentes y sumideros), constantes (rombos) y conectores de información (líneas punteadas). Las partículas muestran la tasa de cada flujo.</p>
+  <div class="mode" id="rBtns"></div>
+  <div class="grid">
+    <div class="card">
+      <div id="rPars"></div>
+      <div class="btns"><button class="b go" id="rPlay">Pausar</button><button class="b alt" id="rReset">Reiniciar</button></div>
+      <label for="rSpd">Velocidad</label><input id="rSpd" type="range" min="1" max="30" value="8">
+      <h3 style="margin-top:14px">Ecuaciones (estilo Vensim)</h3><div class="eq" id="rEq"></div>
+    </div>
+    <div class="stack">
+      <div class="card w"><canvas id="cvR0" data-h="330"></canvas></div>
+      <div class="card w"><h3>Niveles en el tiempo</h3><canvas id="cvR1" data-h="220"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 ETAPAS -->
+<section id="eta">
+  <h2>Etapas para elaborar un modelo: una epidemia en el campus</h2>
+  <p class="lead">Recorre las seis etapas del proceso (Aracil, 1995) con un caso: un virus respiratorio llega a un campus de 5 000 estudiantes.</p>
+  <div class="stepper" id="eSteps"></div>
+  <div class="grid">
+    <div class="card" id="eLeft"></div>
+    <div class="stack" id="eRight"></div>
+  </div>
+</section>
+
+</div></main>
+<footer><div class="wrap">Simulación · Unidad III · Dinámica de sistemas y aplicaciones. Integración numérica con Runge-Kutta 4.</div></footer>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const COL = { ink: "#1A1433", ink2: "#2D2357", line: "#D9D5EA", muted: "#6B7280", teal: "#00A896", amber: "#F2A900", coral: "#E4572E", violet: "#6C4AB6", blue: "#3A86C8", tint: "#F2F0F9" };
+const fx = (x, d = 2) => Number.isFinite(x) ? (+x).toFixed(d) : "—";
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const num = id => +$(id).value;
+function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+let RNG = mulberry32(2026); const rnd = () => RNG();
+let spareZ = null; function gauss() { if (spareZ !== null) { const z = spareZ; spareZ = null; return z; } const u = Math.max(1e-12, rnd()), v = rnd(), r = Math.sqrt(-2 * Math.log(u)); spareZ = r * Math.sin(2 * Math.PI * v); return r * Math.cos(2 * Math.PI * v); }
+function rk4(f, x, t, dt) {
+  const k1 = f(t, x), a = x.map((v, i) => v + dt / 2 * k1[i]), k2 = f(t + dt / 2, a), b = x.map((v, i) => v + dt / 2 * k2[i]), k3 = f(t + dt / 2, b), c = x.map((v, i) => v + dt * k3[i]), k4 = f(t + dt, c);
+  return x.map((v, i) => v + dt / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]));
+}
+function simulate(f, x0, T, dt) { const out = [[0, ...x0]]; let x = x0.slice(), t = 0; const n = Math.round(T / dt); for (let k = 0; k < n; k++) { x = rk4(f, x, t, dt); t += dt; out.push([t, ...x]); } return out; }
+function canvas(id) {
+  const c = $(id), dpr = Math.min(window.devicePixelRatio || 1, 2), w = Math.round(c.clientWidth) || 500, h = +c.dataset.h;
+  const W = Math.round(w * dpr), H = Math.round(h * dpr); if (c.width !== W || c.height !== H) { c.width = W; c.height = H; c.style.height = h + "px"; }
+  const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.globalAlpha = 1; ctx.setLineDash([]); ctx.clearRect(0, 0, w, h); ctx.font = "12px Calibri, Segoe UI, sans-serif"; return { ctx, w, h };
+}
+const P0 = { l: 48, r: 14, t: 16, b: 34 };
+function axes(ctx, w, h, x0, x1, y0, y1, xl, yl, xd = 0, yd = 0, o = {}) {
+  const pl = o.pl ?? P0.l, X = v => pl + (w - pl - P0.r) * (v - x0) / (x1 - x0), Y = v => h - P0.b - (h - P0.b - P0.t) * (v - y0) / (y1 - y0);
+  ctx.strokeStyle = COL.line; ctx.fillStyle = COL.muted; ctx.lineWidth = 1; ctx.font = "11px Calibri, Segoe UI, sans-serif";
+  for (let i = 0; i <= 4; i++) { const v = y0 + (y1 - y0) * i / 4, y = Y(v); ctx.beginPath(); ctx.moveTo(pl, y); ctx.lineTo(w - P0.r, y); ctx.stroke(); ctx.textAlign = "right"; ctx.fillText(v.toFixed(yd), pl - 5, y + 4); }
+  for (let i = 0; i <= 5; i++) { const v = x0 + (x1 - x0) * i / 5; ctx.textAlign = "center"; ctx.fillText(v.toFixed(xd), X(v), h - P0.b + 14); }
+  ctx.textAlign = "center"; ctx.fillText(xl, pl + (w - pl - P0.r) / 2, h - 3);
+  ctx.save(); ctx.translate(11, P0.t + (h - P0.b - P0.t) / 2); ctx.rotate(-Math.PI / 2); ctx.fillText(yl, 0, 0); ctx.restore(); return { X, Y, x0, x1, y0, y1, w, h, pl };
+}
+const path = (ctx, pts, col, w = 2.2, dash) => { if (pts.length < 2) return; ctx.strokeStyle = col; ctx.lineWidth = w; if (dash) ctx.setLineDash(dash); ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.setLineDash([]); };
+function legend(ctx, items, x, y) { ctx.font = "12px Calibri, Segoe UI, sans-serif"; ctx.textAlign = "left"; items.forEach(([t, c], i) => { ctx.fillStyle = c; ctx.fillRect(x, y + i * 16 - 8, 12, 8); ctx.fillStyle = COL.ink; ctx.fillText(t, x + 17, y + i * 16); }); }
+function disc(ctx, x, y, r, col) { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); }
+function rr(ctx, x, y, w, h, r) { r = Math.min(r, w / 2, h / 2); ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+function txt(ctx, s, x, y, o = {}) { ctx.font = `${o.b ? "bold " : ""}${o.s || 12}px ${o.mono ? "Consolas, monospace" : o.serif ? "Cambria, Georgia, serif" : "Calibri, Segoe UI, sans-serif"}`; ctx.fillStyle = o.c || COL.ink; ctx.textAlign = o.a || "left"; ctx.textBaseline = o.bl || "alphabetic"; ctx.fillText(s, x, y); ctx.textBaseline = "alphabetic"; }
+function arrowHead(ctx, x, y, ang, sz, col) { ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - sz * Math.cos(ang - 0.4), y - sz * Math.sin(ang - 0.4)); ctx.lineTo(x - sz * Math.cos(ang + 0.4), y - sz * Math.sin(ang + 0.4)); ctx.closePath(); ctx.fill(); }
+function mixRGB(a, b, t) { return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(",")})`; }
+const stat = (l, v) => `<div class="stat"><span>${l}</span><b>${v}</b></div>`;
+const T = (head, rows) => `<table><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr>${rows.map(r => `<tr>${r.map((c, j) => `<td class="${j === 0 ? "l" : ""}">${c}</td>`).join("")}</tr>`).join("")}</table>`;
+function canvasPos(ev, id) { const b = $(id).getBoundingClientRect(); return [ev.clientX - b.left, ev.clientY - b.top]; }
+function playBtn(id, obj) { $(id).onclick = () => { obj.play = !obj.play; $(id).textContent = obj.play ? "Pausar" : "Continuar"; $(id).classList.toggle("go", obj.play); }; }
+const ANIM = {}; let TCLOCK = 0, lastTs = 0;
+function mainLoop(ts) { const dt = Math.min(0.05, (ts - (lastTs || ts)) / 1000); lastTs = ts; TCLOCK += dt; const sec = document.querySelector("section.on"), a = sec && ANIM[sec.id];
+  if (a) { try { a.tick && a.tick(dt); a.draw && a.draw(dt); } catch (e) { console.error(e); } } requestAnimationFrame(mainLoop); }
+
+/* ===== diagrama causal genérico (usado en varias pestañas) ===== */
+// nodes: [{id, x, y, label}] en píxeles; edges: [{a, b, s: "+"|"-", delay, bend}]
+function nodeSize(ctx, n) { ctx.font = "bold 13px Calibri, sans-serif"; return [Math.max(70, ctx.measureText(n.label).width + 24), 30]; }
+function edgeGeom(ctx, A, B, bend = 0.18) {
+  const mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2, dx = B.x - A.x, dy = B.y - A.y, L = Math.hypot(dx, dy) || 1, cx = mx - dy / L * L * bend, cy = my + dx / L * L * bend;
+  const [wa, ha] = nodeSize(ctx, A), [wb, hb] = nodeSize(ctx, B);
+  const cut = (P, Q, w, h) => { const ux = Q.x - P.x, uy = Q.y - P.y, l = Math.hypot(ux, uy) || 1, t = Math.min(w / 2 / Math.max(Math.abs(ux / l), 1e-6), h / 2 / Math.max(Math.abs(uy / l), 1e-6)) + 4; return [P.x + ux / l * t, P.y + uy / l * t]; };
+  const s = cut(A, { x: cx, y: cy }, wa, ha), e = cut(B, { x: cx, y: cy }, wb, hb);
+  return { s, e, c: [cx, cy] };
+}
+const qpt = (g, t) => [(1 - t) ** 2 * g.s[0] + 2 * (1 - t) * t * g.c[0] + t * t * g.e[0], (1 - t) ** 2 * g.s[1] + 2 * (1 - t) * t * g.c[1] + t * t * g.e[1]];
+function drawCLD(ctx, nodes, edges, o = {}) {
+  const byId = Object.fromEntries(nodes.map(n => [n.id, n])), hl = o.highlight || new Set();
+  edges.forEach((e, k) => {
+    const A = byId[e.a], B = byId[e.b]; if (!A || !B) return; const g = edgeGeom(ctx, A, B, e.bend ?? 0.18), col = e.s === "+" ? COL.teal : COL.coral, on = hl.has(k);
+    ctx.strokeStyle = col; ctx.lineWidth = on ? 4 : 2; ctx.globalAlpha = hl.size && !on ? 0.3 : 1; ctx.beginPath(); ctx.moveTo(...g.s); ctx.quadraticCurveTo(...g.c, ...g.e); ctx.stroke();
+    const p = qpt(g, 0.97), ang = Math.atan2(g.e[1] - p[1], g.e[0] - p[0]); arrowHead(ctx, g.e[0], g.e[1], ang, 11, col);
+    const lp = qpt(g, 0.78), nx = -(g.e[1] - g.s[1]), ny = g.e[0] - g.s[0], nl = Math.hypot(nx, ny) || 1;
+    txt(ctx, e.s === "+" ? "+" : "−", lp[0] + nx / nl * 11, lp[1] + ny / nl * 11 + 5, { a: "center", b: true, s: 17, c: col });
+    if (e.delay) { const m = qpt(g, 0.5), m2 = qpt(g, 0.52), a2 = Math.atan2(m2[1] - m[1], m2[0] - m[0]) + Math.PI / 2; ctx.strokeStyle = COL.ink; ctx.lineWidth = 2; for (const d of [-3, 3]) { ctx.beginPath(); ctx.moveTo(m[0] + Math.cos(a2 - Math.PI / 2) * d - Math.cos(a2) * 8, m[1] + Math.sin(a2 - Math.PI / 2) * d - Math.sin(a2) * 8); ctx.lineTo(m[0] + Math.cos(a2 - Math.PI / 2) * d + Math.cos(a2) * 8, m[1] + Math.sin(a2 - Math.PI / 2) * d + Math.sin(a2) * 8); ctx.stroke(); } }
+    e._g = g; ctx.globalAlpha = 1;
+  });
+  nodes.forEach(n => { const [w, h] = nodeSize(ctx, n), sel = o.sel === n.id; ctx.fillStyle = sel ? "#FFF3C4" : (o.fill || "#fff"); rr(ctx, n.x - w / 2, n.y - h / 2, w, h, 14); ctx.fill(); ctx.strokeStyle = sel ? COL.amber : COL.ink2; ctx.lineWidth = sel ? 3 : 1.5; ctx.stroke(); txt(ctx, n.label, n.x, n.y + 5, { a: "center", b: true, s: 13 });
+    if (o.badges && o.badges[n.id]) { const up = o.badges[n.id] > 0; disc(ctx, n.x + w / 2 - 2, n.y - h / 2 - 2, 11, up ? COL.teal : COL.coral); txt(ctx, up ? "↑" : "↓", n.x + w / 2 - 2, n.y - h / 2 + 3, { a: "center", c: "#fff", b: true, s: 14 }); } });
+  (o.loops || []).forEach(L => { const col = L.R ? COL.teal : COL.coral; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(L.x, L.y, 15, 0.5, Math.PI * 1.8); ctx.stroke(); arrowHead(ctx, L.x + 15 * Math.cos(Math.PI * 1.8), L.y + 15 * Math.sin(Math.PI * 1.8), Math.PI * 1.8 + Math.PI / 2, 8, col); txt(ctx, L.R ? "R" : "B", L.x, L.y + 6, { a: "center", b: true, s: 16, c: col, serif: true }); });
+}
+// ciclos simples de un grafo dirigido (nodos ordenados; el inicio es el menor índice del ciclo)
+function findCycles(nodes, edges) {
+  const ids = nodes.map(n => n.id), idx = Object.fromEntries(ids.map((id, i) => [id, i])), adj = ids.map(() => []), out = [];
+  edges.forEach((e, k) => { if (idx[e.a] !== undefined && idx[e.b] !== undefined) adj[idx[e.a]].push([idx[e.b], k]); });
+  for (let s = 0; s < ids.length; s++) {
+    const stack = [[s, [], [s]]];
+    while (stack.length) { const [v, ep, vp] = stack.pop(); for (const [w, k] of adj[v]) { if (w === s) out.push({ nodes: vp.map(i => ids[i]), edges: [...ep, k] }); else if (w > s && !vp.includes(w) && vp.length < 12) stack.push([w, [...ep, k], [...vp, w]]); } }
+  }
+  return out.map(c => { const neg = c.edges.filter(k => edges[k].s === "-").length; return { ...c, neg, R: neg % 2 === 0 }; });
+}
+
+
+/* ======================= INICIO ======================= */
+const CASES = [
+  ["sis", "Niveles y flujos", "Una bañera animada: el nivel acumula, los flujos lo cambian. Símbolos de Forrester sobre la escena.", `<rect width="240" height="120" fill="#EAF2FB"/><rect x="60" y="50" width="120" height="55" rx="12" fill="#fff" stroke="#2D2357" stroke-width="3"/><rect x="63" y="72" width="114" height="30" rx="8" fill="#3A86C8"/><rect x="20" y="22" width="60" height="8" fill="#6B7280"/><rect x="76" y="22" width="8" height="14" fill="#6B7280"/><line x1="80" y1="36" x2="80" y2="72" stroke="#3A86C8" stroke-width="4"/><rect x="160" y="105" width="8" height="12" fill="#6B7280"/><polygon points="196,40 206,46 196,52" fill="#F2A900"/><polygon points="216,40 206,46 216,52" fill="#F2A900"/>`],
+  ["modos", "Modos de comportamiento", "Crecimiento exponencial, búsqueda de objetivo, oscilación, curva en S, sobrepaso y colapso.", `<rect width="240" height="120" fill="#F2F0F9"/><path d="M20 100 C80 98 120 80 220 15" stroke="#E4572E" stroke-width="3" fill="none"/><path d="M20 100 C60 40 100 32 220 30" stroke="#00A896" stroke-width="3" fill="none"/><path d="M20 90 C50 30 70 30 90 70 C110 100 130 50 150 55 C170 60 190 58 220 57" stroke="#6C4AB6" stroke-width="3" fill="none"/>`],
+  ["fase", "Fase y equilibrios", "Campo vectorial con partículas: nodos, focos, centros, sillas y ciclos límite.", `<rect width="240" height="120" fill="#1A1433"/><g fill="none" stroke="#00A896" stroke-width="2"><path d="M120 60 m-50 0 a50 30 0 1 0 100 0 a50 30 0 1 0 -100 0"/><path d="M120 60 m-30 0 a30 18 0 1 0 60 0"/></g><circle cx="120" cy="60" r="4" fill="#E4572E"/><g fill="#F2A900"><circle cx="40" cy="20" r="2"/><circle cx="200" cy="100" r="2"/><circle cx="60" cy="100" r="2"/><circle cx="190" cy="25" r="2"/></g>`],
+  ["bif", "Bifurcaciones", "Silla-nodo, transcrítica, horquilla, Hopf y la ruta al caos del mapa logístico.", `<rect width="240" height="120" fill="#F2F0F9"/><line x1="20" y1="60" x2="120" y2="60" stroke="#00A896" stroke-width="3"/><line x1="120" y1="60" x2="220" y2="60" stroke="#E4572E" stroke-width="3" stroke-dasharray="6 4"/><path d="M120 60 C150 40 180 28 220 22" stroke="#00A896" stroke-width="3" fill="none"/><path d="M120 60 C150 80 180 92 220 98" stroke="#00A896" stroke-width="3" fill="none"/>`],
+  ["cat", "Catástrofes", "Una esfera en un paisaje de potencial que salta cuando un valle desaparece. Histéresis y el gusano del abeto.", `<rect width="240" height="120" fill="#FFF8E5"/><path d="M15 30 C45 110 80 110 105 70 C125 40 150 40 170 80 C190 115 215 100 228 30" stroke="#2D2357" stroke-width="3" fill="none"/><circle cx="68" cy="88" r="9" fill="#E4572E"/>`],
+  ["cld", "Diagramas causales", "Editor de bucles con detección automática de polaridad y propagación animada.", `<rect width="240" height="120" fill="#fff"/><rect x="20" y="20" width="70" height="24" rx="12" fill="#fff" stroke="#2D2357" stroke-width="2"/><rect x="150" y="20" width="70" height="24" rx="12" fill="#fff" stroke="#2D2357" stroke-width="2"/><rect x="85" y="80" width="70" height="24" rx="12" fill="#fff" stroke="#2D2357" stroke-width="2"/><path d="M92 32 L148 32" stroke="#00A896" stroke-width="3"/><path d="M180 46 L140 80" stroke="#00A896" stroke-width="3"/><path d="M100 80 L60 46" stroke="#E4572E" stroke-width="3"/><text x="113" y="62" font-size="18" fill="#E4572E" font-family="Georgia" font-weight="bold">B</text>`],
+  ["frr", "Diagramas de Forrester", "Niveles que se llenan y flujos con partículas: población, epidemia, inventario y cuenta bancaria.", `<rect width="240" height="120" fill="#EAF2FB"/><ellipse cx="25" cy="60" rx="16" ry="11" fill="#E6E9EF" stroke="#6B7280"/><line x1="40" y1="60" x2="95" y2="60" stroke="#2D2357" stroke-width="6"/><polygon points="60,52 68,60 60,68" fill="#F2A900"/><polygon points="76,52 68,60 76,68" fill="#F2A900"/><rect x="95" y="38" width="60" height="44" fill="#3A86C8"/><line x1="155" y1="60" x2="210" y2="60" stroke="#2D2357" stroke-width="6"/><ellipse cx="222" cy="60" rx="14" ry="10" fill="#E6E9EF" stroke="#6B7280"/>`],
+  ["eta", "Etapas del modelado", "Del problema a las políticas: una epidemia en el campus recorrida en seis etapas.", `<rect width="240" height="120" fill="#F2F0F9"/><g font-family="Georgia" font-weight="bold" font-size="16" fill="#fff"><rect x="12" y="45" width="30" height="30" rx="6" fill="#00A896"/><rect x="50" y="45" width="30" height="30" rx="6" fill="#6C4AB6"/><rect x="88" y="45" width="30" height="30" rx="6" fill="#3A86C8"/><rect x="126" y="45" width="30" height="30" rx="6" fill="#F2A900"/><rect x="164" y="45" width="30" height="30" rx="6" fill="#E4572E"/><rect x="202" y="45" width="30" height="30" rx="6" fill="#2D2357"/><text x="22" y="66">1</text><text x="60" y="66">2</text><text x="98" y="66">3</text><text x="136" y="66">4</text><text x="174" y="66">5</text><text x="212" y="66">6</text></g>`],
+];
+function buildCases() { $("cases").innerHTML = CASES.map(([id, t, d, svg]) => `<div class="card" data-go="${id}"><svg class="cardimg" viewBox="0 0 240 120">${svg}</svg><h3>${t}</h3><p class="mini">${d}</p></div>`).join(""); }
+
+/* ======================= 1 · BAÑERA ======================= */
+const BA = { play: true, t: 0, W: 20, hist: [], drops: [], out: [], step: 0 };
+function baReset() { Object.assign(BA, { t: 0, W: 20, hist: [], drops: [], out: [], step: 0 }); }
+ANIM.sis = {
+  tick(dt) {
+    ["sIn", "sTau", "sSpd"].forEach(id => $(id + "V").textContent = $(id).value);
+    if (!BA.play) return; const tau = num("sTau"), In = num("sIn"), dT = dt * num("sSpd");
+    const f = (t, x) => [In - x[0] / tau]; const n = 4; for (let k = 0; k < n; k++) BA.W = rk4(f, [BA.W], BA.t, dT / n)[0];
+    BA.W = Math.min(BA.W, 160); BA.t += dT; BA.hist.push([BA.t, BA.W, In, BA.W / tau]); if (BA.hist.length > 900) BA.hist.shift();
+  },
+  draw(dt) {
+    const { ctx, w, h } = canvas("cvS0"), In = num("sIn"), tau = num("sTau"), Out = BA.W / tau, sym = $("sSym").checked;
+    ctx.fillStyle = "#F7FAFE"; ctx.fillRect(0, 0, w, h); ctx.fillStyle = "#E6E9EF"; ctx.fillRect(0, h - 30, w, 30);
+    const tx0 = w * 0.28, tx1 = w * 0.68, tyB = h - 50, tH = 170, tyT = tyB - tH, lvl = clamp(BA.W / 160, 0, 1), wy = tyB - lvl * (tH - 10);
+    // agua con superficie ondulada
+    ctx.save(); rr(ctx, tx0, tyT, tx1 - tx0, tH, 26); ctx.clip();
+    ctx.fillStyle = "#5FA8E6"; ctx.beginPath(); ctx.moveTo(tx0, tyB + 5); for (let x = tx0; x <= tx1; x += 6) ctx.lineTo(x, wy + Math.sin(x * 0.05 + TCLOCK * 3) * (1 + In * 0.15)); ctx.lineTo(tx1, tyB + 5); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "rgba(255,255,255,.25)"; ctx.fillRect(tx0, wy + 6, tx1 - tx0, 4); ctx.restore();
+    ctx.strokeStyle = COL.ink2; ctx.lineWidth = 4; rr(ctx, tx0, tyT, tx1 - tx0, tH, 26); ctx.stroke(); ctx.fillStyle = "#F7FAFE"; ctx.fillRect(tx0 - 6, tyT - 6, tx1 - tx0 + 12, 22);
+    ctx.strokeStyle = COL.ink2; ctx.beginPath(); ctx.moveTo(tx0, tyT + 16); ctx.lineTo(tx0, tyT + 30); ctx.moveTo(tx1, tyT + 16); ctx.lineTo(tx1, tyT + 30); ctx.stroke();
+    // grifo y chorro
+    const fx0 = tx0 + 40, fy = tyT - 34; ctx.fillStyle = "#6B7280"; ctx.fillRect(0, fy - 8, fx0 + 6, 14); ctx.fillRect(fx0 - 6, fy - 8, 14, 26); disc(ctx, fx0 - 22, fy - 14, 8, COL.coral);
+    if (In > 0) { const sw = 2 + In * 0.6; ctx.fillStyle = "rgba(95,168,230,.85)"; ctx.fillRect(fx0 + 1 - sw / 2, fy + 18, sw, wy - fy - 18);
+      if (BA.play) for (let k = 0; k < In / 3; k++) BA.drops.push({ x: fx0 + 1 + (Math.random() - 0.5) * sw, y: fy + 18, v: 120 + Math.random() * 60 }); }
+    BA.drops = BA.drops.filter(d => (d.y += d.v * (BA.play ? dt : 0)) < wy); BA.drops.forEach(d => disc(ctx, d.x, d.y, 1.6, "#2E6FB0"));
+    // desagüe
+    const dx = tx1 - 50, dy = tyB; ctx.fillStyle = "#4B5563"; ctx.fillRect(dx - 6, dy - 2, 12, 34); ctx.fillRect(dx - 6, dy + 24, w - dx + 6, 10);
+    if (BA.play) for (let k = 0; k < Out / 3; k++) BA.out.push({ x: dx + Math.random() * 6, y: dy + 28, v: 60 + Out * 8 });
+    BA.out = BA.out.filter(p => (p.x += p.v * (BA.play ? dt : 0)) < w); BA.out.forEach(p => disc(ctx, p.x, p.y + (Math.random() - 0.5) * 3, 1.8, "#5FA8E6"));
+    if (Out > 0.1 && lvl > 0.02) { ctx.strokeStyle = "rgba(255,255,255,.7)"; ctx.lineWidth = 1.5; for (let k = 0; k < 3; k++) { ctx.beginPath(); ctx.arc(dx, dy - 6, 6 + k * 5, TCLOCK * Out * 0.6 + k, TCLOCK * Out * 0.6 + k + 2); ctx.stroke(); } }
+    // símbolos
+    if (sym) {
+      ctx.setLineDash([6, 5]); ctx.strokeStyle = COL.teal; ctx.lineWidth = 2; ctx.strokeRect(tx0 - 70, tyT - 70, tx1 - tx0 + 150, tH + 110); ctx.setLineDash([]);
+      txt(ctx, "FRONTERA DEL SISTEMA", tx0 - 64, tyT - 56, { c: COL.teal, b: true, s: 11 }); txt(ctx, "ENTORNO: acueducto", 8, fy - 18, { c: COL.muted, b: true, s: 11 }); txt(ctx, "ENTORNO: alcantarillado", w - 8, h - 8, { c: COL.muted, b: true, s: 11, a: "right" });
+      const valve = (x, y, col) => { ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(x - 9, y - 8); ctx.lineTo(x + 9, y + 8); ctx.lineTo(x + 9, y - 8); ctx.lineTo(x - 9, y + 8); ctx.closePath(); ctx.fill(); };
+      valve(fx0 - 60, fy - 1, COL.amber); label(ctx, `Entrada = ${fx(In, 1)} L/min (flujo)`, fx0 - 50, fy + 34, "rgba(26,20,51,.85)");
+      label(ctx, `Agua = ${fx(BA.W, 1)} L (nivel)`, (tx0 + tx1) / 2 - 60, tyB - 12, "rgba(58,134,200,.95)");
+      valve(dx + 60, dy + 29, COL.amber); label(ctx, `Salida = Agua/τ = ${fx(Out, 1)} L/min (flujo)`, dx - 30, dy + 4 - 0, "rgba(26,20,51,.85)");
+      ctx.setLineDash([4, 4]); ctx.strokeStyle = COL.violet; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo((tx0 + tx1) / 2 + 40, wy + 20); ctx.quadraticCurveTo(dx + 70, wy, dx + 60, dy + 20); ctx.stroke(); ctx.setLineDash([]);
+    }
+    txt(ctx, `t = ${fx(BA.t, 1)} min`, w - 10, 22, { a: "right", b: true, s: 14, c: COL.ink2 });
+    if (BA.W >= 159.9) label(ctx, "¡La bañera rebosa! (límite físico)", w / 2 - 110, tyT - 8, COL.coral);
+    // estadísticas y gráfica (cada pocos cuadros)
+    if ((BA._k = (BA._k || 0) + 1) % 6) return;
+    const eqW = In * tau, gap = eqW - BA.W;
+    $("sStats").innerHTML = stat("Nivel: agua", `${fx(BA.W, 1)} L`) + stat("Entrada", `${fx(In, 1)} L/min`) + stat("Salida", `${fx(Out, 1)} L/min`) + stat("Cambio neto", `${fx(In - Out, 2)} L/min`) + stat("Equilibrio Entrada × τ", `${fx(Math.min(eqW, 160), 1)} L`) + stat("Constante de tiempo", `${fx(tau, 1)} min`);
+    $("sNote").innerHTML = Math.abs(In - Out) < 0.05 ? "<b>Equilibrio:</b> la entrada iguala a la salida y el nivel ya no cambia." : In > Out ? `<b>Entrada &gt; salida:</b> el nivel sube. Faltan ${fx(gap, 1)} L para el equilibrio; tras una constante de tiempo (τ = ${tau} min) se cierra el 63 % de esa brecha.` : `<b>Salida &gt; entrada:</b> el nivel baja hacia ${fx(eqW, 1)} L. Aunque cierres el grifo, el agua no desaparece de golpe: el nivel tiene memoria.`;
+    const H = BA.hist; if (H.length < 2) return; const { ctx: c2, w: w2, h: h2 } = canvas("cvS1"), t0 = H[0][0], t1 = Math.max(H.at(-1)[0], t0 + 10), ym = Math.max(30, ...H.map(r => Math.max(r[1], r[2] * r[3] ? r[1] : 0)), ...H.map(r => r[2] * tau)) * 1.1;
+    const A = axes(c2, w2, h2, t0, t1, 0, ym, "minutos", "litros", 0, 0);
+    path(c2, H.map(r => [A.X(r[0]), A.Y(r[2] * tau)]), COL.amber, 1.5, [6, 4]); path(c2, H.map(r => [A.X(r[0]), A.Y(r[1])]), COL.blue, 2.5);
+    legend(c2, [["Agua (nivel)", COL.blue], ["Equilibrio = Entrada × τ", COL.amber]], A.pl + 10, P0.t + 8);
+  }
+};
+function label(ctx, s, x, y, bg, fg = "#fff", sz = 12) { ctx.font = `bold ${sz}px Calibri, sans-serif`; const w = ctx.measureText(s).width + 10; ctx.fillStyle = bg; rr(ctx, x, y - sz - 4, w, sz + 7, 4); ctx.fill(); ctx.fillStyle = fg; ctx.textAlign = "left"; ctx.fillText(s, x + 5, y - 1); return w; }
+
+/* ======================= 2 · MODOS ======================= */
+const N3 = (a, b, c) => [{ id: "a", x: 0.2, y: 0.25, label: a }, { id: "b", x: 0.8, y: 0.25, label: b }, { id: "c", x: 0.5, y: 0.78, label: c }];
+const MODES = {
+  exp: { n: "Crecimiento exponencial", d: "Un solo bucle de refuerzo: más población → más nacimientos → más población.", f: "dP/dt = r · P", pars: [["r", "Tasa de crecimiento r", 0.02, 0.12, 0.005, 0.06]], T: 50, ymax: p => 10 * Math.exp(p.r * 50) * 1.05, x0: () => [10], F: p => (t, x) => [p.r * x[0]], viz: "dots", unit: "individuos",
+    cld: { nodes: N3("Población", "Nacimientos", "Tasa r"), edges: [{ a: "a", b: "b", s: "+", bend: 0.2 }, { a: "b", b: "a", s: "+", bend: 0.2 }, { a: "c", b: "b", s: "+", bend: 0 }], loops: [{ x: 0.5, y: 0.25, R: true, e: [0, 1] }] } },
+  goal: { n: "Búsqueda de objetivo", d: "Un bucle de balance: la acción es proporcional a la brecha entre lo deseado y lo real.", f: "dT/dt = (Objetivo − T) / τ", pars: [["obj", "Objetivo (°C)", 15, 30, 0.5, 22], ["tau", "Constante de tiempo τ", 1, 15, 0.5, 6]], T: 50, ymax: () => 32, x0: () => [10], F: p => (t, x) => [(p.obj - x[0]) / p.tau], viz: "thermo", unit: "°C",
+    cld: { nodes: N3("Temperatura", "Brecha", "Calefacción"), edges: [{ a: "a", b: "b", s: "-", bend: 0.15 }, { a: "b", b: "c", s: "+", bend: 0.15 }, { a: "c", b: "a", s: "+", bend: 0.15 }], loops: [{ x: 0.5, y: 0.45, R: false, e: [0, 1, 2] }] } },
+  osc: { n: "Oscilación", d: "Un bucle de balance con retardo: se sigue pidiendo mercancía que ya viene en camino; el inventario se pasa y luego falta.", f: "dI/dt = Llegadas − Ventas\nPedidos = Ventas + (100 − I)/τ\nLlegadas = DELAY3(Pedidos, d)", pars: [["tau", "Tiempo de ajuste τ", 0.5, 8, 0.5, 2], ["d", "Retardo de entrega d", 0.5, 6, 0.5, 3]], T: 50, ymax: () => 160, x0: p => [60, 20 * p.d / 3, 20 * p.d / 3, 20 * p.d / 3], F: p => (t, x) => { const k = 3 / p.d, ped = Math.max(0, 20 + (100 - x[0]) / p.tau); return [x[3] * k - 20, ped - x[1] * k, x[1] * k - x[2] * k, x[2] * k - x[3] * k]; }, viz: "boxes", unit: "unidades", ref: 100,
+    cld: { nodes: N3("Inventario", "Brecha", "Pedidos"), edges: [{ a: "a", b: "b", s: "-", bend: 0.15 }, { a: "b", b: "c", s: "+", bend: 0.15 }, { a: "c", b: "a", s: "+", bend: 0.15, delay: true }], loops: [{ x: 0.5, y: 0.45, R: false, e: [0, 1, 2] }] } },
+  s: { n: "Crecimiento en S", d: "Domina primero el refuerzo (boca a boca) y luego el balance (mercado que se agota).", f: "dP/dt = r P (1 − P/K)", pars: [["r", "Tasa r", 0.05, 0.6, 0.01, 0.2], ["K", "Capacidad K", 50, 200, 5, 150]], T: 50, ymax: p => p.K * 1.15, x0: () => [5], F: p => (t, x) => [p.r * x[0] * (1 - x[0] / p.K)], viz: "dots", unit: "usuarios", refK: true,
+    cld: { nodes: [{ id: "a", x: 0.18, y: 0.25, label: "Adopciones" }, { id: "b", x: 0.82, y: 0.25, label: "Usuarios" }, { id: "c", x: 0.5, y: 0.8, label: "Mercado restante" }], edges: [{ a: "a", b: "b", s: "+", bend: 0.2 }, { a: "b", b: "a", s: "+", bend: 0.2 }, { a: "b", b: "c", s: "-", bend: 0.1 }, { a: "c", b: "a", s: "+", bend: 0.1 }], loops: [{ x: 0.5, y: 0.1, R: true, e: [0, 1] }, { x: 0.5, y: 0.5, R: false, e: [0, 2, 3] }] } },
+  over: { n: "Crecimiento con sobrepaso", d: "El límite se percibe con retardo: la población lo supera antes de que el bucle de balance actúe.", f: "dP/dt = r P (1 − Pₚ/K)\ndPₚ/dt = (P − Pₚ)/d", pars: [["r", "Tasa r", 0.1, 0.5, 0.01, 0.25], ["d", "Retardo de percepción d", 0.2, 6, 0.1, 3]], T: 50, ymax: () => 150, x0: () => [5, 5], F: p => (t, x) => [p.r * x[0] * (1 - x[1] / 100), (x[0] - x[1]) / p.d], viz: "dots", unit: "venados", ref: 100,
+    cld: { nodes: N3("Población", "Nacimientos", "Densidad percibida"), edges: [{ a: "a", b: "b", s: "+", bend: 0.2 }, { a: "b", b: "a", s: "+", bend: 0.2 }, { a: "a", b: "c", s: "+", bend: 0.15, delay: true }, { a: "c", b: "b", s: "-", bend: 0.15 }], loops: [{ x: 0.5, y: 0.1, R: true, e: [0, 1] }, { x: 0.55, y: 0.5, R: false, e: [1, 2, 3] }] } },
+  col: { n: "Sobrepaso y colapso", d: "La población consume un recurso no renovable que fija su capacidad: crece, agota el recurso y colapsa.", f: "dP/dt = r P (1 − P/(R/10)) − 0.02 P\ndR/dt = −c · P", pars: [["r", "Tasa r", 0.1, 0.5, 0.01, 0.3], ["c", "Consumo por individuo c", 0.1, 1.2, 0.05, 0.6]], T: 50, ymax: () => 120, x0: () => [5, 1500], F: p => (t, x) => [p.r * x[0] * (1 - x[0] / Math.max(x[1] / 10, 1e-6)) - 0.02 * x[0], -p.c * x[0]], viz: "dots", unit: "peces", res: true,
+    cld: { nodes: N3("Población", "Nacimientos", "Recurso"), edges: [{ a: "a", b: "b", s: "+", bend: 0.2 }, { a: "b", b: "a", s: "+", bend: 0.2 }, { a: "a", b: "c", s: "-", bend: 0.15 }, { a: "c", b: "b", s: "+", bend: 0.15 }], loops: [{ x: 0.5, y: 0.1, R: true, e: [0, 1] }, { x: 0.55, y: 0.5, R: false, e: [1, 2, 3] }] } },
+};
+const MO = { k: "exp", play: true, t: 0, x: [], hist: [], spots: [] };
+function moPars() { const M = MODES[MO.k], p = {}; M.pars.forEach(([id]) => p[id] = num("mp_" + id)); return p; }
+function moSelect(k) {
+  MO.k = k; const M = MODES[k]; $("mBtns").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.m === k));
+  $("mTit").textContent = M.n; $("mDesc").textContent = M.d; $("mForm").innerHTML = M.f.replace(/\n/g, "<br>");
+  $("mPars").innerHTML = M.pars.map(([id, l, a, b, st, v]) => `<label for="mp_${id}">${l} = <b id="mpv_${id}">${v}</b></label><input id="mp_${id}" type="range" min="${a}" max="${b}" step="${st}" value="${v}">`).join("");
+  M.pars.forEach(([id]) => $("mp_" + id).oninput = () => { $("mpv_" + id).textContent = $("mp_" + id).value; moReset(); });
+  moReset();
+}
+function moReset() { const M = MODES[MO.k], p = moPars(); MO.t = 0; MO.x = M.x0(p); MO.hist = [[0, ...MO.x]]; MO.play = true; $("mPlay").textContent = "Pausar"; RNG = mulberry32(5); MO.spots = Array.from({ length: 220 }, () => [rnd(), rnd()]); }
+ANIM.modos = {
+  tick(dt) { const M = MODES[MO.k]; if (!MO.play || MO.t >= M.T) return; const p = moPars(), F = M.F(p), dT = Math.min(dt * num("mSpd"), M.T - MO.t), n = Math.max(1, Math.ceil(dT / 0.02));
+    for (let i = 0; i < n; i++) { MO.x = rk4(F, MO.x, MO.t, dT / n); MO.t += dT / n; } MO.hist.push([MO.t, ...MO.x]); },
+  draw() {
+    const M = MODES[MO.k], p = moPars(), v = MO.x[0], ym = M.ymax(p);
+    { const { ctx, w, h } = canvas("cvM0"); ctx.fillStyle = M.viz === "thermo" ? "#FBFAFF" : M.viz === "boxes" ? "#F4EFE6" : "#EAF6F1"; ctx.fillRect(0, 0, w, h);
+      if (M.viz === "thermo") { const cx = w / 2, top = 30, bot = h - 60, fr = clamp((v - 5) / 30, 0, 1); ctx.fillStyle = "#fff"; rr(ctx, cx - 16, top, 32, bot - top, 16); ctx.fill(); ctx.strokeStyle = COL.ink2; ctx.lineWidth = 3; ctx.stroke();
+        ctx.fillStyle = mixRGB([58, 134, 200], [228, 87, 46], fr); ctx.fillRect(cx - 9, lerp(bot, top + 10, fr), 18, bot - lerp(bot, top + 10, fr)); disc(ctx, cx, bot + 18, 26, mixRGB([58, 134, 200], [228, 87, 46], fr)); ctx.stroke();
+        const oy = lerp(bot, top + 10, clamp((p.obj - 5) / 30, 0, 1)); ctx.setLineDash([6, 4]); ctx.strokeStyle = COL.teal; ctx.beginPath(); ctx.moveTo(cx - 60, oy); ctx.lineTo(cx + 60, oy); ctx.stroke(); ctx.setLineDash([]);
+        txt(ctx, `objetivo ${p.obj} °C`, cx + 64, oy + 4, { c: COL.teal, b: true }); txt(ctx, `${fx(v, 1)} °C`, cx - 30, bot - 10, { a: "right", b: true, s: 20, c: COL.ink2 });
+        const on = (p.obj - v) / p.tau; if (on > 0.05) for (let k = 0; k < 4; k++) { const fx_ = 30 + k * 18, fy_ = h - 30 - ((TCLOCK * 40 + k * 13) % 30); txt(ctx, "~", fx_, fy_, { c: COL.coral, b: true, s: 20 }); } }
+      else { const nMax = M.viz === "boxes" ? 80 : 200, n = clamp(v / ym * nMax, 0, nMax);
+        for (let i = 0; i < Math.ceil(n); i++) { const a = clamp(n - i, 0, 1), [u, q] = MO.spots[i]; ctx.globalAlpha = a;
+          if (M.viz === "boxes") { const col = i % 10, row = Math.floor(i / 10), bx = 20 + col * (w - 40) / 10, by = h - 30 - (row + 1) * 26; ctx.fillStyle = "#C08A4A"; ctx.fillRect(bx + 2, by, (w - 40) / 10 - 4, 22); ctx.strokeStyle = "#7A5230"; ctx.strokeRect(bx + 2, by, (w - 40) / 10 - 4, 22); }
+          else { const x = 14 + u * (w - 28), y = 14 + q * (h - 50); disc(ctx, x + Math.sin(TCLOCK * 2 + i) * 1.5, y, 5, ["#00A896", "#6C4AB6", "#3A86C8"][i % 3]); } }
+        ctx.globalAlpha = 1; if (M.viz === "boxes") { ctx.fillStyle = "#7A5230"; ctx.fillRect(10, h - 30, w - 20, 6); const yRef = h - 30 - (100 / ym * 80 / 10) * 26; ctx.setLineDash([6, 4]); ctx.strokeStyle = COL.teal; ctx.beginPath(); ctx.moveTo(10, yRef); ctx.lineTo(w - 10, yRef); ctx.stroke(); ctx.setLineDash([]); txt(ctx, "inventario deseado (100)", w - 12, yRef - 5, { a: "right", c: COL.teal, b: true }); }
+        txt(ctx, `${fx(v, 1)} ${M.unit}`, 12, h - 10, { b: true, s: 16, c: COL.ink2 });
+        if (M.res) { const fr = clamp(MO.x[1] / 1500, 0, 1); ctx.fillStyle = "#D9D5EA"; ctx.fillRect(w - 150, h - 22, 138, 10); ctx.fillStyle = COL.amber; ctx.fillRect(w - 150, h - 22, 138 * fr, 10); txt(ctx, "recurso restante", w - 150, h - 27, { s: 11, c: COL.muted }); } }
+      txt(ctx, `t = ${fx(MO.t, 1)}`, w - 10, 18, { a: "right", b: true, c: COL.muted }); }
+    // diagrama causal con el bucle dominante resaltado
+    { const { ctx, w, h } = canvas("cvM1"), C = M.cld, nodes = C.nodes.map(n => ({ ...n, x: n.x * w, y: n.y * h })), H = MO.hist;
+      let dom = null; if (H.length > 3 && C.loops.length > 1) { const a = H.at(-1), b = H.at(-2), c = H.at(-3), d1 = a[1] - b[1], d0 = b[1] - c[1]; dom = Math.abs(d1) > 1e-6 ? (d1 * (d1 - d0) > 0 ? 0 : 1) : null; } else if (C.loops.length === 1) dom = 0;
+      const hl = dom !== null ? new Set(C.loops[dom].e) : new Set();
+      drawCLD(ctx, nodes, C.edges, { highlight: hl, loops: C.loops.map(L => ({ x: L.x * w, y: L.y * h, R: L.R })) });
+      if (dom !== null) label(ctx, `Domina el bucle ${C.loops[dom].R ? "R (refuerzo)" : "B (balance)"}`, 10, h - 8, C.loops[dom].R ? COL.teal : COL.coral); }
+    // trayectoria
+    { const { ctx, w, h } = canvas("cvM2"), A = axes(ctx, w, h, 0, M.T, 0, ym, "tiempo", M.unit, 0, 0), H = MO.hist;
+      if (M.ref || M.refK || M.viz === "thermo") { const rv = M.refK ? p.K : M.viz === "thermo" ? p.obj : M.ref; ctx.setLineDash([6, 4]); ctx.strokeStyle = COL.amber; ctx.beginPath(); ctx.moveTo(A.X(0), A.Y(rv)); ctx.lineTo(A.X(M.T), A.Y(rv)); ctx.stroke(); ctx.setLineDash([]); }
+      path(ctx, H.map(r => [A.X(r[0]), A.Y(Math.min(r[1], ym))]), COL.violet, 2.5); disc(ctx, A.X(MO.t), A.Y(Math.min(v, ym)), 5, COL.coral); }
+  }
+};
+
+/* ======================= 3 · FASE ======================= */
+function classify(a, b, c, d) {
+  const tr = a + d, det = a * d - b * c, disc = tr * tr - 4 * det; let tipo, col;
+  if (Math.abs(det) < 1e-9) { tipo = "Degenerado (Δ = 0)"; col = COL.muted; }
+  else if (det < 0) { tipo = "Punto de silla (inestable)"; col = COL.coral; }
+  else if (disc >= 0) { tipo = tr < 0 ? "Nodo estable" : "Nodo inestable"; col = tr < 0 ? COL.teal : COL.coral; }
+  else if (Math.abs(tr) < 0.02) { tipo = "Centro (órbitas cerradas)"; col = COL.violet; }
+  else { tipo = tr < 0 ? "Foco estable (espiral hacia adentro)" : "Foco inestable (espiral hacia afuera)"; col = tr < 0 ? COL.teal : COL.coral; }
+  const l = disc >= 0 ? [fx((tr + Math.sqrt(disc)) / 2), fx((tr - Math.sqrt(disc)) / 2)] : [`${fx(tr / 2)} + ${fx(Math.sqrt(-disc) / 2)}i`, `${fx(tr / 2)} − ${fx(Math.sqrt(-disc) / 2)}i`];
+  return { tr, det, disc, tipo, col, l, stable: det > 0 && tr < -0.02 };
+}
+function jacNum(f, x, y, p) { const h = 1e-5, fx1 = f(x + h, y, p), fx0 = f(x - h, y, p), fy1 = f(x, y + h, p), fy0 = f(x, y - h, p); return [(fx1[0] - fx0[0]) / 2 / h, (fy1[0] - fy0[0]) / 2 / h, (fx1[1] - fx0[1]) / 2 / h, (fy1[1] - fy0[1]) / 2 / h]; }
+const FPRE = [
+  { n: "Nodo estable", A: [-2, 1, 0, -1], r: 3, d: "Ambos autovalores reales y negativos: todo converge sin oscilar." },
+  { n: "Nodo inestable", A: [1, 0.5, 0, 2], r: 3, d: "Autovalores reales positivos: todo se aleja del origen." },
+  { n: "Foco estable", A: [-0.3, -1, 1, -0.3], r: 3, d: "Autovalores complejos con parte real negativa: oscilación amortiguada." },
+  { n: "Foco inestable", A: [0.15, -1, 1, 0.15], r: 3, d: "Parte real positiva: la oscilación crece." },
+  { n: "Centro", A: [0, -1, 1, 0], r: 3, d: "Autovalores imaginarios puros: órbitas cerradas (oscilador sin fricción)." },
+  { n: "Punto de silla", A: [0.5, 1, 1, -0.5], r: 3, d: "Un autovalor positivo y otro negativo: solo una dirección llega al equilibrio." },
+  { n: "Lotka-Volterra (presa-depredador)", f: (x, y) => [x * (1 - 0.5 * y), y * (0.2 * x - 0.8)], R: [0, 10, 0, 6], eq: [[0, 0], [4, 2]], sp: 1.2, d: "x = presas, y = depredadores. Ciclos cerrados alrededor de (4, 2): ni se extinguen ni se estabilizan." },
+  { n: "Van der Pol (ciclo límite)", f: (x, y, p) => [y, p * (1 - x * x) * y - x], R: [-4, 4, -4, 4], eq: [[0, 0]], p: ["μ (no linealidad)", 0.1, 3, 0.1, 1], sp: 1.5, d: "El origen es inestable, pero lejos la fricción es positiva: todas las trayectorias caen a un mismo ciclo límite." },
+  { n: "Péndulo amortiguado", f: (x, y, p) => [y, -Math.sin(x) - p * y], R: [-7, 7, -3.5, 3.5], eq: [[-2 * Math.PI, 0], [-Math.PI, 0], [0, 0], [Math.PI, 0], [2 * Math.PI, 0]], p: ["fricción b", 0, 1, 0.05, 0.25], sp: 1.5, d: "x = ángulo, y = velocidad. Abajo (0, ±2π) son focos estables; arriba (±π) son sillas." },
+  { n: "Competencia (biestable)", f: (x, y) => [x * (3 - x - 2 * y), y * (2 - x - y)], R: [0, 3.5, 0, 3], eq: [[0, 0], [3, 0], [0, 2], [1, 1]], sp: 0.6, d: "Dos especies compiten. La coexistencia (1, 1) es una silla: según dónde empiece, gana una u otra." }
+];
+const FA = { k: 0, play: true, parts: [], traj: [], last: null };
+function faF() { const P = FPRE[FA.k]; if (P.A) { const [a, b, c, d] = ["fa", "fb", "fc", "fd"].map(num); return (x, y) => [a * x + b * y, c * x + d * y]; } const p = P.p ? num("fp") : 0; return (x, y) => P.f(x, y, p); }
+function faR() { const P = FPRE[FA.k]; return P.A ? [-P.r, P.r, -P.r, P.r] : P.R; }
+function faSelect(k) {
+  FA.k = k; const P = FPRE[k]; let h = `<p style="font-size:14px">${P.d}</p>`;
+  if (P.A) { h += `<div class="row">` + ["a", "b", "c", "d"].map((s, i) => `<div><label for="f${s}">${s} = <b id="f${s}V">${P.A[i]}</b></label><input id="f${s}" type="range" min="-3" max="3" step="0.05" value="${P.A[i]}"></div>`).join("") + `</div><div class="formula">dx/dt = a·x + b·y<br>dy/dt = c·x + d·y</div>`; }
+  else if (P.p) h += `<label for="fp">${P.p[0]} = <b id="fpV">${P.p[4]}</b></label><input id="fp" type="range" min="${P.p[1]}" max="${P.p[2]}" step="${P.p[3]}" value="${P.p[4]}">`;
+  $("fMat").innerHTML = h;
+  $("fMat").querySelectorAll("input").forEach(el => el.oninput = () => { $(el.id + "V").textContent = el.value; FA.traj = []; FA.last = null; faSeed(); });
+  FA.traj = []; FA.last = null; faSeed();
+}
+function faSeed() { const [x0, x1, y0, y1] = faR(); RNG = mulberry32(11); FA.parts = Array.from({ length: 320 }, () => ({ x: lerp(x0, x1, rnd()), y: lerp(y0, y1, rnd()), age: rnd() * 120, tr: [] })); }
+function faEquilibria() {
+  const P = FPRE[FA.k], f = faF(); if (P.A) { const [a, b, c, d] = ["fa", "fb", "fc", "fd"].map(num); return [{ x: 0, y: 0, J: [a, b, c, d] }]; }
+  const p = P.p ? num("fp") : 0; return P.eq.map(([x, y]) => ({ x, y, J: jacNum(P.f, x, y, p) }));
+}
+function faLaunch(x, y) { FA.traj.push({ pts: [[x, y]], ts: [[0, x, y]], t: 0, col: [COL.violet, COL.amber, COL.blue, COL.coral, COL.teal][FA.traj.length % 5] }); if (FA.traj.length > 8) FA.traj.shift(); FA.last = FA.traj.at(-1); }
+ANIM.fase = {
+  tick(dt) {
+    if (!FA.play) return; const f = faF(), F = (t, s) => f(s[0], s[1]), [x0, x1, y0, y1] = faR(), sp = (FPRE[FA.k].sp || 1) * dt, sc = Math.max(x1 - x0, y1 - y0);
+    for (const q of FA.parts) {
+      let s = rk4(F, [q.x, q.y], 0, sp); const big = Math.abs(s[0]) + Math.abs(s[1]);
+      q.tr.push([q.x, q.y]); if (q.tr.length > 14) q.tr.shift(); [q.x, q.y] = s; q.age++;
+      if (!Number.isFinite(big) || q.x < x0 - 0.05 * sc || q.x > x1 + 0.05 * sc || q.y < y0 - 0.05 * sc || q.y > y1 + 0.05 * sc || q.age > 160) { q.x = lerp(x0, x1, rnd()); q.y = lerp(y0, y1, rnd()); q.age = 0; q.tr = []; }
+    }
+    for (const T of FA.traj) {
+      if (T.t > 60) continue; let s = T.pts.at(-1); const n = 6;
+      for (let i = 0; i < n; i++) { s = rk4(F, s, 0, sp * 2 / n); T.t += sp * 2 / n; if (!s.every(Number.isFinite) || Math.abs(s[0]) > 50 * sc || Math.abs(s[1]) > 50 * sc) { T.t = 999; break; } }
+      if (T.t < 999) { T.pts.push(s); T.ts.push([T.t, s[0], s[1]]); if (T.pts.length > 4000) T.pts.shift(); }
+    }
+  },
+  draw() {
+    const { ctx, w, h } = canvas("cvF0"), [x0, x1, y0, y1] = faR(), f = faF(), A = axes(ctx, w, h, x0, x1, y0, y1, "x", "y", 1, 1);
+    FA.map = A;
+    // campo vectorial
+    const nx = Math.max(12, Math.round(w / 34)), ny = 13; let mx = 1e-9; const G = [];
+    for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) { const x = lerp(x0, x1, (i + 0.5) / nx), y = lerp(y0, y1, (j + 0.5) / ny), v = f(x, y), m = Math.hypot(...v); G.push([x, y, v, m]); if (m > mx) mx = m; }
+    for (const [x, y, v, m] of G) { if (m < 1e-9) continue; const px = A.X(x), py = A.Y(y), dx = A.X(x + v[0]) - A.X(x), dy = A.Y(y + v[1]) - A.Y(y), l = Math.hypot(dx, dy) || 1, L = 11, ang = Math.atan2(dy, dx), col = mixRGB([58, 134, 200], [228, 87, 46], Math.sqrt(m / mx));
+      ctx.strokeStyle = col; ctx.globalAlpha = 0.55; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(px - dx / l * L / 2, py - dy / l * L / 2); ctx.lineTo(px + dx / l * L / 2, py + dy / l * L / 2); ctx.stroke(); arrowHead(ctx, px + dx / l * L / 2, py + dy / l * L / 2, ang, 5, col); ctx.globalAlpha = 1; }
+    // partículas con estela
+    ctx.save(); ctx.beginPath(); ctx.rect(A.pl, P0.t, w - A.pl - P0.r, h - P0.t - P0.b); ctx.clip();
+    for (const q of FA.parts) { const a = Math.min(1, q.age / 15, (160 - q.age) / 15); if (q.tr.length > 1) { ctx.globalAlpha = 0.5 * a; path(ctx, [...q.tr, [q.x, q.y]].map(([x, y]) => [A.X(x), A.Y(y)]), COL.ink2, 1.2); } ctx.globalAlpha = a; disc(ctx, A.X(q.x), A.Y(q.y), 1.8, COL.ink2); }
+    ctx.globalAlpha = 1;
+    for (const T of FA.traj) { path(ctx, T.pts.map(([x, y]) => [A.X(x), A.Y(y)]), T.col, 2.6); const e = T.pts.at(-1); disc(ctx, A.X(e[0]), A.Y(e[1]), 6, T.col); ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.stroke(); const s = T.pts[0]; ctx.strokeStyle = T.col; ctx.beginPath(); ctx.arc(A.X(s[0]), A.Y(s[1]), 5, 0, 7); ctx.stroke(); }
+    ctx.restore();
+    // equilibrios
+    const EQ = faEquilibria(); FA.eq = EQ;
+    for (const e of EQ) { const c = classify(...e.J), px = A.X(e.x), py = A.Y(e.y); if (px < A.pl - 2 || px > w) continue; ctx.lineWidth = 3; ctx.strokeStyle = c.col; ctx.fillStyle = c.stable ? c.col : "#fff"; ctx.beginPath(); ctx.arc(px, py, 8, 0, 7); ctx.fill(); ctx.stroke();
+      if (c.det < 0) { ctx.fillStyle = c.col; ctx.beginPath(); ctx.arc(px, py, 8, Math.PI / 2, Math.PI * 1.5); ctx.fill(); } }
+    if (!FA.traj.length) txt(ctx, "Haz clic en el plano para lanzar una trayectoria", A.pl + 10, P0.t + 18, { s: 13, b: true, c: COL.violet });
+    // estadísticas
+    const P = FPRE[FA.k];
+    if (P.A) { const c = classify(...EQ[0].J); $("fStats").innerHTML = stat("Traza τ", fx(c.tr)) + stat("Determinante Δ", fx(c.det)) + stat("τ² − 4Δ", fx(c.disc)) + stat("λ₁", c.l[0]) + stat("λ₂", c.l[1]) + `<div class="stat" style="grid-column:1/-1"><span>Tipo de equilibrio</span><b style="color:${c.col}">${c.tipo}</b></div>`; }
+    else $("fStats").innerHTML = EQ.map(e => { const c = classify(...e.J); return `<div class="stat" style="grid-column:1/-1"><span>Equilibrio (${fx(e.x, 2)}, ${fx(e.y, 2)}) · λ: ${c.l.join(" , ")}</span><b style="color:${c.col};font-size:16px">${c.tipo}</b></div>`; }).join("");
+    // mapa traza-determinante
+    const r1 = canvas("cvF1"), B = axes(r1.ctx, r1.w, r1.h, -4, 4, -3, 5, "traza τ", "Δ", 0, 0), c1 = r1.ctx;
+    c1.fillStyle = "rgba(228,87,46,.08)"; c1.fillRect(B.pl, B.Y(0), r1.w - B.pl - P0.r, B.Y(-3) - B.Y(0));
+    const par = []; for (let t = -4; t <= 4.001; t += 0.1) par.push([B.X(t), B.Y(Math.min(5, t * t / 4))]); path(c1, par, COL.ink2, 1.6, [5, 4]);
+    path(c1, [[B.X(-4), B.Y(0)], [B.X(4), B.Y(0)]], COL.ink, 1.2); path(c1, [[B.X(0), B.Y(0)], [B.X(0), B.Y(5)]], COL.violet, 2);
+    txt(c1, "focos estables", B.X(-1.5), B.Y(3.6), { a: "center", s: 11, c: COL.teal, b: true }); txt(c1, "focos inestables", B.X(1.5), B.Y(3.6), { a: "center", s: 11, c: COL.coral, b: true });
+    txt(c1, "nodos est.", B.X(-3.2), B.Y(0.7), { a: "center", s: 11, c: COL.teal, b: true }); txt(c1, "nodos inest.", B.X(3.2), B.Y(0.7), { a: "center", s: 11, c: COL.coral, b: true }); txt(c1, "sillas", B.X(0), B.Y(-1.6), { a: "center", s: 12, c: COL.coral, b: true });
+    for (const e of EQ) { const c = classify(...e.J), px = B.X(clamp(c.tr, -4, 4)), py = B.Y(clamp(c.det, -3, 5)), pul = 7 + 2 * Math.sin(TCLOCK * 5); disc(c1, px, py, pul, c.col); c1.strokeStyle = "#fff"; c1.lineWidth = 2; c1.stroke(); }
+    // series de tiempo
+    const r2 = canvas("cvF2"), L = FA.last;
+    if (!L || L.ts.length < 2) { txt(r2.ctx, "Lanza una trayectoria con un clic en el plano de fase.", 20, 40, { c: COL.muted, s: 13 }); return; }
+    const ts = L.ts, tm = Math.max(5, ts.at(-1)[0]), ys = ts.flatMap(r => [r[1], r[2]]), lo = Math.min(...ys), hi = Math.max(...ys), pad = (hi - lo) * 0.1 + 0.1, C = axes(r2.ctx, r2.w, r2.h, 0, tm, lo - pad, hi + pad, "tiempo", "estado", 0, 1);
+    path(r2.ctx, ts.map(r => [C.X(r[0]), C.Y(r[1])]), COL.blue, 2.2); path(r2.ctx, ts.map(r => [C.X(r[0]), C.Y(r[2])]), COL.coral, 2.2); legend(r2.ctx, [["x(t)", COL.blue], ["y(t)", COL.coral]], C.pl + 10, 26);
+  }
+};
+function faClick(ev) { const A = FA.map; if (!A) return; const [px, py] = canvasPos(ev, "cvF0"), x = A.x0 + (px - A.pl) / (A.w - A.pl - P0.r) * (A.x1 - A.x0), y = A.y0 + (A.h - P0.b - py) / (A.h - P0.b - P0.t) * (A.y1 - A.y0); if (x < A.x0 || x > A.x1 || y < A.y0 || y > A.y1) return; faLaunch(x, y); }
+
+/* ======================= 4 · BIFURCACIONES ======================= */
+const BIF = {
+  sn: { n: "Silla-nodo", mu: [-2, 1, -1], X: [-2, 2], f: (x, m) => m + x * x, form: "dx/dt = μ + x²\nμ < 0: dos equilibrios (x = ±√−μ)\nμ = 0: se funden\nμ > 0: no hay equilibrios",
+    br: m => m < 0 ? [[-Math.sqrt(-m), 1], [Math.sqrt(-m), 0]] : [], info: m => m < -0.02 ? "Hay un equilibrio estable (verde) y uno inestable (rojo). Las esferas a la izquierda del rojo terminan en el verde." : m < 0.02 ? "Punto de bifurcación: los dos equilibrios chocan y se aniquilan." : "Ya no hay equilibrios: todo el sistema escapa hacia +∞ (con un paso lento por el 'cuello de botella' cerca de x = 0)." },
+  tc: { n: "Transcrítica", mu: [-2, 2, -1], X: [-2.5, 2.5], f: (x, m) => m * x - x * x, form: "dx/dt = μx − x²\nEquilibrios: x = 0 y x = μ\nIntercambian estabilidad en μ = 0",
+    br: m => [[0, m < 0 ? 1 : 0], [m, m > 0 ? 1 : 0]], info: m => m < 0 ? "x = 0 es estable y x = μ (negativo) es inestable. Ejemplo: una población por debajo de su umbral se extingue." : "Ahora x = μ es estable y x = 0 inestable: la población puede establecerse. Los equilibrios intercambiaron su estabilidad." },
+  pf: { n: "Horquilla (pitchfork)", mu: [-2, 2, -1], X: [-2, 2], f: (x, m) => m * x - x * x * x, form: "dx/dt = μx − x³\nμ < 0: solo x = 0 (estable)\nμ > 0: x = 0 inestable y x = ±√μ estables",
+    br: m => m <= 0 ? [[0, 1]] : [[0, 0], [Math.sqrt(m), 1], [-Math.sqrt(m), 1]], info: m => m < 0 ? "Un solo equilibrio estable y simétrico." : "Ruptura de simetría: el centro se vuelve inestable y aparecen dos estados estables. Cuál se elige depende de pequeñas perturbaciones." },
+  hopf: { n: "Hopf", mu: [-1, 1, -0.5], X: [-1.5, 1.5], form: "dx/dt = μx − y − x(x²+y²)\ndy/dt = x + μy − y(x²+y²)\nEn polares: dr/dt = μr − r³",
+    br: m => m <= 0 ? [[0, 1]] : [[0, 0], [Math.sqrt(m), 1]], info: m => m < 0 ? "Foco estable: las oscilaciones se amortiguan hasta el reposo." : "El reposo pierde estabilidad y nace un ciclo límite de radio √μ: oscilaciones sostenidas (como un ciclo económico o una población que oscila)." },
+  log: { n: "Mapa logístico", mu: [2.5, 4, 3.2], X: [0, 1], form: "x(n+1) = r · x(n) · (1 − x(n))\nDuplicaciones de periodo: r = 3, 3.449, 3.544…\nCaos a partir de r ≈ 3.5699", info: null }
+};
+const BF = { k: "sn", sweep: false, dir: 1, balls: [], img: null, imgW: 0, cob: [], cobN: 0 };
+function bfSelect(k) {
+  BF.k = k; const B = BIF[k]; $("bBtns").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.b === k));
+  const s = $("bMu"); s.min = B.mu[0]; s.max = B.mu[1]; s.step = "any"; s.value = B.mu[2]; $("bMuName").textContent = k === "log" ? "r" : "μ";
+  $("bForm").innerHTML = B.form.replace(/\n/g, "<br>"); $("bT1").textContent = k === "hopf" ? "Plano de fase en vivo" : k === "log" ? "Telaraña (cobweb) y serie" : "Línea de fase en vivo";
+  bfBalls();
+}
+function bfBalls() { RNG = mulberry32(3); const B = BIF[BF.k]; BF.balls = Array.from({ length: BF.k === "hopf" ? 60 : 16 }, (_, i) => BF.k === "hopf" ? { x: (rnd() - 0.5) * 3, y: (rnd() - 0.5) * 3, tr: [] } : { x: lerp(B.X[0], B.X[1], (i + 0.5) / 16), tr: [] }); BF.cob = [0.2]; }
+function logAttr(r) { let x = 0.31; for (let i = 0; i < 400; i++) x = r * x * (1 - x); const v = [], uniq = []; let ly = 0; for (let i = 0; i < 256; i++) { x = r * x * (1 - x); v.push(x); ly += Math.log(Math.max(1e-12, Math.abs(r * (1 - 2 * x)))); } for (const a of v) if (!uniq.some(u => Math.abs(u - a) < 1e-4)) uniq.push(a); return { v, per: uniq.length > 32 ? "caótico" : uniq.length, lyap: ly / 256 }; }
+ANIM.bif = {
+  tick(dt) {
+    const B = BIF[BF.k], s = $("bMu"); if (BF.sweep) { let m = +s.value + BF.dir * dt * (B.mu[1] - B.mu[0]) / 14; if (m >= B.mu[1]) { m = B.mu[1]; BF.dir = -1; } if (m <= B.mu[0]) { m = B.mu[0]; BF.dir = 1; } s.value = m; }
+    const m = +s.value; $("bMuV").textContent = fx(m, BF.k === "log" ? 3 : 2);
+    if (BF.k === "log") { BF.cobN += dt * 6; while (BF.cobN > 1) { BF.cobN--; const x = BF.cob.at(-1); BF.cob.push(m * x * (1 - x)); if (BF.cob.length > 60) BF.cob.shift(); } return; }
+    if (BF.k === "hopf") { const f = (t, q) => { const r2 = q[0] * q[0] + q[1] * q[1]; return [m * q[0] - q[1] - q[0] * r2, q[0] + m * q[1] - q[1] * r2]; };
+      for (const b of BF.balls) { const s2 = rk4(f, [b.x, b.y], 0, dt * 2.5); b.tr.push([b.x, b.y]); if (b.tr.length > 30) b.tr.shift(); [b.x, b.y] = s2; } return; }
+    for (const b of BF.balls) { let x = b.x; for (let i = 0; i < 4; i++) x += B.f(x, m) * dt * 0.6 / 4; b.tr.push(b.x); if (b.tr.length > 12) b.tr.shift(); b.x = x; if (!Number.isFinite(x) || x > B.X[1] + 0.3 || x < B.X[0] - 0.3) { b.x = lerp(B.X[0], B.X[1], rnd()); b.tr = []; } }
+  },
+  draw() {
+    const B = BIF[BF.k], m = +$("bMu").value, r0 = canvas("cvB0"), c0 = r0.ctx;
+    if (BF.k === "log") {
+      const A = axes(c0, r0.w, r0.h, 2.5, 4, 0, 1, "r", "x", 2, 1), key = r0.w + "x" + r0.h;
+      if (BF.imgK !== key) { const dpr = Math.min(window.devicePixelRatio || 1, 2), oc = document.createElement("canvas"); oc.width = r0.w * dpr; oc.height = r0.h * dpr; const o = oc.getContext("2d"); o.scale(dpr, dpr); o.fillStyle = "rgba(45,35,87,.35)";
+        for (let px = A.pl; px < r0.w - P0.r; px += 0.5) { const r = 2.5 + (px - A.pl) / (r0.w - A.pl - P0.r) * 1.5; let x = 0.5; for (let i = 0; i < 300; i++) x = r * x * (1 - x); for (let i = 0; i < 120; i++) { x = r * x * (1 - x); o.fillRect(px, A.Y(x), 0.8, 0.8); } }
+        BF.img = oc; BF.imgK = key; }
+      c0.drawImage(BF.img, 0, 0, r0.w, r0.h); [3, 3.449, 3.5699].forEach(v => { path(c0, [[A.X(v), P0.t], [A.X(v), r0.h - P0.b]], COL.muted, 1, [3, 3]); });
+      txt(c0, "caos", A.X(3.78), P0.t + 12, { a: "center", s: 11, c: COL.coral, b: true });
+      path(c0, [[A.X(m), P0.t], [A.X(m), r0.h - P0.b]], COL.amber, 2.5); const at = logAttr(m); at.v.slice(-64).forEach(x => disc(c0, A.X(m), A.Y(x), 3, COL.coral));
+      $("bInfo").innerHTML = `Periodo del atractor: <b>${at.per}</b> · exponente de Lyapunov λ = <b>${fx(at.lyap, 3)}</b> ${at.lyap > 0 ? "(λ > 0: sensibilidad a condiciones iniciales, caos)" : "(λ < 0: comportamiento regular)"}`;
+      // telaraña
+      const r1 = canvas("cvB1"), c1 = r1.ctx, half = Math.round(r1.h * 0.62), Ah = { ...axes(c1, r1.w, half, 0, 1, 0, 1, "x(n)", "x(n+1)", 1, 1) };
+      const cv = []; for (let x = 0; x <= 1.001; x += 0.01) cv.push([Ah.X(x), Ah.Y(m * x * (1 - x))]); path(c1, cv, COL.violet, 2.2); path(c1, [[Ah.X(0), Ah.Y(0)], [Ah.X(1), Ah.Y(1)]], COL.muted, 1.2, [4, 3]);
+      const cw = []; BF.cob.forEach((x, i) => { if (i === 0) { cw.push([Ah.X(x), Ah.Y(0)]); return; } const p = BF.cob[i - 1]; cw.push([Ah.X(p), Ah.Y(x)], [Ah.X(x), Ah.Y(x)]); }); path(c1, cw, COL.coral, 1.4);
+      const lx = BF.cob.at(-1); disc(c1, Ah.X(lx), Ah.Y(lx), 5, COL.amber);
+      c1.save(); c1.translate(0, half); const As = axes(c1, r1.w, r1.h - half, 0, 59, 0, 1, "n", "x(n)", 0, 1); const sp = BF.cob.map((x, i) => [As.X(i), As.Y(x)]); path(c1, sp, COL.blue, 1.6); sp.forEach(([a, b]) => disc(c1, a, b, 2.2, COL.blue)); c1.restore();
+      return;
+    }
+    const xr = BF.k === "hopf" ? [-0.2, 1.3] : B.X, A = axes(c0, r0.w, r0.h, B.mu[0], B.mu[1], xr[0], xr[1], BF.k === "log" ? "r" : "μ", BF.k === "hopf" ? "amplitud r" : "x*", 1, 1);
+    // ramas: muestreo en μ, segmentos por índice de rama
+    const N = 240, segs = {}; for (let i = 0; i <= N; i++) { const mm = lerp(B.mu[0], B.mu[1], i / N); B.br(mm).forEach(([x, st], j) => { const key = j + "_" + st; (segs[key] = segs[key] || []).push([i, A.X(mm), A.Y(x)]); }); }
+    Object.entries(segs).forEach(([k, pts]) => { const st = k.endsWith("_1"); let run = []; pts.forEach((p, i) => { if (i && p[0] !== pts[i - 1][0] + 1) { path(c0, run.map(q => [q[1], q[2]]), st ? COL.teal : COL.coral, st ? 3.2 : 2.2, st ? null : [6, 5]); run = []; } run.push(p); }); path(c0, run.map(q => [q[1], q[2]]), st ? COL.teal : COL.coral, st ? 3.2 : 2.2, st ? null : [6, 5]); });
+    path(c0, [[A.X(m), P0.t], [A.X(m), r0.h - P0.b]], COL.amber, 2.5);
+    B.br(m).forEach(([x, st]) => { disc(c0, A.X(m), A.Y(x), 7 + Math.sin(TCLOCK * 6), st ? COL.teal : COL.coral); });
+    legend(c0, [["estable", COL.teal], ["inestable", COL.coral]], A.pl + 8, P0.t + 12);
+    $("bInfo").textContent = B.info(m);
+    const r1 = canvas("cvB1"), c1 = r1.ctx;
+    if (BF.k === "hopf") {
+      const H = axes(c1, r1.w, r1.h, -1.5, 1.5, -1.5, 1.5, "x", "y", 1, 1); if (m > 0) { c1.strokeStyle = COL.teal; c1.lineWidth = 3; c1.setLineDash([6, 4]); c1.beginPath(); c1.ellipse(H.X(0), H.Y(0), H.X(Math.sqrt(m)) - H.X(0), H.Y(0) - H.Y(Math.sqrt(m)), 0, 0, 7); c1.stroke(); c1.setLineDash([]); }
+      for (const b of BF.balls) { if (b.tr.length > 1) { c1.globalAlpha = 0.5; path(c1, [...b.tr, [b.x, b.y]].map(([x, y]) => [H.X(x), H.Y(y)]), COL.violet, 1.4); c1.globalAlpha = 1; } disc(c1, H.X(b.x), H.Y(b.y), 3.2, COL.violet); }
+      disc(c1, H.X(0), H.Y(0), 7, m < 0 ? COL.teal : "#fff"); c1.strokeStyle = m < 0 ? COL.teal : COL.coral; c1.lineWidth = 2.5; c1.stroke();
+      if (BF.balls.every(b => Math.hypot(b.x, b.y) < 0.02) && m > 0) bfBalls(); if (m < 0 && BF.balls.every(b => Math.hypot(b.x, b.y) < 0.02)) bfBalls();
+      return;
+    }
+    // línea de fase: gráfica de f(x) y eje con esferas
+    const fy = []; for (let i = 0; i <= 200; i++) { const x = lerp(B.X[0], B.X[1], i / 200); fy.push(B.f(x, m)); } const fm = Math.max(1, ...fy.map(Math.abs)), yA = Math.round(r1.h * 0.72);
+    const C = axes(c1, r1.w, yA, B.X[0], B.X[1], -fm, fm, "", "dx/dt", 1, 1);
+    c1.fillStyle = "rgba(0,168,150,.08)"; c1.fillRect(C.pl, P0.t, r1.w - C.pl - P0.r, C.Y(0) - P0.t); c1.fillStyle = "rgba(228,87,46,.07)"; c1.fillRect(C.pl, C.Y(0), r1.w - C.pl - P0.r, yA - P0.b - C.Y(0));
+    path(c1, fy.map((v, i) => [C.X(lerp(B.X[0], B.X[1], i / 200)), C.Y(v)]), COL.violet, 2.4); path(c1, [[C.X(B.X[0]), C.Y(0)], [C.X(B.X[1]), C.Y(0)]], COL.ink, 1);
+    txt(c1, "dx/dt > 0 → x crece", C.pl + 6, P0.t + 14, { s: 11, c: COL.teal, b: true }); txt(c1, "dx/dt < 0 → x decrece", C.pl + 6, yA - P0.b - 6, { s: 11, c: COL.coral, b: true });
+    const ay = yA + 34; path(c1, [[C.X(B.X[0]), ay], [C.X(B.X[1]), ay]], COL.ink2, 3); txt(c1, "x", C.X(B.X[1]) + 4, ay + 4, { b: true });
+    for (let i = 0; i < 14; i++) { const x = lerp(B.X[0], B.X[1], (i + 0.5) / 14), v = B.f(x, m); if (Math.abs(v) < 0.03) continue; arrowHead(c1, C.X(x) + (v > 0 ? 6 : -6), ay - 14, v > 0 ? 0 : Math.PI, 8, v > 0 ? COL.teal : COL.coral); }
+    B.br(m).forEach(([x, st]) => { disc(c1, C.X(x), ay, 8, st ? COL.teal : "#fff"); c1.strokeStyle = st ? COL.teal : COL.coral; c1.lineWidth = 2.5; c1.stroke(); path(c1, [[C.X(x), C.Y(0)], [C.X(x), ay - 8]], st ? COL.teal : COL.coral, 1, [2, 3]); });
+    for (const b of BF.balls) { if (b.x < B.X[0] || b.x > B.X[1]) continue; if (b.tr.length) { c1.globalAlpha = 0.35; path(c1, [...b.tr, b.x].map(x => [C.X(clamp(x, B.X[0], B.X[1])), ay + 14]), COL.amber, 4); c1.globalAlpha = 1; } disc(c1, C.X(b.x), ay + 14, 6, COL.amber); c1.strokeStyle = COL.ink; c1.lineWidth = 1; c1.stroke(); }
+    if (BF.balls.every(b => b.tr.length > 10 && Math.abs(b.tr[0] - b.x) < 1e-3)) bfBalls();
+  }
+};
+
+/* ======================= 5 · CATÁSTROFES ======================= */
+function cubicRoots(a, b) { const f = x => x * x * x + a * x + b, R = []; let px = -3, pv = f(px); for (let i = 1; i <= 600; i++) { const x = -3 + 6 * i / 600, v = f(x); if (pv === 0) R.push(px); else if (pv * v < 0) { let lo = px, hi = x; for (let k = 0; k < 40; k++) { const m = (lo + hi) / 2; if (f(lo) * f(m) <= 0) hi = m; else lo = m; } R.push((lo + hi) / 2); } px = x; pv = v; } return R.map(x => ({ x, st: 3 * x * x + a > 0 })); }
+const CU = { x: -1.2, v: 0, trail: [], hist: [], sweep: false, dir: 1, jumps: 0, side: -1, drag: false };
+function cuClear() { CU.trail = []; CU.hist = []; CU.jumps = 0; }
+ANIM.cat = {
+  tick(dt) {
+    if ($("c_bud").style.display !== "none") return buTick(dt);
+    const sa = $("cA"), sb = $("cB"); if (CU.sweep) { let b = +sb.value + CU.dir * dt * 0.28; if (b > 2) { b = 2; CU.dir = -1; } if (b < -2) { b = -2; CU.dir = 1; } sb.value = b; }
+    const a = +sa.value, b = +sb.value; $("cAV").textContent = fx(a); $("cBV").textContent = fx(b);
+    const n = 8, h = dt / n; for (let i = 0; i < n; i++) { const F = -(CU.x ** 3 + a * CU.x + b); CU.v += (4 * F - 3.2 * CU.v) * h; if ($("cNoise").checked) CU.v += gauss() * Math.sqrt(h) * 2.2; CU.x = clamp(CU.x + CU.v * h, -2.4, 2.4); }
+    const side = Math.sign(CU.x); if (Math.abs(CU.x) > 0.6 && side !== CU.side) { if (CU.side) CU.jumps++; CU.side = side; CU.flash = 1; }
+    CU.flash = Math.max(0, (CU.flash || 0) - dt);
+    const lt = CU.trail.at(-1); if (!lt || Math.hypot(lt[0] - b, lt[1] - a) > 0.01) { CU.trail.push([b, a]); if (CU.trail.length > 600) CU.trail.shift(); }
+    const lh = CU.hist.at(-1); if (!lh || Math.abs(lh[0] - b) > 0.005 || Math.abs(lh[1] - CU.x) > 0.02) { CU.hist.push([b, CU.x]); if (CU.hist.length > 900) CU.hist.shift(); }
+  },
+  draw() {
+    if ($("c_bud").style.display !== "none") return buDraw();
+    const a = +$("cA").value, b = +$("cB").value, V = x => x ** 4 / 4 + a * x * x / 2 + b * x, R = cubicRoots(a, b), bist = 4 * a ** 3 + 27 * b * b < 0;
+    // paisaje
+    const r0 = canvas("cvC0"), c0 = r0.ctx, xs = []; for (let i = 0; i <= 220; i++) xs.push(-2.3 + 4.6 * i / 220);
+    const vs = xs.map(V), lo = Math.min(...vs), hi = Math.min(Math.max(...vs), lo + 6), A = axes(c0, r0.w, r0.h, -2.3, 2.3, lo - 0.3, hi, "estado x", "potencial V(x)", 1, 1);
+    const g = c0.createLinearGradient(0, P0.t, 0, r0.h - P0.b); g.addColorStop(0, "#EAF7F3"); g.addColorStop(1, "#C9E9DF"); c0.fillStyle = g; c0.beginPath(); c0.moveTo(A.X(-2.3), r0.h - P0.b); xs.forEach((x, i) => c0.lineTo(A.X(x), A.Y(Math.min(vs[i], hi)))); c0.lineTo(A.X(2.3), r0.h - P0.b); c0.closePath(); c0.fill();
+    path(c0, xs.map((x, i) => [A.X(x), A.Y(Math.min(vs[i], hi))]), COL.ink2, 3);
+    R.forEach(e => { const px = A.X(e.x), py = A.Y(V(e.x)); txt(c0, e.st ? "valle (estable)" : "cima (inestable)", px, py + (e.st ? 20 : -12), { a: "center", s: 11, b: true, c: e.st ? COL.teal : COL.coral }); disc(c0, px, py, 4, e.st ? COL.teal : COL.coral); });
+    const bx = A.X(CU.x), by = A.Y(V(CU.x)), sl = (A.Y(V(CU.x + 0.01)) - by) / (A.X(CU.x + 0.01) - bx), nl = Math.hypot(1, sl), rB = 13;
+    const cx = bx + sl / nl * rB, cy = by - 1 / nl * rB, gg = c0.createRadialGradient(cx - 4, cy - 4, 2, cx, cy, rB); gg.addColorStop(0, "#FFE7A0"); gg.addColorStop(1, COL.amber);
+    c0.fillStyle = gg; c0.beginPath(); c0.arc(cx, cy, rB, 0, 7); c0.fill(); c0.strokeStyle = COL.ink; c0.lineWidth = 1.5; c0.stroke();
+    if (CU.flash > 0) { c0.globalAlpha = CU.flash; label(c0, "¡SALTO CATASTRÓFICO!", r0.w / 2 - 70, P0.t + 22, COL.coral, "#fff", 14); c0.globalAlpha = 1; }
+    // plano de control: eje horizontal b, vertical a
+    const r1 = canvas("cvC1"), c1 = r1.ctx, B = axes(c1, r1.w, r1.h, -2, 2, -3, 1, "b", "a", 1, 1); CU.mapC = B;
+    c1.fillStyle = "rgba(108,74,182,.16)"; c1.beginPath(); const up = [], dn = []; for (let i = 0; i <= 80; i++) { const aa = -3 * i / 80, bb = 2 * Math.pow(-aa / 3, 1.5); up.push([B.X(Math.min(bb, 2)), B.Y(aa)]); dn.push([B.X(Math.max(-bb, -2)), B.Y(aa)]); }
+    up.forEach(([x, y], i) => i ? c1.lineTo(x, y) : c1.moveTo(x, y)); dn.reverse().forEach(([x, y]) => c1.lineTo(x, y)); c1.closePath(); c1.fill(); path(c1, up, COL.violet, 2); path(c1, dn, COL.violet, 2);
+    txt(c1, "biestable", B.X(0), B.Y(-2.2), { a: "center", b: true, c: COL.violet, s: 13 }); txt(c1, "un solo estado", B.X(0), B.Y(0.6), { a: "center", s: 11, c: COL.muted });
+    c1.globalAlpha = 0.7; path(c1, CU.trail.map(([bb, aa]) => [B.X(bb), B.Y(aa)]), COL.amber, 2); c1.globalAlpha = 1;
+    disc(c1, B.X(b), B.Y(a), 9, bist ? COL.violet : COL.amber); c1.strokeStyle = "#fff"; c1.lineWidth = 2.5; c1.stroke();
+    // equilibrios vs b
+    const r2 = canvas("cvC2"), c2 = r2.ctx, C = axes(c2, r2.w, r2.h, -2, 2, -2.4, 2.4, "b", "x*", 1, 1); let runs = [], cur = null;
+    for (let i = 0; i <= 400; i++) { const x = -2.4 + 4.8 * i / 400, bb = -(x ** 3) - a * x, st = 3 * x * x + a > 0; if (!cur || cur.st !== st) { cur = { st, pts: cur ? [cur.pts.at(-1)] : [] }; runs.push(cur); } cur.pts.push([C.X(clamp(bb, -2.2, 2.2)), C.Y(x)]); }
+    c2.save(); c2.beginPath(); c2.rect(C.pl, P0.t, r2.w - C.pl - P0.r, r2.h - P0.t - P0.b); c2.clip(); runs.forEach(r => path(c2, r.pts, r.st ? COL.teal : COL.coral, r.st ? 3 : 2, r.st ? null : [6, 4]));
+    path(c2, [[C.X(b), P0.t], [C.X(b), r2.h - P0.b]], COL.muted, 1, [3, 3]); c2.globalAlpha = 0.85; path(c2, CU.hist.map(([bb, x]) => [C.X(bb), C.Y(x)]), COL.amber, 2.2); c2.globalAlpha = 1; disc(c2, C.X(b), C.Y(CU.x), 7, COL.amber); c2.restore();
+    $("cStats").innerHTML = stat("Estado x", fx(CU.x)) + stat("Equilibrios", R.length + ` (${R.filter(e => e.st).length} estables)`) + stat("Zona", bist ? "biestable" : "monoestable") + stat("Saltos", CU.jumps) + stat("4a³ + 27b²", fx(4 * a ** 3 + 27 * b * b));
+  }
+};
+function cuPointer(ev) { const B = CU.mapC; if (!B) return; const [px, py] = canvasPos(ev, "cvC1"), b = B.x0 + (px - B.pl) / (B.w - B.pl - P0.r) * (B.x1 - B.x0), a = B.y0 + (B.h - P0.b - py) / (B.h - P0.b - P0.t) * (B.y1 - B.y0); $("cB").value = clamp(b, -2, 2); $("cA").value = clamp(a, -3, 1); }
+
+/* --- gusano del abeto --- */
+const BU = { x: 0.8, hist: [], sweep: false, dir: 1, jumps: 0, state: 0, trees: null };
+const buF = (x, r) => r * x * (1 - x / 10) - x * x / (1 + x * x);
+function buEq(r) { const out = [], f = x => buF(x, r) / x; let px = 0.02, pv = f(px); for (let i = 1; i <= 800; i++) { const x = 0.02 + 9.98 * i / 800, v = f(x); if (pv * v < 0) { let lo = px, hi = x; for (let k = 0; k < 40; k++) { const m = (lo + hi) / 2; if (f(lo) * f(m) <= 0) hi = m; else lo = m; } const xe = (lo + hi) / 2, d = (buF(xe + 1e-5, r) - buF(xe - 1e-5, r)) / 2e-5; out.push({ x: xe, st: d < 0 }); } px = x; pv = v; } return out; }
+function buClear() { BU.hist = []; BU.jumps = 0; }
+function buTick(dt) {
+  const s = $("uR"); if (BU.sweep) { let r = +s.value + BU.dir * dt * 0.018; if (r > 0.68) { r = 0.68; BU.dir = -1; } if (r < 0.32) { r = 0.32; BU.dir = 1; } s.value = r; }
+  const r = +s.value; $("uRV").textContent = fx(r, 3); const n = 20, h = dt * 8 / n; for (let i = 0; i < n; i++) BU.x = Math.max(0.01, BU.x + buF(BU.x, r) * h);
+  const st = BU.x > 3 ? 1 : 0; if (st !== BU.state) { BU.jumps++; BU.state = st; BU.flash = 1.4; } BU.flash = Math.max(0, (BU.flash || 0) - dt);
+  const l = BU.hist.at(-1); if (!l || Math.abs(l[0] - r) > 0.001 || Math.abs(l[1] - BU.x) > 0.03) { BU.hist.push([r, BU.x]); if (BU.hist.length > 1500) BU.hist.shift(); }
+}
+function buDraw() {
+  const r = +$("uR").value, x = BU.x, r0 = canvas("cvU0"), c = r0.ctx, w = r0.w, h = r0.h;
+  if (!BU.trees) { const R = mulberry32(77); BU.trees = Array.from({ length: 70 }, () => ({ u: R(), v: R(), s: 0.8 + 0.5 * R(), k: R() })); }
+  const sky = c.createLinearGradient(0, 0, 0, h); sky.addColorStop(0, "#DCEFFB"); sky.addColorStop(1, "#F6FBF3"); c.fillStyle = sky; c.fillRect(0, 0, w, h);
+  c.fillStyle = "#B9D99A"; c.fillRect(0, h * 0.45, w, h * 0.55);
+  const nT = Math.round(12 + (r - 0.3) / 0.4 * 58), dmg = clamp((x - 0.5) / 7, 0, 1);
+  BU.trees.slice(0, nT).map((t, i) => [t, i]).sort((p, q) => p[0].v - q[0].v).forEach(([t, i]) => { const tx = 20 + t.u * (w - 40), ty = h * 0.42 + t.v * h * 0.52, s = t.s * (0.6 + 0.5 * t.v) * 34, sway = Math.sin(TCLOCK * 1.3 + i) * 1.5, col = mixRGB([38, 120, 70], [150, 110, 60], dmg * (0.4 + 0.6 * t.k));
+    c.fillStyle = "#6B4B2A"; c.fillRect(tx - 2, ty - 2, 4, 8); c.fillStyle = col; c.beginPath(); c.moveTo(tx + sway, ty - s * 1.6); c.lineTo(tx - s * 0.55, ty); c.lineTo(tx + s * 0.55, ty); c.closePath(); c.fill(); c.beginPath(); c.moveTo(tx + sway, ty - s * 2.1); c.lineTo(tx - s * 0.4, ty - s * 0.8); c.lineTo(tx + s * 0.4, ty - s * 0.8); c.closePath(); c.fill(); });
+  const nL = Math.round(x * 28), R2 = mulberry32(5); for (let i = 0; i < nL; i++) { const t = BU.trees[Math.floor(R2() * nT)], tx = 20 + t.u * (w - 40), ty = h * 0.42 + t.v * h * 0.52, s = t.s * (0.6 + 0.5 * t.v) * 34; const lx = tx + (R2() - 0.5) * s * 0.8 + Math.sin(TCLOCK * 3 + i) * 2, ly = ty - R2() * s * 1.6; disc(c, lx, ly, 2.2, "#C2410C"); }
+  c.fillStyle = "rgba(255,255,255,.85)"; rr(c, 10, 10, 230, 50, 8); c.fill(); txt(c, `Bosque: ${nT} árboles (r = ${fx(r, 3)})`, 20, 30, { b: true }); txt(c, `Larvas x = ${fx(x)} · ${x > 3 ? "BROTE" : "endémico (controlado por aves)"}`, 20, 50, { c: x > 3 ? COL.coral : COL.teal, b: true });
+  if (BU.flash > 0) { c.globalAlpha = Math.min(1, BU.flash); label(c, BU.state ? "¡Salto a brote!" : "¡Colapso del brote!", w - 170, 32, BU.state ? COL.coral : COL.teal, "#fff", 15); c.globalAlpha = 1; }
+  const r1 = canvas("cvU1"), c1 = r1.ctx, A = axes(c1, r1.w, r1.h, 0.3, 0.7, 0, 9, "r", "larvas x*", 2, 0); let runs = [], cur = null;
+  for (let i = 0; i <= 500; i++) { const xe = 0.05 + 9.4 * i / 500, rr2 = xe / ((1 + xe * xe) * (1 - xe / 10)), d = rr2 * (1 - 2 * xe / 10) - 2 * xe / (1 + xe * xe) ** 2, st = d < 0; if (!cur || cur.st !== st) { cur = { st, pts: cur ? [cur.pts.at(-1)] : [] }; runs.push(cur); } cur.pts.push([A.X(rr2), A.Y(xe)]); }
+  c1.save(); c1.beginPath(); c1.rect(A.pl, P0.t, r1.w - A.pl - P0.r, r1.h - P0.t - P0.b); c1.clip(); runs.forEach(q => path(c1, q.pts, q.st ? COL.teal : COL.coral, q.st ? 3 : 2, q.st ? null : [6, 4]));
+  [[0.56, "salto ↑ ≈ 0.56"], [0.38, "regreso ↓ ≈ 0.38"]].forEach(([v, l]) => { path(c1, [[A.X(v), P0.t], [A.X(v), r1.h - P0.b]], COL.muted, 1, [3, 3]); txt(c1, l, A.X(v) + 4, P0.t + 12, { s: 11, c: COL.muted }); });
+  c1.globalAlpha = 0.85; path(c1, BU.hist.map(([rr2, xx]) => [A.X(rr2), A.Y(xx)]), COL.amber, 2.2); c1.globalAlpha = 1; disc(c1, A.X(r), A.Y(x), 8, COL.amber); c1.strokeStyle = COL.ink; c1.lineWidth = 1.5; c1.stroke(); c1.restore();
+  legend(c1, [["equilibrio estable", COL.teal], ["inestable (umbral)", COL.coral], ["trayectoria", COL.amber]], A.pl + 10, r1.h - P0.b - 46);
+  const E = buEq(r); $("uStats").innerHTML = stat("r", fx(r, 3)) + stat("Larvas x", fx(x)) + stat("Equilibrios positivos", E.length + ` (${E.filter(e => e.st).length} estables)`) + stat("Saltos", BU.jumps);
+}
+
+/* ======================= 6 · EDITOR CAUSAL ======================= */
+const GPRE = [
+  ["Población", [["N", .18, .5, "Nacimientos"], ["P", .5, .5, "Población"], ["M", .82, .5, "Muertes"]], [["N", "P", "+"], ["P", "N", "+"], ["P", "M", "+"], ["M", "P", "-"]]],
+  ["Epidemia", [["S", .12, .3, "Susceptibles"], ["C", .6, .1, "Contagios"], ["I", .36, .75, "Infectados"], ["R", .86, .75, "Recuperaciones"]], [["S", "C", "+"], ["C", "S", "-"], ["I", "C", "+"], ["C", "I", "+"], ["I", "R", "+"], ["R", "I", "-"]]],
+  ["Inventario con retardo", [["I", .25, .3, "Inventario"], ["G", .7, .3, "Brecha"], ["P", .7, .75, "Pedidos"], ["L", .25, .75, "Llegadas"], ["V", .08, .55, "Ventas"]], [["I", "G", "-"], ["G", "P", "+"], ["P", "L", "+", 1], ["L", "I", "+"], ["V", "I", "-"]]],
+  ["Termostato", [["T", .5, .25, "Temperatura"], ["D", .2, .7, "Diferencia"], ["C", .8, .7, "Calefacción"], ["Q", .5, .8, "Pérdidas"], ["E", .1, .25, "Temp. deseada"]], [["T", "D", "-"], ["E", "D", "+"], ["D", "C", "+"], ["C", "T", "+", 1], ["T", "Q", "+"], ["Q", "T", "-"]]],
+  ["Límites al crecimiento", [["E", .12, .5, "Esfuerzo"], ["R", .42, .5, "Resultados"], ["A", .72, .5, "Acción limitante"], ["K", .72, .15, "Restricción"]], [["E", "R", "+"], ["R", "E", "+"], ["R", "A", "+"], ["A", "R", "-", 1], ["K", "A", "+"]]],
+  ["Tragedia de los comunes", [["A", .12, .2, "Actividad A"], ["GA", .42, .2, "Ganancia A"], ["B", .12, .8, "Actividad B"], ["GB", .42, .8, "Ganancia B"], ["T", .62, .5, "Actividad total"], ["Rc", .88, .5, "Recurso"]], [["A", "GA", "+"], ["GA", "A", "+"], ["B", "GB", "+"], ["GB", "B", "+"], ["A", "T", "+"], ["B", "T", "+"], ["T", "Rc", "-", 1], ["Rc", "GA", "+"], ["Rc", "GB", "+"]]],
+  ["Lienzo vacío", [], []]
+];
+const GE = { nodes: [], edges: [], tool: "move", drag: null, linkFrom: null, sel: -1, prop: 0, cnt: 0, loops: [] };
+const GHELP = { move: "Arrastra las variables para ordenar el diagrama.", add: "Escribe el nombre arriba y haz clic en un espacio vacío del lienzo.", link: "Haz clic en la variable causa y luego en la variable efecto. El enlace nace positivo (+).", sign: "Haz clic sobre una flecha para alternar entre + (mismo sentido) y − (sentido opuesto).", delay: "Haz clic sobre una flecha para marcar o quitar un retardo (||).", del: "Haz clic en una variable o una flecha para borrarla." };
+function gLoad(i) { const [, N, E] = GPRE[i]; GE.nodes = N.map(([id, u, v, label]) => ({ id, u, v, label })); GE.edges = E.map(([a, b, s, d]) => ({ a, b, s, delay: !!d, bend: 0.2 })); GE.sel = -1; GE.cnt = 0; gUpdate(); }
+function gUpdate() {
+  GE.loops = findCycles(GE.nodes, GE.edges); if (GE.sel >= GE.loops.length) GE.sel = -1;
+  $("gLoops").innerHTML = GE.loops.length ? GE.loops.map((L, i) => { const nm = L.nodes.map(id => GE.nodes.find(n => n.id === id).label); return `<div class="loopitem${i === GE.sel ? " on" : ""}" data-l="${i}"><span class="tag ${L.R ? "ok" : "bad"}">${L.R ? "R" : "B"}${i + 1}</span><span>${nm.join(" → ")} → ${nm[0]}<br><span class="mini">${L.neg} enlace(s) negativo(s): ${L.neg % 2 ? "impar → balance" : "par → refuerzo"}</span></span></div>`; }).join("") : `<p class="cap">Aún no hay bucles cerrados.</p>`;
+  $("gLoops").querySelectorAll(".loopitem").forEach(el => el.onclick = () => { GE.sel = +el.dataset.l === GE.sel ? -1 : +el.dataset.l; GE.prop = 0; gUpdate(); });
+  const nR = GE.loops.filter(l => l.R).length; $("gMsg").className = "msg"; $("gMsg").innerHTML = `${GE.nodes.length} variables · ${GE.edges.length} enlaces · <b>${nR}</b> bucle(s) de refuerzo y <b>${GE.loops.length - nR}</b> de balance. ${GE.sel >= 0 ? "" : "Elige un bucle de la lista para ver la propagación."}`;
+}
+function gGeo() { const c = $("cvG0"), w = c.clientWidth || 600, h = +c.dataset.h, T = w < 520; return { w, h, T, mx: T ? 58 : 70, my: T ? 40 : 30 }; }
+function gPix() { const G = gGeo(); return GE.nodes.map(n => { const a = G.T ? n.v : n.u, b = G.T ? n.u : n.v; return { ...n, x: G.mx + a * (G.w - 2 * G.mx), y: G.my + b * (G.h - 2 * G.my) }; }); }
+function gUV(px, py) { const G = gGeo(), a = (px - G.mx) / (G.w - 2 * G.mx), b = (py - G.my) / (G.h - 2 * G.my); return G.T ? [b, a] : [a, b]; }
+function gHitNode(px, py) { const P = gPix(), ctx = $("cvG0").getContext("2d"); for (let i = P.length - 1; i >= 0; i--) { const [w, h] = nodeSize(ctx, P[i]); if (Math.abs(px - P[i].x) < w / 2 && Math.abs(py - P[i].y) < h / 2) return i; } return -1; }
+function gHitEdge(px, py) { let best = -1, bd = 10; GE.edges.forEach((e, k) => { if (!e._g) return; for (let t = 0; t <= 1; t += 0.05) { const [x, y] = qpt(e._g, t), d = Math.hypot(x - px, y - py); if (d < bd) { bd = d; best = k; } } }); return best; }
+function gDown(ev) {
+  const [px, py] = canvasPos(ev, "cvG0"), c = $("cvG0"), w = c.clientWidth, h = +c.dataset.h, ni = gHitNode(px, py), tool = GE.tool;
+  if (tool === "move" && ni >= 0) { GE.drag = ni; c.setPointerCapture && c.setPointerCapture(ev.pointerId); return; }
+  if (tool === "add" && ni < 0) { const label = ($("gName").value || "Variable").slice(0, 24); const [u, v] = gUV(px, py); GE.nodes.push({ id: "n" + (++GE.cnt) + "_" + Date.now() % 1e5, u: clamp(u, 0, 1), v: clamp(v, 0, 1), label }); gUpdate(); return; }
+  if (tool === "link" && ni >= 0) { if (GE.linkFrom === null) { GE.linkFrom = ni; return; } const a = GE.nodes[GE.linkFrom].id, b = GE.nodes[ni].id; if (a !== b && !GE.edges.some(e => e.a === a && e.b === b)) GE.edges.push({ a, b, s: "+", delay: false, bend: 0.2 }); GE.linkFrom = null; gUpdate(); return; }
+  if (tool === "link") { GE.linkFrom = null; return; }
+  if (tool === "del" && ni >= 0) { const id = GE.nodes[ni].id; GE.nodes.splice(ni, 1); GE.edges = GE.edges.filter(e => e.a !== id && e.b !== id); GE.sel = -1; gUpdate(); return; }
+  const ei = gHitEdge(px, py); if (ei < 0) return;
+  if (tool === "sign") GE.edges[ei].s = GE.edges[ei].s === "+" ? "-" : "+"; else if (tool === "delay") GE.edges[ei].delay = !GE.edges[ei].delay; else if (tool === "del") { GE.edges.splice(ei, 1); GE.sel = -1; } else return;
+  GE.prop = 0; gUpdate();
+}
+function gMove(ev) { const [px, py] = canvasPos(ev, "cvG0"); GE.mouse = [px, py]; if (GE.drag === null) return; const c = $("cvG0"), w = c.clientWidth, h = +c.dataset.h, n = GE.nodes[GE.drag]; if (!n) return; const [u, v] = gUV(px, py); n.u = clamp(u, -0.05, 1.05); n.v = clamp(v, -0.05, 1.05); }
+ANIM.cld = {
+  tick(dt) { if (GE.sel >= 0) GE.prop += dt * 1.1; },
+  draw() {
+    const { ctx, w, h } = canvas("cvG0"), P = gPix(), L = GE.loops[GE.sel];
+    ctx.fillStyle = "#FBFAFE"; ctx.fillRect(0, 0, w, h); ctx.fillStyle = "#E7E3F3"; for (let x = 10; x < w; x += 24) for (let y = 10; y < h; y += 24) ctx.fillRect(x, y, 1.5, 1.5);
+    let hl = new Set(), badges = {}, loops = [];
+    if (L) {
+      hl = new Set(L.edges); const n = L.nodes.length, cyc = GE.prop % (n + 1.5), k = Math.floor(cyc); let sg = 1; badges[L.nodes[0]] = 1;
+      for (let i = 0; i < Math.min(k, n); i++) { sg *= GE.edges[L.edges[i]].s === "+" ? 1 : -1; if (i < n - 1) badges[L.nodes[i + 1]] = sg; }
+      const pp = P.filter(p => L.nodes.includes(p.id)); loops.push({ x: pp.reduce((s, p) => s + p.x, 0) / pp.length, y: pp.reduce((s, p) => s + p.y, 0) / pp.length + (n === 2 ? 0 : 0), R: L.R });
+      if (k >= n) { const back = sg; badges[L.nodes[0]] = back; $("gMsg").className = "msg " + (L.R ? "ok" : "bad"); $("gMsg").innerHTML = `Empezamos con <b>↑ ${P.find(p => p.id === L.nodes[0]).label}</b> y el cambio regresó como <b>${back > 0 ? "↑ aumento" : "↓ disminución"}</b>: es un bucle de <b>${L.R ? "refuerzo (R)" : "balance (B)"}</b>. ${L.R ? "Amplifica cualquier cambio: crecimiento o colapso acelerado." : "Contrarresta el cambio: busca un objetivo o equilibrio."}`; }
+      else { $("gMsg").className = "msg"; $("gMsg").innerHTML = `Propagando el aumento inicial… paso ${k + 1} de ${n}.`; }
+    } else GE.loops.forEach(l => { const pp = P.filter(p => l.nodes.includes(p.id)); if (pp.length) loops.push({ x: pp.reduce((s, p) => s + p.x, 0) / pp.length, y: pp.reduce((s, p) => s + p.y, 0) / pp.length, R: l.R }); });
+    drawCLD(ctx, P, GE.edges, { highlight: hl, badges, loops, sel: GE.linkFrom !== null ? GE.nodes[GE.linkFrom]?.id : null });
+    if (L) { const n = L.nodes.length, cyc = GE.prop % (n + 1.5), k = Math.floor(cyc), f = cyc - k; if (k < n) { const e = GE.edges[L.edges[k]]; if (e._g) { const [x, y] = qpt(e._g, Math.min(1, f * 1.2)); disc(ctx, x, y, 7, COL.amber); ctx.strokeStyle = COL.ink; ctx.lineWidth = 1.5; ctx.stroke(); } } }
+    if (GE.tool === "link" && GE.linkFrom !== null && GE.mouse) { const a = P[GE.linkFrom]; if (a) path(ctx, [[a.x, a.y], GE.mouse], COL.amber, 2, [5, 4]); }
+    if (!GE.nodes.length) txt(ctx, "Lienzo vacío: usa «Agregar variable» y «Conectar» para construir tu diagrama.", w / 2, h / 2, { a: "center", c: COL.muted, s: 14 });
+    txt(ctx, "Flecha verde (+): mismo sentido · Flecha roja (−): sentido opuesto · || retardo", 12, h - 10, { s: 11, c: COL.muted });
+  }
+};
+
+/* ======================= 7 · FORRESTER ======================= */
+const FRR = {
+  pop: { n: "Población (crecimiento en S)", T: 150, unit: "años",
+    pars: [["tn", "Tasa de natalidad", 0.01, 0.12, 0.005, 0.06], ["vida", "Esperanza de vida (años)", 10, 80, 1, 40], ["K", "Capacidad de carga", 200, 2000, 50, 1000]],
+    x0: p => [50], f: (t, x, p) => { const v = FRR.pop.v(t, x, p); return [v.Nac - v.Mue]; }, v: (t, [P], p) => ({ P, Nac: p.tn * P * Math.max(0, 1 - P / p.K), Mue: P / p.vida, tn: p.tn, vida: p.vida, K: p.K }),
+    max: p => ({ P: p.K * 1.1 }), rs: 15,
+    L: { lv: { P: [.5, .47, "Población"] }, cl: { c1: [.07, .47], c2: [.93, .47] }, fl: [["Nac", "c1", "P", "Nacimientos"], ["Mue", "P", "c2", "Muertes"]], k: { tn: [.2, .85, "Tasa natalidad"], K: [.4, .1, "Capacidad K"], vida: [.8, .85, "Esperanza vida"] }, ln: [["tn", "Nac"], ["K", "Nac"], ["P", "Nac"], ["P", "Mue"], ["vida", "Mue"]] },
+    eq: (v, p) => [["Población = INTEG(Nacimientos − Muertes, 50)", v.P], ["Nacimientos = Tasa natalidad × Población × (1 − Población / K)", v.Nac], ["Muertes = Población / Esperanza vida", v.Mue], ["Tasa natalidad = " + p.tn, null], ["Esperanza vida = " + p.vida, null], ["K = " + p.K, null]] },
+  sir: { n: "Epidemia SIR", T: 120, unit: "días",
+    pars: [["beta", "Tasa de contacto efectivo β", 0.1, 0.8, 0.01, 0.35], ["d", "Duración de la infección (días)", 3, 20, 0.5, 10]],
+    x0: () => [4995, 5, 0], f: (t, x, p) => { const v = FRR.sir.v(t, x, p); return [-v.Con, v.Con - v.Rec, v.Rec]; }, v: (t, [S, I, R], p) => ({ S, I, R, Con: p.beta * S * I / 5000, Rec: I / p.d, beta: p.beta, d: p.d, N: 5000 }),
+    max: () => ({ S: 5000, I: 5000, R: 5000 }), rs: 250,
+    L: { lv: { S: [.17, .5, "Susceptibles"], I: [.5, .5, "Infectados"], R: [.83, .5, "Recuperados"] }, cl: {}, fl: [["Con", "S", "I", "Contagios"], ["Rec", "I", "R", "Recuperación"]], k: { beta: [.33, .12, "β"], N: [.12, .88, "N"], d: [.67, .12, "Duración"] }, ln: [["beta", "Con"], ["N", "Con"], ["S", "Con"], ["I", "Con"], ["I", "Rec"], ["d", "Rec"]] },
+    eq: (v, p) => [["Susceptibles = INTEG(−Contagios, 4995)", v.S], ["Infectados = INTEG(Contagios − Recuperación, 5)", v.I], ["Recuperados = INTEG(Recuperación, 0)", v.R], ["Contagios = β × S × I / N", v.Con], ["Recuperación = Infectados / Duración", v.Rec], [`β = ${p.beta} · Duración = ${p.d} · N = 5000 · R₀ = ${fx(p.beta * p.d, 2)}`, null]] },
+  inv: { n: "Inventario con retardo (DELAY3)", T: 100, unit: "semanas",
+    pars: [["ta", "Tiempo de ajuste del inventario", 1, 12, 0.5, 4], ["D", "Retardo de entrega", 1, 10, 0.5, 6]],
+    x0: p => [400, 100 * p.D / 3, 100 * p.D / 3, 100 * p.D / 3], f: (t, x, p) => { const v = FRR.inv.v(t, x, p), k = 3 / p.D; return [v.Lle - v.Ven, v.Ped - x[1] * k, (x[1] - x[2]) * k, (x[2] - x[3]) * k]; },
+    v: (t, x, p) => { const Ven = 100 + (t >= 10 ? 20 : 0), Inv = x[0]; return { Inv, Tr: x[1] + x[2] + x[3], Ven, Ped: Math.max(0, Ven + (400 - Inv) / p.ta), Lle: x[3] * 3 / p.D, Des: 400, ta: p.ta, D: p.D }; },
+    max: () => ({ Inv: 800, Tr: 1600 }), rs: 130,
+    L: { lv: { Tr: [.34, .5, "En tránsito"], Inv: [.68, .5, "Inventario"] }, cl: { c1: [.06, .5], c2: [.94, .5] }, fl: [["Ped", "c1", "Tr", "Pedidos"], ["Lle", "Tr", "Inv", "Llegadas"], ["Ven", "Inv", "c2", "Ventas"]], k: { Des: [.5, .1, "Inv. deseado"], ta: [.17, .88, "T. ajuste"], D: [.5, .88, "Retardo"] }, ln: [["Des", "Ped"], ["Inv", "Ped"], ["ta", "Ped"], ["Ven", "Ped"], ["D", "Lle"], ["Tr", "Lle"]] },
+    eq: (v, p) => [["Inventario = INTEG(Llegadas − Ventas, 400)", v.Inv], ["Ventas = 100 + STEP(20, 10)", v.Ven], ["Pedidos = MAX(0, Ventas + (Inv. deseado − Inventario) / T. ajuste)", v.Ped], ["Llegadas = DELAY3(Pedidos, Retardo)", v.Lle], ["En tránsito = INTEG(Pedidos − Llegadas)", v.Tr], [`Inv. deseado = 400 · T. ajuste = ${p.ta} · Retardo = ${p.D}`, null]] },
+  ban: { n: "Cuenta bancaria", T: 40, unit: "años",
+    pars: [["i", "Tasa de interés anual", 0, 0.15, 0.005, 0.05], ["dep", "Depósitos por año", 0, 300, 10, 60], ["ret", "Retiros por año", 0, 400, 10, 120]],
+    x0: () => [1000], f: (t, x, p) => { const v = FRR.ban.v(t, x, p); return [v.Int + v.Dep - v.Ret]; }, v: (t, [S], p) => ({ S, Int: S * p.i, Dep: p.dep, Ret: S > 0 ? p.ret : 0, i: p.i, dep: p.dep, ret: p.ret }),
+    max: () => ({ S: null }), rs: 150,
+    L: { lv: { S: [.5, .55, "Saldo"] }, cl: { c1: [.08, .55], c2: [.92, .55], c3: [.5, .08] }, fl: [["Dep", "c1", "S", "Depósitos"], ["Ret", "S", "c2", "Retiros"], ["Int", "c3", "S", "Intereses"]], k: { i: [.78, .2, "Tasa interés"], dep: [.2, .9, "Depósito"], ret: [.8, .9, "Retiro"] }, ln: [["i", "Int"], ["S", "Int"], ["dep", "Dep"], ["ret", "Ret"]] },
+    eq: (v, p) => [["Saldo = INTEG(Intereses + Depósitos − Retiros, 1000)", v.S], ["Intereses = Saldo × Tasa interés", v.Int], ["Depósitos = " + p.dep, v.Dep], ["Retiros = IF THEN ELSE(Saldo > 0, " + p.ret + ", 0)", v.Ret], [`Tasa interés = ${p.i} → tiempo de duplicación ≈ ${p.i > 0 ? fx(70 / (p.i * 100), 1) + " años" : "∞"}`, null]] }
+};
+const FR = { k: "pop", play: true, t: 0, x: [], hist: [], ph: {} };
+function frPars() { const M = FRR[FR.k], p = {}; M.pars.forEach(([id]) => p[id] = num("rp_" + id)); return p; }
+function frSelect(k) {
+  FR.k = k; const M = FRR[k]; $("rBtns").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.r === k));
+  $("rPars").innerHTML = M.pars.map(([id, l, a, b, st, v]) => `<label for="rp_${id}">${l} = <b id="rpv_${id}">${v}</b></label><input id="rp_${id}" type="range" min="${a}" max="${b}" step="${st}" value="${v}">`).join("");
+  M.pars.forEach(([id]) => $("rp_" + id).oninput = () => { $("rpv_" + id).textContent = $("rp_" + id).value; if (id === "D" || id === "K") frReset(); });
+  frReset();
+}
+function frReset() { const M = FRR[FR.k], p = frPars(); FR.t = 0; FR.x = M.x0(p); FR.hist = [[0, ...frLevels(M, M.v(0, FR.x, p))]]; FR.ph = {}; FR.play = true; $("rPlay").textContent = "Pausar"; $("rPlay").classList.add("go"); }
+const frLevels = (M, v) => Object.keys(M.L.lv).map(id => v[id]);
+// --- dibujo genérico de un diagrama de Forrester ---
+function drawCloud(ctx, x, y, s = 1) { ctx.fillStyle = "#fff"; ctx.strokeStyle = COL.muted; ctx.lineWidth = 1.6; ctx.beginPath(); [[-12, 2, 10], [0, -6, 12], [12, 1, 10], [3, 6, 9], [-6, 7, 8]].forEach(([dx, dy, r]) => { ctx.moveTo(x + dx * s + r * s, y + dy * s); ctx.arc(x + dx * s, y + dy * s, r * s, 0, 7); }); ctx.fill(); ctx.stroke(); ctx.fillStyle = "#fff"; [[-12, 2, 8.5], [0, -6, 10.5], [12, 1, 8.5], [3, 6, 7.5], [-6, 7, 6.5]].forEach(([dx, dy, r]) => { ctx.beginPath(); ctx.arc(x + dx * s, y + dy * s, r * s, 0, 7); ctx.fill(); }); }
+function halo(ctx, s, x, y, a, sz, b) { ctx.font = `${b ? "bold " : ""}${sz}px Calibri, sans-serif`; const w = ctx.measureText(s).width + 6, x0 = a === "center" ? x - w / 2 : x - 3; ctx.fillStyle = "rgba(251,250,254,.92)"; ctx.fillRect(x0, y - sz, w, sz + 4); }
+function drawForrester(ctx, w, h, L, v, mx, ph, o = {}) {
+  const lw = Math.min(118, w * 0.2), lh = Math.min(84, h * 0.3), P = {}, colLv = [COL.blue, COL.coral, COL.teal, COL.violet];
+  Object.entries(L.lv).forEach(([id, [u, vv, lab]], i) => P[id] = { x: u * w, y: vv * h, t: "lv", lab, col: colLv[i % 4] });
+  Object.entries(L.cl).forEach(([id, [u, vv]]) => P[id] = { x: u * w, y: vv * h, t: "cl" });
+  Object.entries(L.k).forEach(([id, [u, vv, lab]]) => P[id] = { x: u * w, y: vv * h, t: "k", lab });
+  const att = (A, B) => { if (A.t !== "lv") return [A.x + (A.t === "cl" ? Math.sign(B.x - A.x) * (Math.abs(B.x - A.x) > Math.abs(B.y - A.y) ? 20 : 0) : 0), A.y + (Math.abs(B.y - A.y) > Math.abs(B.x - A.x) ? Math.sign(B.y - A.y) * 14 : 0)]; return Math.abs(B.x - A.x) >= Math.abs(B.y - A.y) ? [A.x + Math.sign(B.x - A.x) * lw / 2, A.y] : [A.x, A.y + Math.sign(B.y - A.y) * lh / 2]; };
+  L.fl.forEach(([id, a, b, lab]) => { const A = P[a], B = P[b], s = att(A, B), e = att(B, A); P[id] = { x: (s[0] + e[0]) / 2, y: (s[1] + e[1]) / 2, t: "fl", lab, s, e }; });
+  // conectores de información (detrás)
+  L.ln.forEach(([a, b]) => { const A = P[a], B = P[b]; if (!A || !B) return; const dx = B.x - A.x, dy = B.y - A.y, l = Math.hypot(dx, dy) || 1, ra = A.t === "lv" ? Math.min(lw, lh) / 2 : 14, rb = B.t === "fl" ? 17 : 16, sx = A.x + dx / l * ra, sy = A.y + dy / l * ra, ex = B.x - dx / l * rb, ey = B.y - dy / l * rb, cx = (sx + ex) / 2 - dy / l * 22, cy = (sy + ey) / 2 + dx / l * 22;
+    ctx.strokeStyle = COL.violet; ctx.globalAlpha = 0.75; ctx.lineWidth = 1.4; ctx.setLineDash([4, 4]); ctx.lineDashOffset = -TCLOCK * 14; ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(cx, cy, ex, ey); ctx.stroke(); ctx.setLineDash([]); ctx.lineDashOffset = 0; arrowHead(ctx, ex, ey, Math.atan2(ey - cy, ex - cx), 8, COL.violet); ctx.globalAlpha = 1; });
+  // tuberías y válvulas
+  L.fl.forEach(([id, a, b, lab]) => { const F = P[id], [sx, sy] = F.s, [ex, ey] = F.e, L2 = Math.hypot(ex - sx, ey - sy) || 1, ux = (ex - sx) / L2, uy = (ey - sy) / L2, nx = -uy * 4, ny = ux * 4, rate = v[id] || 0, rs = o.rs || 1;
+    ctx.strokeStyle = COL.ink2; ctx.lineWidth = 2; for (const sg of [1, -1]) { ctx.beginPath(); ctx.moveTo(sx + nx * sg, sy + ny * sg); ctx.lineTo(ex - ux * 8 + nx * sg, ey - uy * 8 + ny * sg); ctx.stroke(); } arrowHead(ctx, ex, ey, Math.atan2(uy, ux), 14, COL.ink2);
+    ph[id] = ((ph[id] || 0) + Math.min(3, rate / rs) * 0.012) % 1; const np = Math.round(clamp(rate / rs * 6, rate > 1e-6 ? 1 : 0, 8));
+    for (let i = 0; i < np; i++) { const t = (ph[id] + i / np) % 1; disc(ctx, sx + (ex - sx) * t * 0.92, sy + (ey - sy) * t * 0.92, 3.2, COL.amber); }
+    const vx = F.x, vy = F.y, ang = Math.atan2(uy, ux); ctx.save(); ctx.translate(vx, vy); ctx.rotate(ang); ctx.fillStyle = "#fff"; ctx.strokeStyle = COL.ink; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-10, -9); ctx.lineTo(10, 9); ctx.lineTo(10, -9); ctx.lineTo(-10, 9); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
+    const rot = (ph[id] || 0) * Math.PI * 8, hv = Math.abs(uy) > 0.5, hx = hv ? -1 : 0, hy = hv ? 0 : -1; ctx.strokeStyle = COL.ink; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(vx, vy); ctx.lineTo(vx + hx * 15, vy + hy * 15); ctx.stroke(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(vx + hx * 20, vy + hy * 20, 6, 0, 7); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.moveTo(vx + hx * 20 - 5 * Math.cos(rot), vy + hy * 20 - 5 * Math.sin(rot)); ctx.lineTo(vx + hx * 20 + 5 * Math.cos(rot), vy + hy * 20 + 5 * Math.sin(rot)); ctx.stroke();
+    const vert = Math.abs(uy) > 0.5; halo(ctx, lab, vx + (vert ? 16 : 0), vy + (vert ? -2 : 24), vert ? "left" : "center", 12, true); halo(ctx, fx(rate, rate < 10 ? 2 : 1), vx + (vert ? 16 : 0), vy + (vert ? 13 : 38), vert ? "left" : "center", 11); txt(ctx, lab, vx + (vert ? 16 : 0), vy + (vert ? -2 : 24), { a: vert ? "left" : "center", b: true, s: 12 }); txt(ctx, fx(rate, rate < 10 ? 2 : 1), vx + (vert ? 16 : 0), vy + (vert ? 13 : 38), { a: vert ? "left" : "center", s: 11, c: COL.violet, mono: true }); });
+  // nubes, niveles, constantes
+  Object.values(P).forEach(Q => { if (Q.t === "cl") drawCloud(ctx, Q.x, Q.y, 0.9); });
+  Object.entries(P).forEach(([id, Q]) => { if (Q.t !== "lv") return; const x = Q.x - lw / 2, y = Q.y - lh / 2, m = (mx && mx[id]) || 1, f = clamp((v[id] || 0) / m, 0, 1), fh = f * (lh - 4);
+    ctx.fillStyle = "#fff"; ctx.fillRect(x, y, lw, lh); ctx.save(); ctx.beginPath(); ctx.rect(x + 2, y + 2, lw - 4, lh - 4); ctx.clip(); ctx.fillStyle = Q.col; ctx.globalAlpha = 0.28; ctx.beginPath(); ctx.moveTo(x, y + lh); for (let k = 0; k <= 20; k++) { const xx = x + lw * k / 20; ctx.lineTo(xx, y + lh - 2 - fh + Math.sin(TCLOCK * 3 + k * 0.7) * (f > 0.01 ? 2 : 0)); } ctx.lineTo(x + lw, y + lh); ctx.closePath(); ctx.fill(); ctx.restore(); ctx.globalAlpha = 1;
+    ctx.strokeStyle = COL.ink; ctx.lineWidth = 2.2; ctx.strokeRect(x, y, lw, lh); txt(ctx, Q.lab, Q.x, Q.y - 6, { a: "center", b: true, s: 13 }); txt(ctx, fx(v[id], Math.abs(v[id]) < 100 ? 1 : 0), Q.x, Q.y + 16, { a: "center", b: true, s: 15, c: Q.col, mono: true }); });
+  Object.entries(P).forEach(([id, Q]) => { if (Q.t !== "k") return; ctx.fillStyle = "#FFF6DD"; ctx.strokeStyle = COL.amber; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(Q.x, Q.y - 11); ctx.lineTo(Q.x + 11, Q.y); ctx.lineTo(Q.x, Q.y + 11); ctx.lineTo(Q.x - 11, Q.y); ctx.closePath(); ctx.fill(); ctx.stroke();
+    const below = Q.y < h * 0.3; halo(ctx, `${Q.lab} = ${v[id] !== undefined ? +(+v[id]).toFixed(3) : ""}`, Q.x, Q.y + (below ? 26 : -16), "center", 11, true); txt(ctx, `${Q.lab} = ${v[id] !== undefined ? +(+v[id]).toFixed(3) : ""}`, Q.x, Q.y + (below ? 26 : -16), { a: "center", s: 11, b: true, c: COL.ink2 }); });
+}
+ANIM.frr = {
+  tick(dt) { const M = FRR[FR.k]; if (!FR.play || FR.t >= M.T) return; const p = frPars(), dT = Math.min(dt * num("rSpd"), M.T - FR.t), n = Math.max(1, Math.ceil(dT / 0.05)), h = dT / n;
+    for (let i = 0; i < n; i++) { FR.x = rk4((t, x) => M.f(t, x, p), FR.x, FR.t, h); FR.t += h; } FR.hist.push([FR.t, ...frLevels(M, M.v(FR.t, FR.x, p))]); if (FR.t >= M.T - 1e-9) { FR.play = false; $("rPlay").textContent = "Terminado"; } },
+  draw() {
+    const M = FRR[FR.k], p = frPars(), v = M.v(FR.t, FR.x, p), { ctx, w, h } = canvas("cvR0"), mx = M.max(p);
+    if (FR.k === "ban") mx.S = Math.max(2000, ...FR.hist.map(r => r[1])) * 1.05;
+    ctx.fillStyle = "#FBFAFE"; ctx.fillRect(0, 0, w, h); drawForrester(ctx, w, h, M.L, v, mx, FR.ph, { rs: M.rs });
+    txt(ctx, `t = ${fx(FR.t, 1)} ${M.unit}`, 10, h - 10, { b: true, c: COL.muted });
+    $("rEq").innerHTML = M.eq(v, p).map(([s, val]) => s + (val !== null ? `   <span class="v">= ${fx(val, Math.abs(val) < 10 ? 3 : 1)}</span>` : "")).join("\n");
+    const { ctx: c2, w: w2, h: h2 } = canvas("cvR1"), H = FR.hist, ids = Object.keys(M.L.lv), ys = H.flatMap(r => r.slice(1)), ym = Math.max(10, ...ys) * 1.08, yn = Math.min(0, ...ys) * 1.08;
+    const A = axes(c2, w2, h2, 0, M.T, yn, ym, M.unit, "nivel", 0, 0, { pl: 56 }), cols = [COL.blue, COL.coral, COL.teal, COL.violet];
+    ids.forEach((id, j) => path(c2, H.map(r => [A.X(r[0]), A.Y(r[j + 1])]), cols[j], 2.4)); legend(c2, ids.map((id, j) => [M.L.lv[id][2], cols[j]]), A.pl + 10, P0.t + 10);
+  }
+};
+
+/* ======================= 8 · ETAPAS ======================= */
+function sirRun(beta, d, o = {}) { const N = 5000, V = o.V || 0, dt = 0.1, T = o.T || 150; let x = [N - 5 - V, 5, V]; const out = [[0, ...x]]; const f = (t, s) => { const c = beta * s[0] * s[1] / N, r = s[1] / d; return [-c, c - r, r]; }; for (let k = 1; k <= T / dt; k++) { x = rk4(f, x, 0, dt); if (k % 5 === 0) out.push([k * dt, ...x]); } return out; }
+const sirPeak = R => R.reduce((m, r) => r[2] > m[1] ? [r[0], r[2]] : m, [0, 0]);
+const ET = { step: 0, t: 0, play: true, base: null, mc: [], chk: 0, loop: 0, dots: null };
+const ESTEPS = ["1 · Problema", "2 · Conceptualización", "3 · Formalización", "4 · Comportamiento", "5 · Evaluación", "6 · Explotación"];
+function etDots() { if (ET.dots) return; const R = mulberry32(42); ET.dots = Array.from({ length: 160 }, () => ({ x: R(), y: R(), a: R() * 6.28, sp: 0.03 + 0.05 * R() })); }
+function campus(ctx, w, h, frac, label) {
+  ctx.fillStyle = "#EFF6EC"; ctx.fillRect(0, 0, w, h); ctx.fillStyle = "#DCE6F4"; [[.05, .1, .25, .3], [.7, .08, .25, .28], [.38, .62, .26, .3]].forEach(([x, y, a, b]) => { rr(ctx, x * w, y * h, a * w, b * h, 8); ctx.fill(); });
+  txt(ctx, "Biblioteca", .175 * w, .27 * h, { a: "center", s: 11, c: COL.muted, b: true }); txt(ctx, "Aulas", .825 * w, .24 * h, { a: "center", s: 11, c: COL.muted, b: true }); txt(ctx, "Cafetería", .51 * w, .8 * h, { a: "center", s: 11, c: COL.muted, b: true });
+  const n = ET.dots.length, nR = Math.round(frac[2] * n), nI = Math.round(frac[1] * n);
+  ET.dots.forEach((d, k) => { const st = k < nR ? 2 : k < nR + nI ? 1 : 0, col = [COL.blue, COL.coral, COL.teal][st]; const x = 10 + d.x * (w - 20), y = 10 + d.y * (h - 20); if (st === 1) { ctx.globalAlpha = 0.25; disc(ctx, x, y, 9 + 2 * Math.sin(TCLOCK * 5 + k), COL.coral); ctx.globalAlpha = 1; } disc(ctx, x, y, 4, col); });
+  ctx.fillStyle = "rgba(255,255,255,.88)"; rr(ctx, 8, h - 34, Math.min(w - 16, 360), 26, 8); ctx.fill(); txt(ctx, label, 16, h - 16, { b: true, s: 12 });
+}
+function etMoveDots(dt) { etDots(); ET.dots.forEach(d => { d.a += (rnd() - 0.5) * 1.2; d.x += Math.cos(d.a) * d.sp * dt; d.y += Math.sin(d.a) * d.sp * dt; if (d.x < 0 || d.x > 1) { d.a = Math.PI - d.a; d.x = clamp(d.x, 0, 1); } if (d.y < 0 || d.y > 1) { d.a = -d.a; d.y = clamp(d.y, 0, 1); } }); }
+const SIRCLD = { nodes: [["S", .15, .3, "Susceptibles"], ["C", .5, .12, "Contagios"], ["I", .5, .62, "Infectados"], ["R", .86, .62, "Recuperaciones"], ["B", .86, .15, "Contactos β"]], edges: [["S", "C", "+"], ["C", "S", "-"], ["I", "C", "+"], ["C", "I", "+"], ["I", "R", "+"], ["R", "I", "-"], ["B", "C", "+"]] };
+function etSelect(i) {
+  ET.step = i; ET.t = 0; ET.play = true; ET.chk = 0; ET.mc = []; etDots(); if (!ET.base) ET.base = sirRun(0.35, 10);
+  $("eSteps").querySelectorAll("button").forEach((b, k) => { b.classList.toggle("on", k === i); b.classList.toggle("done", k < i); });
+  const L = $("eLeft"), R = $("eRight"), pk = sirPeak(ET.base), fin = ET.base.at(-1)[3];
+  const nav = `<div class="btns" style="margin-top:14px">${i ? `<button class="b alt" onclick="etSelect(${i - 1})">← Anterior</button>` : ""}${i < 5 ? `<button class="b go" onclick="etSelect(${i + 1})">Siguiente etapa →</button>` : ""}</div>`;
+  if (i === 0) { L.innerHTML = `<h3>Definición del problema</h3><p style="font-size:14px">Un virus respiratorio llega al campus con <b>5 estudiantes infectados</b> entre <b>5 000</b>. La dirección pregunta:</p><div class="formula">¿Cuántos estudiantes enfermarán a la vez en el peor momento y cuándo ocurrirá? ¿Qué medida reduce más ese pico?</div><div class="kv" style="margin-top:10px"><b>Horizonte</b><span>120 días</span><b>Variable clave</b><span>Infectados simultáneos</span><b>Modo de referencia</b><span>sube, alcanza un pico y cae</span><b>Frontera</b><span>campus cerrado (N constante)</span></div>${nav}`;
+    R.innerHTML = `<div class="card w"><h3>El campus (azul: susceptible · rojo: infectado · verde: recuperado)</h3><canvas id="cvE0" data-h="250"></canvas></div><div class="card w"><h3>Modo de referencia esperado (boceto)</h3><canvas id="cvE1" data-h="200"></canvas></div>`; }
+  if (i === 1) { L.innerHTML = `<h3>Conceptualización</h3><p style="font-size:14px">Identificamos variables y relaciones causales. Tres bucles explican el comportamiento:</p><div class="loopitem"><span class="tag ok">R</span>Más infectados → más contagios → más infectados (crecimiento explosivo).</div><div class="loopitem"><span class="tag bad">B1</span>Más contagios → menos susceptibles → menos contagios (agotamiento).</div><div class="loopitem"><span class="tag bad">B2</span>Más infectados → más recuperaciones → menos infectados.</div><p class="cap">Al principio domina R; cuando los susceptibles escasean, domina B1 y aparece el pico.</p>${nav}`;
+    R.innerHTML = `<div class="card w"><h3>Diagrama causal (se resalta un bucle cada 3 s)</h3><canvas id="cvE0" data-h="360"></canvas></div><div class="msg" id="eMsg"></div>`; }
+  if (i === 2) { L.innerHTML = `<h3>Formalización</h3><p style="font-size:14px">Convertimos el diagrama causal en niveles, flujos y ecuaciones.</p><div class="eq">S = INTEG(−Contagios, 4995)
+I = INTEG(Contagios − Recuperación, 5)
+R = INTEG(Recuperación, 0)
+Contagios    = β · S · I / N
+Recuperación = I / Duración
+β = 0.35 /día · Duración = 10 días · N = 5000
+<span class="v">R₀ = β · Duración = 3.5</span></div><p class="cap">Unidades: los niveles en personas; los flujos en personas/día; β en 1/día. Paso de integración: 0.1 días (RK4).</p>${nav}`;
+    R.innerHTML = `<div class="card w"><h3>Diagrama de Forrester del modelo</h3><canvas id="cvE0" data-h="330"></canvas></div>`; }
+  if (i === 3) { L.innerHTML = `<h3>Comportamiento del modelo</h3><p style="font-size:14px">Simulamos 120 días. Observa cómo los bucles cambian de dominancia.</p><div class="stats" id="eStats"></div><div class="btns"><button class="b go" id="ePlay">Pausar</button><button class="b alt" onclick="ET.t=0">Repetir</button></div>${nav}`;
+    R.innerHTML = `<div class="card w"><canvas id="cvE0" data-h="230"></canvas></div><div class="card w"><h3>S, I y R en el tiempo</h3><canvas id="cvE1" data-h="230"></canvas></div>`; playBtn("ePlay", ET); }
+  if (i === 4) { const b0 = sirRun(0, 10), cons = Math.max(...ET.base.map(r => Math.abs(r[1] + r[2] + r[3] - 5000))), z = sirRun(0.35, 10).map(r => r); ET.checks = [["Consistencia dimensional: personas/día en todos los flujos", true], [`Conservación: S + I + R = 5000 (error máx. ${cons.toExponential(1)})`, cons < 1e-6], [`Condición extrema β = 0: los infectados no crecen (I final = ${fx(b0.at(-1)[2], 3)})`, b0.at(-1)[2] <= 5], [`Reproduce el modo de referencia: sube, pico el día ${fx(pk[0], 0)} y cae`, z.at(-1)[2] < pk[1] / 10], ["Ningún nivel se vuelve negativo", ET.base.every(r => r[1] >= -1e-9 && r[2] >= -1e-9)], ["Sensibilidad (Monte Carlo): el pico sigue existiendo con β ∈ [0.28, 0.42] y Duración ∈ [8, 12]", true]];
+    L.innerHTML = `<h3>Evaluación (validación)</h3><p style="font-size:14px">¿Merece confianza el modelo? Aplicamos pruebas de estructura y de comportamiento.</p><div id="eChk"></div>${nav}`;
+    R.innerHTML = `<div class="card w"><h3>Análisis de sensibilidad: 60 simulaciones Monte Carlo</h3><canvas id="cvE0" data-h="330"></canvas></div><div class="stats" id="eStats"></div>`; }
+  if (i === 5) { L.innerHTML = `<h3>Explotación: diseño de políticas</h3><p style="font-size:14px">Probamos medidas y comparamos contra el caso base.</p>
+    <label for="eP1">Reducción de contactos (tapabocas, aforos): <b id="eP1V">0</b> %</label><input id="eP1" type="range" min="0" max="70" step="5" value="0">
+    <label for="eP2">Estudiantes vacunados antes del brote: <b id="eP2V">0</b> %</label><input id="eP2" type="range" min="0" max="80" step="5" value="0">
+    <label for="eP3">Aislamiento temprano (acorta la fase contagiosa): <b id="eP3V">0</b> %</label><input id="eP3" type="range" min="0" max="60" step="5" value="0">
+    <div class="msg" id="eRec" style="margin-top:12px"></div>${nav}`;
+    R.innerHTML = `<div class="card w"><h3>Infectados: caso base frente a la política</h3><canvas id="cvE0" data-h="300"></canvas></div><div class="stats" id="eStats"></div>`;
+    ["eP1", "eP2", "eP3"].forEach(id => $(id).oninput = () => { $(id + "V").textContent = $(id).value; ET.t = 0; }); }
+}
+ANIM.eta = {
+  tick(dt) { etMoveDots(dt); if (ET.play) ET.t += dt * 12; ET.chk += dt; if (ET.step === 4 && ET.mc.length < 60) { const R = mulberry32(100 + ET.mc.length); ET.mc.push(sirRun(0.28 + 0.14 * R(), 8 + 4 * R(), { T: 120 })); } },
+  draw() {
+    const s = ET.step, B = ET.base, pk = sirPeak(B), tt = Math.min(ET.t, 120), idx = Math.min(B.length - 1, Math.round(tt * 2)), row = B[idx], frac = [row[1] / 5000, row[2] / 5000, row[3] / 5000];
+    if (s === 0) { const tl = (ET.t * 0.5) % 125; const r = B[Math.min(B.length - 1, Math.round(tl * 2))]; const { ctx, w, h } = canvas("cvE0"); campus(ctx, w, h, [r[1] / 5000, r[2] / 5000, r[3] / 5000], `Día ${fx(tl, 0)}: ${fx(r[2], 0)} infectados`);
+      const c = canvas("cvE1"), A = axes(c.ctx, c.w, c.h, 0, 120, 0, 2000, "días", "infectados", 0, 0), pts = []; for (let t = 0; t <= Math.min(120, ET.t * 1.5); t += 1) { const y = 1700 * Math.exp(-(((t - 30) / 12) ** 2)) + Math.sin(t * 1.7) * 25; pts.push([A.X(t), A.Y(Math.max(0, y))]); }
+      path(c.ctx, pts, COL.coral, 3, [8, 5]); if (ET.t * 1.5 > 40) { txt(c.ctx, "¿qué tan alto?", A.X(32), A.Y(1880), { a: "center", b: true, c: COL.violet }); txt(c.ctx, "¿cuándo?", A.X(30), A.Y(150), { a: "center", b: true, c: COL.violet }); } return; }
+    if (s === 1) { const { ctx, w, h } = canvas("cvE0"), P = SIRCLD.nodes.map(([id, u, v, label]) => ({ id, x: 70 + u * (w - 140), y: 30 + v * (h - 60), label })), E = SIRCLD.edges.map(([a, b, sg]) => ({ a, b, s: sg, bend: 0.22 })), cyc = findCycles(P, E), L = cyc[Math.floor(ET.chk / 3) % cyc.length];
+      const nm = id => P.find(p => p.id === id).label, ll = cyc.map(c => { const pp = P.filter(p => c.nodes.includes(p.id)); return { x: pp.reduce((a, p) => a + p.x, 0) / pp.length, y: pp.reduce((a, p) => a + p.y, 0) / pp.length, R: c.R }; });
+      drawCLD(ctx, P, E, { highlight: new Set(L.edges), loops: ll });
+      const g = E[L.edges[Math.floor((ET.chk % 3) / 3 * L.edges.length)]]._g; if (g) { const [x, y] = qpt(g, ((ET.chk % 3) / 3 * L.edges.length) % 1); disc(ctx, x, y, 7, COL.amber); }
+      $("eMsg").className = "msg " + (L.R ? "ok" : "bad"); $("eMsg").innerHTML = `Bucle resaltado: <b>${L.nodes.map(nm).join(" → ")} → ${nm(L.nodes[0])}</b> · ${L.neg} enlace(s) negativo(s) → <b>${L.R ? "refuerzo (R)" : "balance (B)"}</b>`; return; }
+    if (s === 2) { const { ctx, w, h } = canvas("cvE0"), r = B[Math.min(B.length - 1, Math.round(((ET.t * 0.4) % 120) * 2))], v = { S: r[1], I: r[2], R: r[3], Con: 0.35 * r[1] * r[2] / 5000, Rec: r[2] / 10, beta: 0.35, d: 10, N: 5000 };
+      ctx.fillStyle = "#FBFAFE"; ctx.fillRect(0, 0, w, h); ET.ph2 = ET.ph2 || {}; drawForrester(ctx, w, h, FRR.sir.L, v, { S: 5000, I: 5000, R: 5000 }, ET.ph2, { rs: 250 }); txt(ctx, `Día ${fx(r[0], 0)}`, 10, h - 10, { b: true, c: COL.muted }); return; }
+    if (s === 3) { const { ctx, w, h } = canvas("cvE0"); campus(ctx, w, h, frac, `Día ${fx(tt, 0)} · S ${fx(row[1], 0)} · I ${fx(row[2], 0)} · R ${fx(row[3], 0)}`);
+      const c = canvas("cvE1"), A = axes(c.ctx, c.w, c.h, 0, 120, 0, 5000, "días", "personas", 0, 0, { pl: 52 }), seg = B.filter(r => r[0] <= tt);
+      [[1, COL.blue], [2, COL.coral], [3, COL.teal]].forEach(([j, col]) => path(c.ctx, seg.map(r => [A.X(r[0]), A.Y(r[j])]), col, 2.6));
+      if (tt >= pk[0]) { disc(c.ctx, A.X(pk[0]), A.Y(pk[1]), 6, COL.coral); txt(c.ctx, `pico: ${fx(pk[1], 0)} el día ${fx(pk[0], 0)}`, A.X(pk[0]) + 8, A.Y(pk[1]) - 6, { b: true, c: COL.coral }); }
+      legend(c.ctx, [["Susceptibles", COL.blue], ["Infectados", COL.coral], ["Recuperados", COL.teal]], c.w - 130, P0.t + 10);
+      const dom = row[1] / 5000 * 3.5 > 1 ? "R (contagio) domina: I crece" : "B1 (agotamiento) domina: I decrece";
+      $("eStats").innerHTML = stat("Día", fx(tt, 0)) + stat("Infectados ahora", fx(row[2], 0)) + stat("Pico", tt >= pk[0] ? `${fx(pk[1], 0)} (día ${fx(pk[0], 0)})` : "…") + stat("Enfermaron en total", fx(row[2] + row[3], 0)) + `<div class="stat" style="grid-column:1/-1"><span>Bucle dominante</span><b style="font-size:15px">${dom}</b></div>`; return; }
+    if (s === 4) { const { ctx, w, h } = canvas("cvE0"), A = axes(ctx, w, h, 0, 120, 0, 2600, "días", "infectados", 0, 0, { pl: 52 });
+      ctx.globalAlpha = 0.18; ET.mc.forEach(R => path(ctx, R.map(r => [A.X(r[0]), A.Y(r[2])]), COL.violet, 1.4)); ctx.globalAlpha = 1; path(ctx, B.filter(r => r[0] <= 120).map(r => [A.X(r[0]), A.Y(r[2])]), COL.coral, 3);
+      const pks = ET.mc.map(sirPeak), hs = pks.map(p => p[1]).sort((a, b) => a - b), ds = pks.map(p => p[0]).sort((a, b) => a - b), q = (a, f) => a[Math.min(a.length - 1, Math.floor(f * a.length))] || 0;
+      legend(ctx, [["caso base", COL.coral], ["simulaciones Monte Carlo", COL.violet]], w - 190, P0.t + 10);
+      $("eStats").innerHTML = stat("Simulaciones", ET.mc.length) + stat("Pico (P5–P95)", `${fx(q(hs, .05), 0)} – ${fx(q(hs, .95), 0)}`) + stat("Día del pico (P5–P95)", `${fx(q(ds, .05), 0)} – ${fx(q(ds, .95), 0)}`);
+      const k = Math.min(ET.checks.length, Math.floor(ET.chk / 0.7)); $("eChk").innerHTML = ET.checks.map(([t, ok], j) => `<div class="check"><span class="ic ${j < k ? (ok ? "ok" : "bad") : ""}">${j < k ? (ok ? "✓" : "✗") : "…"}</span>${t}</div>`).join(""); return; }
+    if (s === 5) { const c = 1 - num("eP1") / 100, Vf = num("eP2") / 100, q = num("eP3") / 100, beta = 0.35 * c, d = 10 * (1 - 0.5 * q), Pr = sirRun(beta, d, { V: Math.round(5000 * Vf) }), pB = sirPeak(B), pP = sirPeak(Pr), fB = 5000 - B.at(-1)[1], fP = 5000 - Pr.at(-1)[1] - Math.round(5000 * Vf), Re = beta * d * (1 - Vf);
+      const { ctx, w, h } = canvas("cvE0"), A = axes(ctx, w, h, 0, 150, 0, 2000, "días", "infectados", 0, 0, { pl: 52 }), tt2 = Math.min(150, ET.t * 1.4);
+      ctx.fillStyle = "rgba(228,87,46,.06)"; ctx.fillRect(A.pl, A.Y(500), w - A.pl - P0.r, A.Y(0) - A.Y(500)); path(ctx, [[A.pl, A.Y(500)], [w - P0.r, A.Y(500)]], COL.amber, 1.5, [6, 4]); txt(ctx, "capacidad de la enfermería: 500", w - P0.r - 6, A.Y(500) - 6, { a: "right", s: 11, b: true, c: COL.amber });
+      path(ctx, B.filter(r => r[0] <= tt2).map(r => [A.X(r[0]), A.Y(r[2])]), COL.muted, 2.4, [6, 4]); path(ctx, Pr.filter(r => r[0] <= tt2).map(r => [A.X(r[0]), A.Y(r[2])]), COL.teal, 3.2);
+      legend(ctx, [["caso base", COL.muted], ["con la política", COL.teal]], w - 150, P0.t + 30);
+      $("eStats").innerHTML = stat("R efectivo", fx(Re)) + stat("Pico base → política", `${fx(pB[1], 0)} → ${fx(pP[1], 0)}`) + stat("Día del pico", Pr.some(r => r[2] > 1.5) ? fx(pP[0], 0) : "sin brote") + stat("Enfermos totales", `${fx(fB, 0)} → ${fx(Math.max(0, fP), 0)}`);
+      const m = $("eRec"); if (Re < 1) { m.className = "msg ok"; m.innerHTML = `<b>R efectivo &lt; 1:</b> el brote no despega. La combinación elegida rompe el bucle de refuerzo.`; } else if (pP[1] <= 500) { m.className = "msg ok"; m.innerHTML = `El pico (${fx(pP[1], 0)}) queda por debajo de la capacidad de la enfermería: <b>política aceptable</b>, aunque la epidemia ocurre.`; } else { m.className = "msg bad"; m.innerHTML = `El pico (${fx(pP[1], 0)}) supera la capacidad de 500. Combina medidas: cada una debilita un enlace distinto del bucle R.`; } }
+  }
+};
+
+/* ======================= arranque ======================= */
+function goTab(id) { document.querySelectorAll("nav button").forEach(x => x.classList.toggle("on", x.dataset.t === id)); document.querySelectorAll("section").forEach(s => s.classList.toggle("on", s.id === id)); if (id === "eta" && !$("eLeft").innerHTML) etSelect(0); }
+buildCases();
+$("nav").addEventListener("click", ev => { const b = ev.target.closest("button"); if (b) goTab(b.dataset.t); });
+$("cases").addEventListener("click", ev => { const c = ev.target.closest("[data-go]"); if (c) { goTab(c.dataset.go); window.scrollTo({ top: 0, behavior: "smooth" }); } });
+// 1 bañera
+playBtn("sPlay", BA); $("sStep").onclick = () => { const s = $("sIn"); s.value = Math.min(+s.max, +s.value + 5); BA.step = 1.5; };
+$("sReset").onclick = () => { baReset(); BA.play = true; $("sPlay").textContent = "Pausar"; $("sPlay").classList.add("go"); };
+// 2 modos
+$("mBtns").innerHTML = Object.entries(MODES).map(([k, M]) => `<button data-m="${k}">${M.n}</button>`).join("");
+$("mBtns").addEventListener("click", ev => { const b = ev.target.closest("button"); if (b) moSelect(b.dataset.m); });
+playBtn("mPlay", MO); $("mReset").onclick = moReset; moSelect("exp");
+// 3 fase
+$("fPre").innerHTML = FPRE.map((p, i) => `<option value="${i}">${p.n}</option>`).join(""); $("fPre").onchange = () => faSelect(+$("fPre").value);
+playBtn("fPlay", FA); $("fClear").onclick = () => { FA.traj = []; FA.last = null; }; $("cvF0").addEventListener("click", faClick); faSelect(0);
+// 4 bifurcaciones
+$("bBtns").innerHTML = Object.entries(BIF).map(([k, B]) => `<button data-b="${k}">${B.n}</button>`).join("");
+$("bBtns").addEventListener("click", ev => { const b = ev.target.closest("button"); if (b) bfSelect(b.dataset.b); });
+$("bSweep").onclick = () => { BF.sweep = !BF.sweep; $("bSweep").textContent = BF.sweep ? "Detener barrido" : "Barrido automático"; };
+$("bMu").oninput = () => { if (BF.k !== "log") bfBalls(); BF.cob = [0.2]; }; bfSelect("sn"); $("cB").step = "any"; $("uR").step = "any";
+// 5 catástrofes
+$("cNav").addEventListener("click", ev => { const b = ev.target.closest("button"); if (!b) return; $("cNav").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); $("c_cusp").style.display = b.dataset.c === "cusp" ? "" : "none"; $("c_bud").style.display = b.dataset.c === "bud" ? "" : "none"; });
+$("cSweep").onclick = () => { CU.sweep = !CU.sweep; $("cSweep").textContent = CU.sweep ? "Detener barrido" : "Barrido de b (ida y vuelta)"; }; $("cClr").onclick = cuClear;
+$("cvC1").addEventListener("pointerdown", ev => { CU.drag = true; cuPointer(ev); }); $("cvC1").addEventListener("pointermove", ev => { if (CU.drag) cuPointer(ev); }); window.addEventListener("pointerup", () => { CU.drag = false; GE.drag = null; });
+$("uSweep").onclick = () => { BU.sweep = !BU.sweep; $("uSweep").textContent = BU.sweep ? "Detener ciclo" : "Ciclo: crece y se tala el bosque"; }; $("uClr").onclick = buClear;
+// 6 editor causal
+$("gPre").innerHTML = GPRE.map((p, i) => `<option value="${i}">${p[0]}</option>`).join(""); $("gPre").onchange = () => gLoad(+$("gPre").value);
+$("gTools").addEventListener("click", ev => { const b = ev.target.closest("button"); if (!b) return; GE.tool = b.dataset.k; GE.linkFrom = null; $("gTools").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); $("gHelp").textContent = GHELP[GE.tool]; });
+$("gHelp").textContent = GHELP.move; const cg = $("cvG0"); cg.style.touchAction = "none"; cg.addEventListener("pointerdown", gDown); cg.addEventListener("pointermove", gMove); gLoad(0);
+// 7 Forrester
+$("rBtns").innerHTML = Object.entries(FRR).map(([k, M]) => `<button data-r="${k}">${M.n}</button>`).join("");
+$("rBtns").addEventListener("click", ev => { const b = ev.target.closest("button"); if (b) frSelect(b.dataset.r); });
+$("rPlay").onclick = () => { if (FR.t >= FRR[FR.k].T - 1e-9) { frReset(); return; } FR.play = !FR.play; $("rPlay").textContent = FR.play ? "Pausar" : "Continuar"; $("rPlay").classList.toggle("go", FR.play); }; $("rReset").onclick = frReset; frSelect("pop");
+// 8 etapas
+$("eSteps").innerHTML = ESTEPS.map((s, i) => `<button onclick="etSelect(${i})">${s}</button>`).join(""); etSelect(0);
+requestAnimationFrame(mainLoop);
+
+</script>
+</body>
+</html>
