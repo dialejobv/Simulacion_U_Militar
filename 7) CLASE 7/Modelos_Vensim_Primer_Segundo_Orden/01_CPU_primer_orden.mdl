@@ -1,0 +1,160 @@
+{UTF-8}
+Temperatura CPU=
+	INTEG (
+			Calentamiento-Enfriamiento,
+				Temperatura ambiente+Potencia en reposo*Resistencia termica)
+	~	C
+	~	Nivel: temperatura del procesador. Arranca en el equilibrio de reposo.
+	|
+
+Calentamiento=
+	Potencia/Capacidad termica
+	~	C/s
+	~	Flujo de entrada: la potencia disipada calienta el chip.
+	|
+
+Enfriamiento=
+	(Temperatura CPU-Temperatura ambiente)/(Resistencia termica*Capacidad termica)
+	~	C/s
+	~	Flujo de salida: ley de enfriamiento de Newton.
+	|
+
+Potencia=
+	Potencia en reposo+STEP(Potencia en carga-Potencia en reposo, Inicio de la carga)
+	~	W
+	~	Escalón de carga (por ejemplo, un renderizado).
+	|
+
+Potencia en reposo=
+	15
+	~	W
+	~	
+	|
+
+Potencia en carga=
+	95
+	~	W
+	~	
+	|
+
+Inicio de la carga=
+	30
+	~	s
+	~	
+	|
+
+Resistencia termica=
+	0.4
+	~	C/W
+	~	Disipador. Pruebe 0.75 (disipador sucio) o 0.25 (refrigeración líquida).
+	|
+
+Capacidad termica=
+	50
+	~	J/C
+	~	Masa térmica del chip y el disipador.
+	|
+
+Temperatura ambiente=
+	25
+	~	C
+	~	
+	|
+
+Constante de tiempo=
+	Resistencia termica*Capacidad termica
+	~	s
+	~	tau = R·C. El 63 % del cambio ocurre en tau segundos.
+	|
+
+Temperatura de equilibrio=
+	Temperatura ambiente+Potencia*Resistencia termica
+	~	C
+	~	Hacia donde se dirige la temperatura (objetivo del bucle B).
+	|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 200
+	~	s
+	~	Tiempo final de la simulación.
+	|
+
+INITIAL TIME  = 0
+	~	s
+	~	Tiempo inicial de la simulación.
+	|
+
+SAVEPER  = 
+	TIME STEP
+	~	s [0,?]
+	~	Frecuencia de guardado.
+	|
+
+TIME STEP  = 0.5
+	~	s [0,?]
+	~	Paso de integración (método de Euler).
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,100,0
+12,1,48,150,260,10,8,0,3,0,0,-1,0,0,0
+10,2,Temperatura CPU,360,260,46,26,3,3,0,0,0,0,0,0
+12,3,48,570,260,10,8,0,3,0,0,-1,0,0,0
+1,4,6,2,4,0,0,22,0,0,0,-1--1--1,,1|(289,260)|
+1,5,6,1,100,0,0,22,0,0,0,-1--1--1,,1|(182,260)|
+11,6,48,248,260,6,8,34,3,0,0,1,0,0,0
+10,7,Calentamiento,248,282,44,12,40,3,0,0,-1,0,0,0
+1,8,10,3,4,0,0,22,0,0,0,-1--1--1,,1|(512,260)|
+1,9,10,2,100,0,0,22,0,0,0,-1--1--1,,1|(405,260)|
+11,10,48,471,260,6,8,34,3,0,0,1,0,0,0
+10,11,Enfriamiento,471,282,44,12,40,3,0,0,-1,0,0,0
+10,12,Potencia,250,150,40,12,8,3,0,0,0,0,0,0
+10,13,Potencia en reposo,120,90,40,12,8,3,0,0,0,0,0,0
+10,14,Potencia en carga,260,70,40,12,8,3,0,0,0,0,0,0
+10,15,Inicio de la carga,380,110,40,12,8,3,0,0,0,0,0,0
+10,16,Capacidad termica,360,380,40,12,8,3,0,0,0,0,0,0
+10,17,Resistencia termica,560,380,40,12,8,3,0,0,0,0,0,0
+10,18,Temperatura ambiente,620,150,40,12,8,3,0,0,0,0,0,0
+10,19,Constante de tiempo,460,450,40,12,8,3,0,0,0,0,0,0
+10,20,Temperatura de equilibrio,200,420,40,12,8,3,0,0,0,0,0,0
+1,21,13,12,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,22,14,12,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,23,15,12,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,24,12,6,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,25,16,6,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,26,2,10,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,27,18,10,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,28,17,10,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,29,16,10,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,30,17,19,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,31,16,19,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,32,12,20,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,33,17,20,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+///---\\\
+:L<%^E!@
+1:Current.vdf
+9:Current
+15:0,0,0,0,0,0
+19:100,0
+27:0,
+34:0,
+4:Time
+5:Temperatura CPU
+35:Date
+36:YYYY-MM-DD
+37:2000
+38:1
+39:1
+40:0
+41:0
+42:1
+24:0
+25:200
+26:200

@@ -1,0 +1,212 @@
+{UTF-8}
+Tareas pendientes=
+	INTEG (
+			-Avance,
+				Tamano del proyecto)
+	~	tareas
+	~	
+	|
+
+Novatos=
+	INTEG (
+			Contratacion-Asimilacion,
+				0)
+	~	personas
+	~	
+	|
+
+Expertos=
+	INTEG (
+			Asimilacion,
+				Expertos iniciales)
+	~	personas
+	~	
+	|
+
+Contratacion=
+	Personas a contratar*PULSE(Dia de contratacion, TIME STEP)/TIME STEP
+	~	personas/dia
+	~	Ingreso de nuevos desarrolladores en un solo día.
+	|
+
+Asimilacion=
+	Novatos/Tiempo de asimilacion
+	~	personas/dia
+	~	
+	|
+
+Tamano del equipo=
+	Novatos+Expertos
+	~	personas
+	~	
+	|
+
+Sobrecarga de comunicacion=
+	MIN(0.9, Coeficiente de comunicacion*(Tamano del equipo/10)^2)
+	~	Dmnl
+	~	Brooks: los canales de comunicación crecen como n(n-1)/2.
+	|
+
+Productividad bruta=
+	MAX(0, (Expertos-Tiempo de mentoria*Novatos)*Productividad experto+Novatos*Productividad novato)
+	~	tareas/dia
+	~	Los novatos consumen tiempo de los expertos.
+	|
+
+Avance=
+	IF THEN ELSE(Tareas pendientes>0, Productividad bruta*(1-Sobrecarga de comunicacion), 0)
+	~	tareas/dia
+	~	
+	|
+
+Tamano del proyecto=
+	2000
+	~	tareas
+	~	
+	|
+
+Expertos iniciales=
+	10
+	~	personas
+	~	
+	|
+
+Personas a contratar=
+	0
+	~	personas
+	~	Escenarios: 10 personas el día 0, 100 o 150.
+	|
+
+Dia de contratacion=
+	150
+	~	dia
+	~	
+	|
+
+Tiempo de asimilacion=
+	60
+	~	dia
+	~	
+	|
+
+Coeficiente de comunicacion=
+	0.08
+	~	Dmnl
+	~	
+	|
+
+Tiempo de mentoria=
+	0.5
+	~	Dmnl
+	~	Fracción de un experto que consume cada novato.
+	|
+
+Productividad experto=
+	1
+	~	tareas/persona/dia
+	~	
+	|
+
+Productividad novato=
+	0.2
+	~	tareas/persona/dia
+	~	
+	|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 400
+	~	dia
+	~	Tiempo final de la simulación.
+	|
+
+INITIAL TIME  = 0
+	~	dia
+	~	Tiempo inicial de la simulación.
+	|
+
+SAVEPER  = 
+	TIME STEP
+	~	dia [0,?]
+	~	Frecuencia de guardado.
+	|
+
+TIME STEP  = 0.25
+	~	dia [0,?]
+	~	Paso de integración (método de Euler).
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,100,0
+12,1,48,130,230,10,8,0,3,0,0,-1,0,0,0
+10,2,Novatos,330,230,46,26,3,3,0,0,0,0,0,0
+10,3,Expertos,560,230,46,26,3,3,0,0,0,0,0,0
+10,4,Tareas pendientes,450,480,46,26,3,3,0,0,0,0,0,0
+12,5,48,700,480,10,8,0,3,0,0,-1,0,0,0
+1,6,8,2,4,0,0,22,0,0,0,-1--1--1,,1|(236,230)|
+1,7,8,1,100,0,0,22,0,0,0,-1--1--1,,1|(162,230)|
+11,8,48,212,230,6,8,34,3,0,0,1,0,0,0
+10,9,Contratacion,212,252,44,12,40,3,0,0,-1,0,0,0
+1,10,12,3,4,0,0,22,0,0,0,-1--1--1,,1|(466,230)|
+1,11,12,2,100,0,0,22,0,0,0,-1--1--1,,1|(398,230)|
+11,12,48,445,230,6,8,34,3,0,0,1,0,0,0
+10,13,Asimilacion,445,252,44,12,40,3,0,0,-1,0,0,0
+1,14,16,5,4,0,0,22,0,0,0,-1--1--1,,1|(642,480)|
+1,15,16,4,100,0,0,22,0,0,0,-1--1--1,,1|(518,480)|
+11,16,48,593,480,6,8,34,3,0,0,1,0,0,0
+10,17,Avance,593,502,44,12,40,3,0,0,-1,0,0,0
+10,18,Tamano del equipo,450,340,40,12,8,3,0,0,0,0,0,0
+10,19,Sobrecarga de comunicacion,620,380,40,12,8,3,0,0,0,0,0,0
+10,20,Productividad bruta,330,400,40,12,8,3,0,0,0,0,0,0
+10,21,Personas a contratar,120,120,40,12,8,3,0,0,0,0,0,0
+10,22,Dia de contratacion,240,110,40,12,8,3,0,0,0,0,0,0
+10,23,Tiempo de asimilacion,450,120,40,12,8,3,0,0,0,0,0,0
+10,24,Coeficiente de comunicacion,760,330,40,12,8,3,0,0,0,0,0,0
+10,25,Tiempo de mentoria,200,360,40,12,8,3,0,0,0,0,0,0
+10,26,Productividad experto,200,450,40,12,8,3,0,0,0,0,0,0
+10,27,Productividad novato,260,520,40,12,8,3,0,0,0,0,0,0
+10,28,Expertos iniciales,640,140,40,12,8,3,0,0,0,0,0,0
+10,29,Tamano del proyecto,330,580,40,12,8,3,0,0,0,0,0,0
+1,30,21,8,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,31,22,8,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,32,2,12,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,33,23,12,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,34,2,18,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,35,3,18,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,36,18,19,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,37,24,19,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,38,3,20,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,39,2,20,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,40,25,20,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,41,26,20,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,42,27,20,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,43,20,16,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,44,19,16,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,45,4,16,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+///---\\\
+:L<%^E!@
+1:Current.vdf
+9:Current
+15:0,0,0,0,0,0
+19:100,0
+27:0,
+34:0,
+4:Time
+5:Tareas pendientes
+35:Date
+36:YYYY-MM-DD
+37:2000
+38:1
+39:1
+40:0
+41:0
+42:1
+24:0
+25:400
+26:400

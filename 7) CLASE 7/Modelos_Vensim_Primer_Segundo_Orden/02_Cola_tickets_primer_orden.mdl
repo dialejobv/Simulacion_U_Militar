@@ -1,0 +1,126 @@
+{UTF-8}
+Tickets pendientes=
+	INTEG (
+			Llegadas-Resoluciones,
+				Llegadas normales*Tiempo de resolucion)
+	~	tickets
+	~	Nivel: solicitudes sin resolver en la mesa de ayuda. Arranca en el equilibrio de la ley de Little.
+	|
+
+Llegadas=
+	Llegadas normales+STEP(Llegadas en incidente-Llegadas normales, Hora del incidente)
+	~	tickets/hora
+	~	
+	|
+
+Resoluciones=
+	Tickets pendientes/Tiempo de resolucion
+	~	tickets/hora
+	~	Salida proporcional al nivel: primer orden.
+	|
+
+Llegadas normales=
+	40
+	~	tickets/hora
+	~	
+	|
+
+Llegadas en incidente=
+	70
+	~	tickets/hora
+	~	Escenarios: optimista 55, pesimista 100.
+	|
+
+Hora del incidente=
+	8
+	~	hora
+	~	
+	|
+
+Tiempo de resolucion=
+	2
+	~	hora
+	~	Con más agentes baja a 1.4.
+	|
+
+Tiempo de espera estimado=
+	Tickets pendientes/Llegadas
+	~	hora
+	~	Ley de Little: W = L / lambda.
+	|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 24
+	~	hora
+	~	Tiempo final de la simulación.
+	|
+
+INITIAL TIME  = 0
+	~	hora
+	~	Tiempo inicial de la simulación.
+	|
+
+SAVEPER  = 
+	TIME STEP
+	~	hora [0,?]
+	~	Frecuencia de guardado.
+	|
+
+TIME STEP  = 0.0625
+	~	hora [0,?]
+	~	Paso de integración (método de Euler).
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,100,0
+12,1,48,150,250,10,8,0,3,0,0,-1,0,0,0
+10,2,Tickets pendientes,360,250,46,26,3,3,0,0,0,0,0,0
+12,3,48,570,250,10,8,0,3,0,0,-1,0,0,0
+1,4,6,2,4,0,0,22,0,0,0,-1--1--1,,1|(289,250)|
+1,5,6,1,100,0,0,22,0,0,0,-1--1--1,,1|(182,250)|
+11,6,48,248,250,6,8,34,3,0,0,1,0,0,0
+10,7,Llegadas,248,272,44,12,40,3,0,0,-1,0,0,0
+1,8,10,3,4,0,0,22,0,0,0,-1--1--1,,1|(512,250)|
+1,9,10,2,100,0,0,22,0,0,0,-1--1--1,,1|(405,250)|
+11,10,48,471,250,6,8,34,3,0,0,1,0,0,0
+10,11,Resoluciones,471,272,44,12,40,3,0,0,-1,0,0,0
+10,12,Llegadas normales,150,130,40,12,8,3,0,0,0,0,0,0
+10,13,Llegadas en incidente,260,100,40,12,8,3,0,0,0,0,0,0
+10,14,Hora del incidente,360,130,40,12,8,3,0,0,0,0,0,0
+10,15,Tiempo de resolucion,560,370,40,12,8,3,0,0,0,0,0,0
+10,16,Tiempo de espera estimado,360,400,40,12,8,3,0,0,0,0,0,0
+1,17,12,6,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,18,13,6,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,19,14,6,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,20,2,10,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,21,15,10,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,22,2,16,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,23,6,16,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+///---\\\
+:L<%^E!@
+1:Current.vdf
+9:Current
+15:0,0,0,0,0,0
+19:100,0
+27:0,
+34:0,
+4:Time
+5:Tickets pendientes
+35:Date
+36:YYYY-MM-DD
+37:2000
+38:1
+39:1
+40:0
+41:0
+42:1
+24:0
+25:24
+26:24

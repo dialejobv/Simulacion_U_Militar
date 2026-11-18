@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laboratorio de modelos de primer y segundo orden</title>
+<style>
+
+
+:root{--ink:#0F172A;--ink2:#1E293B;--tint:#F1F5F9;--line:#E2E8F0;--muted:#64748B;--bg:#FFFFFF;--teal:#0891B2;--amber:#F59E0B;--coral:#E11D48;--violet:#6366F1;--blue:#6366F1;--okbg:#E8F8F5;--badbg:#FDF0EC;--serif:Cambria,Georgia,"Times New Roman",serif;--sans:Calibri,"Segoe UI",system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--bg);font-size:16px;line-height:1.45}
+header{background:var(--ink);color:#fff;padding:22px 24px 0}
+.wrap{max-width:1240px;margin:0 auto}
+.over{color:var(--amber);font-weight:700;letter-spacing:.18em;font-size:12px}
+h1{font-family:var(--serif);font-size:30px;margin:6px 0 4px}
+header p{margin:0 0 18px;color:#CBD5E1;max-width:90ch}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav button{font:inherit;font-weight:700;border:0;background:var(--ink2);color:#CBD5E1;padding:11px 14px;border-radius:10px 10px 0 0;cursor:pointer}
+nav button .n{display:inline-block;background:var(--ink);color:var(--amber);border-radius:5px;width:22px;height:22px;line-height:22px;text-align:center;font-family:var(--serif);margin-right:7px}
+nav button.on{background:var(--bg);color:var(--ink)} nav button.on .n{background:var(--amber);color:var(--ink)}
+main{padding:24px} section{display:none} section.on{display:block}
+h2{font-family:var(--serif);font-size:24px;margin:0 0 4px} h3{margin:0 0 10px;font-size:17px}
+.lead{color:var(--ink2);margin:0 0 18px;max-width:90ch}
+.grid{display:grid;gap:18px;grid-template-columns:330px minmax(0,1fr);align-items:start}
+.two{display:grid;gap:18px;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.three{display:grid;gap:18px;grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid>*,.two>*,.three>*{min-width:0}
+.stack{display:grid;gap:18px}.stack>*{min-width:0}
+@media(max-width:1000px){.three{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:900px){.grid,.two{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--tint);border-radius:14px;padding:18px}
+.card.w{background:#fff;border:1px solid var(--line)}
+label{display:block;font-size:13px;font-weight:700;color:var(--ink2);margin:10px 0 4px}
+input[type=text],input[type=number],select,textarea{width:100%;font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+input[type=range]{width:100%}
+textarea{min-height:110px;font-size:14px;font-family:Consolas,monospace}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 40%;min-width:0}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+button.b{font:inherit;font-weight:700;border:0;border-radius:8px;padding:9px 14px;cursor:pointer;background:var(--violet);color:#fff}
+button.b.alt{background:#fff;color:var(--ink);border:1px solid var(--line)} button.b.go{background:var(--teal)} button.b.warn{background:var(--coral)}
+.chipbtn{font:inherit;font-size:13px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 11px;cursor:pointer;color:var(--ink)}
+.chipbtn.on{background:var(--ink2);color:#fff;border-color:var(--ink2)}
+.subnav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.formula{background:var(--ink2);color:#fff;border-radius:12px;padding:12px 14px;font-family:var(--serif);font-size:16px;text-align:center;line-height:1.7}
+.tablewrap{overflow:auto;max-height:380px;border:1px solid var(--line);border-radius:10px;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{position:sticky;top:0;background:var(--ink2);color:#fff;padding:7px 9px;text-align:center;font-weight:700}
+td{padding:6px 9px;text-align:center;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+td.l,th.l{text-align:left}
+tr:nth-child(even) td{background:var(--tint)} td.hi{background:#FBEFC9 !important;font-weight:700}
+.msg{margin-top:12px;padding:10px 14px;border-radius:10px;background:#fff;border:1px solid var(--line);font-size:15px}
+.msg.bad{border-color:var(--coral);background:var(--badbg)}.msg.ok{border-color:var(--teal);background:var(--okbg)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:12px;margin:0 0 16px}
+.stat{background:var(--ink2);color:#fff;border-radius:12px;padding:11px 13px}
+.stat b{display:block;font-family:var(--serif);font-size:22px;color:var(--amber);font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:#D9D5EA}
+.stat i{display:block;font-style:normal;font-size:12px;color:#B9B3D6}
+.tag{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700;color:#fff}
+.tag.ok{background:var(--teal)}.tag.bad{background:var(--coral)}.tag.mid{background:var(--amber);color:var(--ink)}
+canvas{width:100%;display:block;background:#fff;border-radius:10px;border:1px solid var(--line)}
+.cap{font-size:13px;color:var(--muted);margin:6px 0 0}
+.plate{display:inline-block;background:#F7D33B;color:#111;border:2px solid #111;border-radius:5px;padding:0 6px;font-family:Consolas,monospace;font-weight:700;letter-spacing:.06em}
+.note{border-left:4px solid var(--amber);background:#FFF8E5;padding:10px 14px;border-radius:0 10px 10px 0;font-size:14px;margin:12px 0}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}.kv b{color:var(--ink2)}
+.legend-inline span{display:inline-flex;align-items:center;gap:5px;margin-right:12px;font-size:13px;color:var(--muted)}
+.legend-inline i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.case{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:6px}
+.case .card h3{display:flex;gap:10px;align-items:center}
+.case .ico{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:#fff;font-weight:700;font-family:var(--serif)}
+code{background:var(--tint);border-radius:5px;padding:1px 5px;font-size:14px}
+pre{background:var(--ink);color:#EDEAF7;border-radius:10px;padding:12px 14px;overflow:auto;font-size:13px}
+footer{padding:0 24px 30px;color:var(--muted);font-size:13px}
+
+
+.scenebar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0 0}
+.scenebar .sp{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)} .scenebar input[type=range]{width:120px}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:#fff;cursor:pointer;user-select:none}
+.chk input{margin:0}
+.camwrap{display:grid;gap:14px;grid-template-columns:minmax(0,1fr) 260px} @media(max-width:1100px){.camwrap{grid-template-columns:minmax(0,1fr)}}
+.insp{background:var(--ink);color:#E9E6F5;border-radius:12px;padding:14px;font-size:13px;min-height:200px}
+.insp h4{margin:0 0 8px;font-family:var(--serif);color:var(--amber);font-size:16px}
+.insp .kv{grid-template-columns:auto 1fr;color:#E9E6F5} .insp .kv b{color:#B9B3D6;font-weight:400}
+.insp canvas{border:0;background:#111;margin:8px 0}
+.log{font-family:Consolas,monospace;font-size:12px;background:#0F0B22;color:#C9F2E9;border-radius:10px;padding:8px 10px;height:150px;overflow:auto}
+.log div{white-space:nowrap}.log .t{color:#F2A900}
+.cardimg{display:block;width:100%;height:auto;border-radius:10px;margin-bottom:10px;background:#fff}
+.case .card{cursor:pointer;transition:transform .15s, box-shadow .15s}.case .card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(26,20,51,.12)}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;padding:6px 9px;border-radius:7px;z-index:20;display:none;white-space:nowrap}
+.bubble{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 14px;font-style:italic;min-height:44px;position:relative;margin-bottom:10px}
+.pmgrid{display:grid;gap:18px;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)} @media(max-width:1000px){.pmgrid{grid-template-columns:minmax(0,1fr)}}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+.steps li{counter-increment:s;padding:8px 10px 8px 44px;position:relative;border-radius:10px;margin-bottom:6px;background:#fff;border:1px solid var(--line);cursor:pointer;font-size:14px}
+.steps li:before{content:counter(s);position:absolute;left:10px;top:8px;width:24px;height:24px;border-radius:6px;background:var(--line);color:var(--ink);display:grid;place-items:center;font-weight:700;font-family:var(--serif)}
+.steps li.on{border-color:var(--violet);background:#F4F0FF}.steps li.on:before{background:var(--violet);color:#fff}
+.steps li.done:before{background:var(--teal);color:#fff}
+.codebox{background:#0F0B22;color:#E9E6F5;border-radius:10px;padding:12px 14px;font-family:Consolas,monospace;font-size:13px;white-space:pre-wrap;margin-top:10px}
+.pill2{display:inline-block;background:var(--tint);border-radius:999px;padding:2px 10px;font-size:12px;margin:2px}
+.mini{font-size:12px;color:var(--muted)}
+
+.mode{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px}
+.mode button{font:inherit;font-size:14px;font-weight:700;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 10px;cursor:pointer;color:var(--ink);text-align:left}
+.mode button.on{background:var(--ink2);color:#fff;border-color:var(--ink2)}
+.tool{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tool button.on{background:var(--amber);color:var(--ink)}
+.eq{font-family:Consolas,monospace;font-size:13px;background:#0F0B22;color:#E9E6F5;border-radius:10px;padding:10px 12px;white-space:pre-wrap;line-height:1.55}
+.eq .v{color:#7CF2C9}
+.loopitem{display:flex;gap:8px;align-items:center;padding:7px 10px;border-radius:10px;background:#fff;border:1px solid var(--line);margin-bottom:6px;cursor:pointer;font-size:14px}
+.loopitem.on{border-color:var(--amber);background:#FFF8E5}
+.loopitem .tag{flex:none}
+.stepper{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-bottom:14px}
+.stepper button{font:inherit;font-size:13px;font-weight:700;border:0;border-radius:10px;padding:10px 6px;cursor:pointer;background:var(--tint);color:var(--ink)}
+.stepper button.on{background:var(--violet);color:#fff}.stepper button.done{background:#D5F2EC}
+@media(max-width:700px){.stepper{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.check{display:flex;gap:10px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--line);font-size:14px}
+.check .ic{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;background:var(--line)}
+.check .ic.ok{background:var(--teal)}.check .ic.bad{background:var(--coral)}
+
+.stat span{color:#CBD5E1}
+.mode{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px}
+.mode button{font:inherit;font-size:14px;font-weight:700;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 10px;cursor:pointer;color:var(--ink);text-align:left}
+.mode button.on{background:var(--ink2);color:#fff;border-color:var(--ink2)}
+.code{font-family:Consolas,"Courier New",monospace;font-size:12.5px;background:#0F172A;color:#E2E8F0;border-radius:10px;padding:10px 12px;white-space:pre-wrap;line-height:1.5;max-height:420px;overflow:auto}
+.code .k{color:#67E8F9}.code .c{color:#94A3B8}.code .n{color:#FCD34D}
+.ptable{width:100%;border-collapse:collapse;font-size:13px}.ptable td{padding:4px 6px;border-bottom:1px solid var(--line)}.ptable input{width:90px;font:inherit;padding:3px 6px;border:1px solid var(--line);border-radius:6px;background:#FFFBEB;color:#1D4ED8}
+.two .code{max-height:300px}
+.mc{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+</style>
+</head>
+<body>
+<div class="tip" id="tip"></div>
+<header><div class="wrap">
+  <div class="over">SIMULACIÓN · UNIDAD MODULAR III · INGENIERÍA INFORMÁTICA</div>
+  <h1>Laboratorio de modelos de primer y segundo orden</h1>
+  <p>Ecuaciones diferenciales que se mueven: un nivel que busca su objetivo, dos niveles que oscilan, los mismos modelos en Vensim y en Python, análisis de escenarios y seis casos de ingeniería informática.</p>
+  <nav id="nav">
+    <button class="on" data-t="ini"><span class="n">0</span>Inicio</button>
+    <button data-t="po"><span class="n">1</span>Primer orden</button>
+    <button data-t="so"><span class="n">2</span>Segundo orden</button>
+    <button data-t="vp"><span class="n">3</span>Vensim ↔ Python</button>
+    <button data-t="es"><span class="n">4</span>Escenarios</button>
+    <button data-t="ca"><span class="n">5</span>Casos</button>
+  </nav>
+</div></header>
+<main><div class="wrap">
+
+<section id="ini" class="on">
+  <h2>Del cálculo a la simulación</h2>
+  <p class="lead">Cada pestaña es un laboratorio interactivo. Los parámetros coinciden con los de la presentación, los archivos de Vensim, el cuaderno de Colab y la plantilla de Excel, así que los números se pueden comparar entre herramientas.</p>
+  <div class="case" id="cases"></div>
+</section>
+
+<!-- 1 PRIMER ORDEN -->
+<section id="po">
+  <h2>Modelos de primer orden: un nivel que busca su objetivo</h2>
+  <p class="lead">τ·dx/dt + x = x*. El tanque se llena o se vacía hacia el equilibrio. Mueve τ y el paso de integración DT: con Euler y DT ≥ τ aparece un error numérico que no es parte del sistema real.</p>
+  <div class="grid">
+    <div class="card">
+      <label for="pTau">Constante de tiempo τ = <b id="pTauV"></b></label><input id="pTau" type="range" min="2" max="30" step="1" value="10">
+      <label for="pXs">Equilibrio x* = <b id="pXsV"></b></label><input id="pXs" type="range" min="0" max="100" step="5" value="80">
+      <label for="pX0">Valor inicial x0 = <b id="pX0V"></b></label><input id="pX0" type="range" min="0" max="100" step="5" value="10">
+      <label for="pDt">Paso DT = <b id="pDtV"></b></label><input id="pDt" type="range" min="0.5" max="20" step="0.5" value="2">
+      <label for="pMet">Método numérico</label><select id="pMet"><option value="euler">Euler (por defecto en Vensim)</option><option value="rk4">Runge-Kutta 4</option></select>
+      <div class="btns"><button class="b go" id="pPlay">Pausar</button><button class="b alt" id="pReset">Reiniciar</button></div>
+      <div class="formula" style="margin-top:12px">x(t) = x* + (x0 − x*)·e^(−t/τ)<br>63 % en τ · 95 % en 3τ</div>
+      <div class="stats" id="pStats" style="margin-top:12px"></div>
+    </div>
+    <div class="stack">
+      <div class="two"><div class="card w"><h3>El nivel como un tanque</h3><canvas id="cvP0" data-h="280"></canvas></div><div class="card w"><h3>Línea de fase: dx/dt según x</h3><canvas id="cvP1" data-h="280"></canvas></div></div>
+      <div class="card w"><h3>Solución exacta frente a la simulación numérica</h3><canvas id="cvP2" data-h="250"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 SEGUNDO ORDEN -->
+<section id="so">
+  <h2>Modelos de segundo orden: dos niveles que pueden oscilar</h2>
+  <p class="lead">x'' + 2ζωn·x' + ωn²·x = ωn²·u. Un bloque con resorte y amortiguador: ζ controla cuánto se frena y ωn qué tan rápido oscila. Mira cómo se mueven los polos en el plano s.</p>
+  <div class="grid">
+    <div class="card">
+      <label for="sZ">Amortiguamiento ζ = <b id="sZV"></b></label><input id="sZ" type="range" min="-0.1" max="2.5" step="0.01" value="0.3">
+      <label for="sW">Frecuencia natural ωn = <b id="sWV"></b> rad/s</label><input id="sW" type="range" min="0.3" max="3" step="0.05" value="1">
+      <div class="mc"><button class="chipbtn" data-z="0.1">ζ = 0,1</button><button class="chipbtn" data-z="0.3">0,3</button><button class="chipbtn" data-z="0.7">0,7</button><button class="chipbtn" data-z="1">1</button><button class="chipbtn" data-z="2">2</button><button class="chipbtn" data-z="0">0</button></div>
+      <div class="btns"><button class="b go" id="sPlay">Pausar</button><button class="b alt" id="sReset">Nuevo escalón</button></div>
+      <div class="formula" style="margin-top:12px">Mp = e^(−πζ/√(1−ζ²))<br>tp = π/(ωn√(1−ζ²)) · ts ≈ 4/(ζωn)</div>
+      <div class="stats" id="sStats" style="margin-top:12px"></div>
+    </div>
+    <div class="stack">
+      <div class="two"><div class="card w"><h3>Masa, resorte y amortiguador</h3><canvas id="cvS0" data-h="280"></canvas></div><div class="card w"><h3>Polos en el plano s</h3><canvas id="cvS1" data-h="280"></canvas></div></div>
+      <div class="card w"><h3>Respuesta al escalón</h3><canvas id="cvS2" data-h="250"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 VENSIM ↔ PYTHON -->
+<section id="vp">
+  <h2>El mismo modelo en Vensim y en Python</h2>
+  <p class="lead">Elige un caso: verás su diagrama de Forrester, las ecuaciones exactas del archivo .mdl de Vensim y el código equivalente en Python. Cambia las constantes en la tabla y pulsa <b>Simular</b>: el laboratorio interpreta las ecuaciones de Vensim con el método de Euler, igual que Vensim y que el cuaderno de Colab.</p>
+  <div class="mode" id="vBtns"></div>
+  <div class="grid">
+    <div class="card"><h3 id="vTit"></h3><p id="vDesc" style="font-size:14px"></p><h3>Constantes</h3><table class="ptable" id="vPars"></table>
+      <label for="vVar" style="margin-top:10px">Variable a graficar</label><select id="vVar"></select>
+      <div class="btns"><button class="b go" id="vRun">Simular</button><button class="b alt" id="vKeep">Fijar corrida para comparar</button><button class="b alt" id="vClr">Borrar comparación</button></div>
+      <div class="stats" id="vStats" style="margin-top:12px"></div></div>
+    <div class="stack">
+      <div class="card w"><h3>Diagrama de Forrester</h3><canvas id="cvV0" data-h="300"></canvas></div>
+      <div class="card w"><h3>Resultado</h3><canvas id="cvV1" data-h="240"></canvas></div>
+      <div class="two"><div class="card w"><h3>Ecuaciones en Vensim (.mdl)</h3><div class="code" id="vMdl"></div></div><div class="card w"><h3>Equivalente en Python</h3><div class="code" id="vPy"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 ESCENARIOS -->
+<section id="es">
+  <h2>Análisis de escenarios</h2>
+  <div class="subnav" id="eNav"><button class="chipbtn on" data-c="esc">Escenarios (tickets)</button><button class="chipbtn" data-c="pol">Políticas (ley de Brooks)</button><button class="chipbtn" data-c="tor">Sensibilidad (tornado)</button><button class="chipbtn" data-c="mc">Monte Carlo (gusano)</button></div>
+  <div class="grid">
+    <div class="card"><p id="eDesc" style="font-size:14px;margin-top:0"></p><div id="ePars"></div><div class="btns" id="eBtns"></div><div class="msg" id="eMsg" style="font-size:14px"></div><div class="stats" id="eStats" style="margin-top:12px"></div></div>
+    <div class="stack"><div class="card w"><h3 id="eT0"></h3><canvas id="cvX0" data-h="340"></canvas></div><div class="card w"><h3 id="eT1"></h3><canvas id="cvX1" data-h="240"></canvas></div></div>
+  </div>
+</section>
+
+<!-- 5 CASOS -->
+<section id="ca">
+  <h2>Seis casos de ingeniería informática</h2>
+  <p class="lead">Cada caso tiene una escena animada con controles en vivo. Los modelos son los mismos de los archivos .mdl.</p>
+  <div class="mode" id="kBtns"></div>
+  <div class="grid">
+    <div class="card"><h3 id="kTit"></h3><p id="kDesc" style="font-size:14px;margin:0 0 8px"></p><div id="kPars"></div><div class="btns" id="kActs"></div><div class="formula" id="kForm" style="margin-top:12px"></div><div class="stats" id="kStats" style="margin-top:12px"></div></div>
+    <div class="stack"><div class="card w"><h3>Escena</h3><canvas id="cvK0" data-h="320"></canvas></div><div class="card w"><h3 id="kT1">Trayectoria</h3><canvas id="cvK1" data-h="240"></canvas></div><div class="msg" id="kMsg"></div></div>
+  </div>
+</section>
+
+</div></main>
+<footer><div class="wrap">Simulación · Unidad III · Modelos de primer y segundo orden. Datos de Code-Red: CAIDA (2001). Regla de autoescalado: Kubernetes HPA. Ley de Brooks (1975) y Abdel-Hamid y Madnick (1991).</div></footer>
+<script>
+
+"use strict";
+const $ = id => document.getElementById(id);
+const COL = { ink: "#0F172A", ink2: "#1E293B", line: "#E2E8F0", muted: "#64748B", teal: "#0891B2", amber: "#F59E0B", coral: "#E11D48", violet: "#6366F1", blue: "#3B82F6", green: "#16A34A", tint: "#F1F5F9" };
+const fx = (x, d = 2) => Number.isFinite(x) ? (+x).toFixed(d) : "—";
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const num = id => +$(id).value;
+function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+let RNG = mulberry32(2026); const rnd = () => RNG();
+let spareZ = null; function gauss() { if (spareZ !== null) { const z = spareZ; spareZ = null; return z; } const u = Math.max(1e-12, rnd()), v = rnd(), r = Math.sqrt(-2 * Math.log(u)); spareZ = r * Math.sin(2 * Math.PI * v); return r * Math.cos(2 * Math.PI * v); }
+function rk4(f, x, t, dt) {
+  const k1 = f(t, x), a = x.map((v, i) => v + dt / 2 * k1[i]), k2 = f(t + dt / 2, a), b = x.map((v, i) => v + dt / 2 * k2[i]), k3 = f(t + dt / 2, b), c = x.map((v, i) => v + dt * k3[i]), k4 = f(t + dt, c);
+  return x.map((v, i) => v + dt / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]));
+}
+function simulate(f, x0, T, dt) { const out = [[0, ...x0]]; let x = x0.slice(), t = 0; const n = Math.round(T / dt); for (let k = 0; k < n; k++) { x = rk4(f, x, t, dt); t += dt; out.push([t, ...x]); } return out; }
+function canvas(id) {
+  const c = $(id), dpr = Math.min(window.devicePixelRatio || 1, 2), w = Math.round(c.clientWidth) || 500, h = +c.dataset.h;
+  const W = Math.round(w * dpr), H = Math.round(h * dpr); if (c.width !== W || c.height !== H) { c.width = W; c.height = H; c.style.height = h + "px"; }
+  const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.globalAlpha = 1; ctx.setLineDash([]); ctx.clearRect(0, 0, w, h); ctx.font = "12px Calibri, Segoe UI, sans-serif"; return { ctx, w, h };
+}
+const P0 = { l: 48, r: 14, t: 16, b: 34 };
+function axes(ctx, w, h, x0, x1, y0, y1, xl, yl, xd = 0, yd = 0, o = {}) {
+  const pl = o.pl ?? P0.l, X = v => pl + (w - pl - P0.r) * (v - x0) / (x1 - x0), Y = v => h - P0.b - (h - P0.b - P0.t) * (v - y0) / (y1 - y0);
+  ctx.strokeStyle = COL.line; ctx.fillStyle = COL.muted; ctx.lineWidth = 1; ctx.font = "11px Calibri, Segoe UI, sans-serif";
+  for (let i = 0; i <= 4; i++) { const v = y0 + (y1 - y0) * i / 4, y = Y(v); ctx.beginPath(); ctx.moveTo(pl, y); ctx.lineTo(w - P0.r, y); ctx.stroke(); ctx.textAlign = "right"; ctx.fillText(v.toFixed(yd), pl - 5, y + 4); }
+  for (let i = 0; i <= 5; i++) { const v = x0 + (x1 - x0) * i / 5; ctx.textAlign = "center"; ctx.fillText(v.toFixed(xd), X(v), h - P0.b + 14); }
+  ctx.textAlign = "center"; ctx.fillText(xl, pl + (w - pl - P0.r) / 2, h - 3);
+  ctx.save(); ctx.translate(11, P0.t + (h - P0.b - P0.t) / 2); ctx.rotate(-Math.PI / 2); ctx.fillText(yl, 0, 0); ctx.restore(); return { X, Y, x0, x1, y0, y1, w, h, pl };
+}
+const path = (ctx, pts, col, w = 2.2, dash) => { if (pts.length < 2) return; ctx.strokeStyle = col; ctx.lineWidth = w; if (dash) ctx.setLineDash(dash); ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.setLineDash([]); };
+function legend(ctx, items, x, y) { ctx.font = "12px Calibri, Segoe UI, sans-serif"; ctx.textAlign = "left"; items.forEach(([t, c], i) => { ctx.fillStyle = c; ctx.fillRect(x, y + i * 16 - 8, 12, 8); ctx.fillStyle = COL.ink; ctx.fillText(t, x + 17, y + i * 16); }); }
+function disc(ctx, x, y, r, col) { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); }
+function rr(ctx, x, y, w, h, r) { r = Math.min(r, w / 2, h / 2); ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+function txt(ctx, s, x, y, o = {}) { ctx.font = `${o.b ? "bold " : ""}${o.s || 12}px ${o.mono ? "Consolas, monospace" : o.serif ? "Cambria, Georgia, serif" : "Calibri, Segoe UI, sans-serif"}`; ctx.fillStyle = o.c || COL.ink; ctx.textAlign = o.a || "left"; ctx.textBaseline = o.bl || "alphabetic"; ctx.fillText(s, x, y); ctx.textBaseline = "alphabetic"; }
+function arrowHead(ctx, x, y, ang, sz, col) { ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - sz * Math.cos(ang - 0.4), y - sz * Math.sin(ang - 0.4)); ctx.lineTo(x - sz * Math.cos(ang + 0.4), y - sz * Math.sin(ang + 0.4)); ctx.closePath(); ctx.fill(); }
+function mixRGB(a, b, t) { return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(",")})`; }
+const stat = (l, v) => `<div class="stat"><span>${l}</span><b>${v}</b></div>`;
+const T = (head, rows) => `<table><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr>${rows.map(r => `<tr>${r.map((c, j) => `<td class="${j === 0 ? "l" : ""}">${c}</td>`).join("")}</tr>`).join("")}</table>`;
+function canvasPos(ev, id) { const b = $(id).getBoundingClientRect(); return [ev.clientX - b.left, ev.clientY - b.top]; }
+function playBtn(id, obj) { $(id).onclick = () => { obj.play = !obj.play; $(id).textContent = obj.play ? "Pausar" : "Continuar"; $(id).classList.toggle("go", obj.play); }; }
+const ANIM = {}; let TCLOCK = 0, lastTs = 0;
+function mainLoop(ts) { const dt = Math.min(0.05, (ts - (lastTs || ts)) / 1000); lastTs = ts; TCLOCK += dt; const sec = document.querySelector("section.on"), a = sec && ANIM[sec.id];
+  if (a) { try { a.tick && a.tick(dt); a.draw && a.draw(dt); } catch (e) { console.error(e); } } requestAnimationFrame(mainLoop); }
+
+/* ===== diagrama causal genérico (usado en varias pestañas) ===== */
+// nodes: [{id, x, y, label}] en píxeles; edges: [{a, b, s: "+"|"-", delay, bend}]
+function nodeSize(ctx, n) { ctx.font = "bold 13px Calibri, sans-serif"; return [Math.max(70, ctx.measureText(n.label).width + 24), 30]; }
+function edgeGeom(ctx, A, B, bend = 0.18) {
+  const mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2, dx = B.x - A.x, dy = B.y - A.y, L = Math.hypot(dx, dy) || 1, cx = mx - dy / L * L * bend, cy = my + dx / L * L * bend;
+  const [wa, ha] = nodeSize(ctx, A), [wb, hb] = nodeSize(ctx, B);
+  const cut = (P, Q, w, h) => { const ux = Q.x - P.x, uy = Q.y - P.y, l = Math.hypot(ux, uy) || 1, t = Math.min(w / 2 / Math.max(Math.abs(ux / l), 1e-6), h / 2 / Math.max(Math.abs(uy / l), 1e-6)) + 4; return [P.x + ux / l * t, P.y + uy / l * t]; };
+  const s = cut(A, { x: cx, y: cy }, wa, ha), e = cut(B, { x: cx, y: cy }, wb, hb);
+  return { s, e, c: [cx, cy] };
+}
+const qpt = (g, t) => [(1 - t) ** 2 * g.s[0] + 2 * (1 - t) * t * g.c[0] + t * t * g.e[0], (1 - t) ** 2 * g.s[1] + 2 * (1 - t) * t * g.c[1] + t * t * g.e[1]];
+function drawCLD(ctx, nodes, edges, o = {}) {
+  const byId = Object.fromEntries(nodes.map(n => [n.id, n])), hl = o.highlight || new Set();
+  edges.forEach((e, k) => {
+    const A = byId[e.a], B = byId[e.b]; if (!A || !B) return; const g = edgeGeom(ctx, A, B, e.bend ?? 0.18), col = e.s === "+" ? COL.teal : COL.coral, on = hl.has(k);
+    ctx.strokeStyle = col; ctx.lineWidth = on ? 4 : 2; ctx.globalAlpha = hl.size && !on ? 0.3 : 1; ctx.beginPath(); ctx.moveTo(...g.s); ctx.quadraticCurveTo(...g.c, ...g.e); ctx.stroke();
+    const p = qpt(g, 0.97), ang = Math.atan2(g.e[1] - p[1], g.e[0] - p[0]); arrowHead(ctx, g.e[0], g.e[1], ang, 11, col);
+    const lp = qpt(g, 0.78), nx = -(g.e[1] - g.s[1]), ny = g.e[0] - g.s[0], nl = Math.hypot(nx, ny) || 1;
+    txt(ctx, e.s === "+" ? "+" : "−", lp[0] + nx / nl * 11, lp[1] + ny / nl * 11 + 5, { a: "center", b: true, s: 17, c: col });
+    if (e.delay) { const m = qpt(g, 0.5), m2 = qpt(g, 0.52), a2 = Math.atan2(m2[1] - m[1], m2[0] - m[0]) + Math.PI / 2; ctx.strokeStyle = COL.ink; ctx.lineWidth = 2; for (const d of [-3, 3]) { ctx.beginPath(); ctx.moveTo(m[0] + Math.cos(a2 - Math.PI / 2) * d - Math.cos(a2) * 8, m[1] + Math.sin(a2 - Math.PI / 2) * d - Math.sin(a2) * 8); ctx.lineTo(m[0] + Math.cos(a2 - Math.PI / 2) * d + Math.cos(a2) * 8, m[1] + Math.sin(a2 - Math.PI / 2) * d + Math.sin(a2) * 8); ctx.stroke(); } }
+    e._g = g; ctx.globalAlpha = 1;
+  });
+  nodes.forEach(n => { const [w, h] = nodeSize(ctx, n), sel = o.sel === n.id; ctx.fillStyle = sel ? "#FFF3C4" : (o.fill || "#fff"); rr(ctx, n.x - w / 2, n.y - h / 2, w, h, 14); ctx.fill(); ctx.strokeStyle = sel ? COL.amber : COL.ink2; ctx.lineWidth = sel ? 3 : 1.5; ctx.stroke(); txt(ctx, n.label, n.x, n.y + 5, { a: "center", b: true, s: 13 });
+    if (o.badges && o.badges[n.id]) { const up = o.badges[n.id] > 0; disc(ctx, n.x + w / 2 - 2, n.y - h / 2 - 2, 11, up ? COL.teal : COL.coral); txt(ctx, up ? "↑" : "↓", n.x + w / 2 - 2, n.y - h / 2 + 3, { a: "center", c: "#fff", b: true, s: 14 }); } });
+  (o.loops || []).forEach(L => { const col = L.R ? COL.teal : COL.coral; ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(L.x, L.y, 15, 0.5, Math.PI * 1.8); ctx.stroke(); arrowHead(ctx, L.x + 15 * Math.cos(Math.PI * 1.8), L.y + 15 * Math.sin(Math.PI * 1.8), Math.PI * 1.8 + Math.PI / 2, 8, col); txt(ctx, L.R ? "R" : "B", L.x, L.y + 6, { a: "center", b: true, s: 16, c: col, serif: true }); });
+}
+// ciclos simples de un grafo dirigido (nodos ordenados; el inicio es el menor índice del ciclo)
+function findCycles(nodes, edges) {
+  const ids = nodes.map(n => n.id), idx = Object.fromEntries(ids.map((id, i) => [id, i])), adj = ids.map(() => []), out = [];
+  edges.forEach((e, k) => { if (idx[e.a] !== undefined && idx[e.b] !== undefined) adj[idx[e.a]].push([idx[e.b], k]); });
+  for (let s = 0; s < ids.length; s++) {
+    const stack = [[s, [], [s]]];
+    while (stack.length) { const [v, ep, vp] = stack.pop(); for (const [w, k] of adj[v]) { if (w === s) out.push({ nodes: vp.map(i => ids[i]), edges: [...ep, k] }); else if (w > s && !vp.includes(w) && vp.length < 12) stack.push([w, [...ep, k], [...vp, w]]); } }
+  }
+  return out.map(c => { const neg = c.edges.filter(k => edges[k].s === "-").length; return { ...c, neg, R: neg % 2 === 0 }; });
+}
+
+
+
+function label(ctx, s, x, y, bg, fg = "#fff", sz = 12) { ctx.font = `bold ${sz}px Calibri, sans-serif`; const w = ctx.measureText(s).width + 10; ctx.fillStyle = bg; rr(ctx, x, y - sz - 4, w, sz + 7, 4); ctx.fill(); ctx.fillStyle = fg; ctx.textAlign = "left"; ctx.fillText(s, x + 5, y - 1); return w; }
+function drawCloud(ctx, x, y, s = 1) { ctx.fillStyle = "#fff"; ctx.strokeStyle = COL.muted; ctx.lineWidth = 1.6; ctx.beginPath(); [[-12, 2, 10], [0, -6, 12], [12, 1, 10], [3, 6, 9], [-6, 7, 8]].forEach(([dx, dy, r]) => { ctx.moveTo(x + dx * s + r * s, y + dy * s); ctx.arc(x + dx * s, y + dy * s, r * s, 0, 7); }); ctx.fill(); ctx.stroke(); ctx.fillStyle = "#fff"; [[-12, 2, 8.5], [0, -6, 10.5], [12, 1, 8.5], [3, 6, 7.5], [-6, 7, 6.5]].forEach(([dx, dy, r]) => { ctx.beginPath(); ctx.arc(x + dx * s, y + dy * s, r * s, 0, 7); ctx.fill(); }); }
+function halo(ctx, s, x, y, a, sz, b) { ctx.font = `${b ? "bold " : ""}${sz}px Calibri, sans-serif`; const w = ctx.measureText(s).width + 6, x0 = a === "center" ? x - w / 2 : x - 3; ctx.fillStyle = "rgba(251,250,254,.92)"; ctx.fillRect(x0, y - sz, w, sz + 4); }
+function drawForrester(ctx, w, h, L, v, mx, ph, o = {}) {
+  const lw = Math.min(118, w * 0.2), lh = Math.min(84, h * 0.3), P = {}, colLv = [COL.blue, COL.coral, COL.teal, COL.violet];
+  Object.entries(L.lv).forEach(([id, [u, vv, lab]], i) => P[id] = { x: u * w, y: vv * h, t: "lv", lab, col: colLv[i % 4] });
+  Object.entries(L.cl).forEach(([id, [u, vv]]) => P[id] = { x: u * w, y: vv * h, t: "cl" });
+  Object.entries(L.k).forEach(([id, [u, vv, lab]]) => P[id] = { x: u * w, y: vv * h, t: "k", lab });
+  const att = (A, B) => { if (A.t !== "lv") return [A.x + (A.t === "cl" ? Math.sign(B.x - A.x) * (Math.abs(B.x - A.x) > Math.abs(B.y - A.y) ? 20 : 0) : 0), A.y + (Math.abs(B.y - A.y) > Math.abs(B.x - A.x) ? Math.sign(B.y - A.y) * 14 : 0)]; return Math.abs(B.x - A.x) >= Math.abs(B.y - A.y) ? [A.x + Math.sign(B.x - A.x) * lw / 2, A.y] : [A.x, A.y + Math.sign(B.y - A.y) * lh / 2]; };
+  L.fl.forEach(([id, a, b, lab]) => { const A = P[a], B = P[b], s = att(A, B), e = att(B, A); P[id] = { x: (s[0] + e[0]) / 2, y: (s[1] + e[1]) / 2, t: "fl", lab, s, e }; });
+  // conectores de información (detrás)
+  L.ln.forEach(([a, b]) => { const A = P[a], B = P[b]; if (!A || !B) return; const dx = B.x - A.x, dy = B.y - A.y, l = Math.hypot(dx, dy) || 1, ra = A.t === "lv" ? Math.min(lw, lh) / 2 : 14, rb = B.t === "fl" ? 17 : 16, sx = A.x + dx / l * ra, sy = A.y + dy / l * ra, ex = B.x - dx / l * rb, ey = B.y - dy / l * rb, cx = (sx + ex) / 2 - dy / l * 22, cy = (sy + ey) / 2 + dx / l * 22;
+    ctx.strokeStyle = COL.violet; ctx.globalAlpha = 0.75; ctx.lineWidth = 1.4; ctx.setLineDash([4, 4]); ctx.lineDashOffset = -TCLOCK * 14; ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(cx, cy, ex, ey); ctx.stroke(); ctx.setLineDash([]); ctx.lineDashOffset = 0; arrowHead(ctx, ex, ey, Math.atan2(ey - cy, ex - cx), 8, COL.violet); ctx.globalAlpha = 1; });
+  // tuberías y válvulas
+  L.fl.forEach(([id, a, b, lab]) => { const F = P[id], [sx, sy] = F.s, [ex, ey] = F.e, L2 = Math.hypot(ex - sx, ey - sy) || 1, ux = (ex - sx) / L2, uy = (ey - sy) / L2, nx = -uy * 4, ny = ux * 4, rate = v[id] || 0, rs = o.rs || 1;
+    ctx.strokeStyle = COL.ink2; ctx.lineWidth = 2; for (const sg of [1, -1]) { ctx.beginPath(); ctx.moveTo(sx + nx * sg, sy + ny * sg); ctx.lineTo(ex - ux * 8 + nx * sg, ey - uy * 8 + ny * sg); ctx.stroke(); } arrowHead(ctx, ex, ey, Math.atan2(uy, ux), 14, COL.ink2);
+    ph[id] = ((ph[id] || 0) + Math.min(3, rate / rs) * 0.012) % 1; const np = Math.round(clamp(rate / rs * 6, rate > 1e-6 ? 1 : 0, 8));
+    for (let i = 0; i < np; i++) { const t = (ph[id] + i / np) % 1; disc(ctx, sx + (ex - sx) * t * 0.92, sy + (ey - sy) * t * 0.92, 3.2, COL.amber); }
+    const vx = F.x, vy = F.y, ang = Math.atan2(uy, ux); ctx.save(); ctx.translate(vx, vy); ctx.rotate(ang); ctx.fillStyle = "#fff"; ctx.strokeStyle = COL.ink; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-10, -9); ctx.lineTo(10, 9); ctx.lineTo(10, -9); ctx.lineTo(-10, 9); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
+    const rot = (ph[id] || 0) * Math.PI * 8, hv = Math.abs(uy) > 0.5, hx = hv ? -1 : 0, hy = hv ? 0 : -1; ctx.strokeStyle = COL.ink; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(vx, vy); ctx.lineTo(vx + hx * 15, vy + hy * 15); ctx.stroke(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(vx + hx * 20, vy + hy * 20, 6, 0, 7); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.moveTo(vx + hx * 20 - 5 * Math.cos(rot), vy + hy * 20 - 5 * Math.sin(rot)); ctx.lineTo(vx + hx * 20 + 5 * Math.cos(rot), vy + hy * 20 + 5 * Math.sin(rot)); ctx.stroke();
+    const vert = Math.abs(uy) > 0.5; halo(ctx, lab, vx + (vert ? 16 : 0), vy + (vert ? -2 : 24), vert ? "left" : "center", 12, true); halo(ctx, fx(rate, rate < 10 ? 2 : 1), vx + (vert ? 16 : 0), vy + (vert ? 13 : 38), vert ? "left" : "center", 11); txt(ctx, lab, vx + (vert ? 16 : 0), vy + (vert ? -2 : 24), { a: vert ? "left" : "center", b: true, s: 12 }); txt(ctx, fx(rate, rate < 10 ? 2 : 1), vx + (vert ? 16 : 0), vy + (vert ? 13 : 38), { a: vert ? "left" : "center", s: 11, c: COL.violet, mono: true }); });
+  // nubes, niveles, constantes
+  Object.values(P).forEach(Q => { if (Q.t === "cl") drawCloud(ctx, Q.x, Q.y, 0.9); });
+  Object.entries(P).forEach(([id, Q]) => { if (Q.t !== "lv") return; const x = Q.x - lw / 2, y = Q.y - lh / 2, m = (mx && mx[id]) || 1, f = clamp((v[id] || 0) / m, 0, 1), fh = f * (lh - 4);
+    ctx.fillStyle = "#fff"; ctx.fillRect(x, y, lw, lh); ctx.save(); ctx.beginPath(); ctx.rect(x + 2, y + 2, lw - 4, lh - 4); ctx.clip(); ctx.fillStyle = Q.col; ctx.globalAlpha = 0.28; ctx.beginPath(); ctx.moveTo(x, y + lh); for (let k = 0; k <= 20; k++) { const xx = x + lw * k / 20; ctx.lineTo(xx, y + lh - 2 - fh + Math.sin(TCLOCK * 3 + k * 0.7) * (f > 0.01 ? 2 : 0)); } ctx.lineTo(x + lw, y + lh); ctx.closePath(); ctx.fill(); ctx.restore(); ctx.globalAlpha = 1;
+    ctx.strokeStyle = COL.ink; ctx.lineWidth = 2.2; ctx.strokeRect(x, y, lw, lh); txt(ctx, Q.lab, Q.x, Q.y - 6, { a: "center", b: true, s: 13 }); txt(ctx, fx(v[id], Math.abs(v[id]) < 100 ? 1 : 0), Q.x, Q.y + 16, { a: "center", b: true, s: 15, c: Q.col, mono: true }); });
+  Object.entries(P).forEach(([id, Q]) => { if (Q.t !== "k") return; ctx.fillStyle = "#FFF6DD"; ctx.strokeStyle = COL.amber; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(Q.x, Q.y - 11); ctx.lineTo(Q.x + 11, Q.y); ctx.lineTo(Q.x, Q.y + 11); ctx.lineTo(Q.x - 11, Q.y); ctx.closePath(); ctx.fill(); ctx.stroke();
+    const below = Q.y < h * 0.3; halo(ctx, `${Q.lab} = ${v[id] !== undefined ? +(+v[id]).toFixed(3) : ""}`, Q.x, Q.y + (below ? 26 : -16), "center", 11, true); txt(ctx, `${Q.lab} = ${v[id] !== undefined ? +(+v[id]).toFixed(3) : ""}`, Q.x, Q.y + (below ? 26 : -16), { a: "center", s: 11, b: true, c: COL.ink2 }); });
+}
+
+/* ======================= INICIO ======================= */
+const CASES = [
+  ["po", "1. Primer orden", "Un tanque que busca su equilibrio, la regla del 63 % y el error de Euler cuando el paso es grande.",
+    '<rect width="240" height="120" fill="#F1F5F9"/><rect x="20" y="20" width="70" height="85" fill="#fff" stroke="#0F172A" stroke-width="2"/><rect x="22" y="55" width="66" height="48" fill="#67E8F9"/><path d="M110 100 C140 40 170 25 225 22" stroke="#0891B2" stroke-width="3" fill="none"/><line x1="110" y1="22" x2="225" y2="22" stroke="#64748B" stroke-dasharray="4 3"/>'],
+  ["so", "2. Segundo orden", "Masa, resorte y amortiguador: ζ, ωn, sobrepaso y polos en el plano s.",
+    '<rect width="240" height="120" fill="#F1F5F9"/><rect x="10" y="30" width="8" height="60" fill="#0F172A"/><path d="M18 60 l8 -10 l8 20 l8 -20 l8 20 l8 -20 l8 10" stroke="#6366F1" stroke-width="3" fill="none"/><rect x="74" y="42" width="36" height="36" rx="4" fill="#0891B2"/><path d="M125 95 C140 10 160 10 170 60 S200 75 230 60" stroke="#E11D48" stroke-width="3" fill="none"/>'],
+  ["vp", "3. Vensim ↔ Python", "Las ecuaciones del .mdl, su diagrama de Forrester y el código en Python, simulados en vivo.",
+    '<rect width="240" height="120" fill="#F1F5F9"/><rect x="15" y="20" width="95" height="80" rx="8" fill="#0F172A"/><g fill="#67E8F9" font-family="monospace" font-size="9"><text x="22" y="38">INTEG(</text><text x="22" y="52">STEP(80,30)</text><text x="22" y="66">IF THEN ELSE</text></g><rect x="130" y="20" width="95" height="80" rx="8" fill="#0F172A"/><g fill="#FCD34D" font-family="monospace" font-size="9"><text x="137" y="38">for k in</text><text x="137" y="52">  x += dt*f</text><text x="137" y="66">np.exp(...)</text></g>'],
+  ["es", "4. Análisis de escenarios", "Escenarios de demanda, política de contratación, diagrama de tornado y Monte Carlo.",
+    '<rect width="240" height="120" fill="#F1F5F9"/><g><rect x="120" y="18" width="70" height="14" fill="#E11D48"/><rect x="70" y="18" width="50" height="14" fill="#0891B2"/><rect x="120" y="40" width="40" height="14" fill="#E11D48"/><rect x="85" y="40" width="35" height="14" fill="#0891B2"/><rect x="120" y="62" width="18" height="14" fill="#E11D48"/><rect x="106" y="62" width="14" height="14" fill="#0891B2"/></g><line x1="120" y1="10" x2="120" y2="85" stroke="#0F172A"/><g fill="#6366F1"><rect x="40" y="100" width="12" height="12"/><rect x="55" y="92" width="12" height="20"/><rect x="70" y="88" width="12" height="24"/><rect x="85" y="96" width="12" height="16"/></g>'],
+  ["ca", "5. Seis casos", "CPU, mesa de ayuda, gusano Code-Red, autoescalado, ley de Brooks y ventilador con PI, animados.",
+    '<rect width="240" height="120" fill="#F1F5F9"/><rect x="20" y="25" width="50" height="50" rx="6" fill="#0F172A"/><rect x="30" y="35" width="30" height="30" fill="#F59E0B"/><g fill="#16A34A"><rect x="95" y="25" width="40" height="10"/><rect x="95" y="40" width="40" height="10"/><rect x="95" y="55" width="40" height="10" fill="#F59E0B"/></g><g fill="#E11D48"><circle cx="170" cy="35" r="5"/><circle cx="190" cy="55" r="5"/><circle cx="210" cy="30" r="5"/></g><g fill="#94A3B8"><circle cx="180" cy="80" r="5"/><circle cx="205" cy="75" r="5"/><circle cx="160" cy="65" r="5"/></g>']];
+function buildCases() { $("cases").innerHTML = CASES.map(([id, t, d, svg]) => `<div class="card" data-go="${id}"><svg class="cardimg" viewBox="0 0 240 120">${svg}</svg><h3>${t}</h3><p class="mini">${d}</p></div>`).join(""); }
+
+/* ======================= 1 · PRIMER ORDEN ======================= */
+const PO = { t: 0, play: true, num: [], drops: [] };
+function poPars() { return { tau: num("pTau"), xs: num("pXs"), x0: num("pX0"), dt: num("pDt"), met: $("pMet").value }; }
+function poReset() { const p = poPars(), T = 6 * p.tau, f = (t, x) => [(p.xs - x[0]) / p.tau]; let x = [p.x0]; PO.num = [[0, p.x0]];
+  for (let t = 0; t < T - 1e-9; t += p.dt) { x = p.met === "rk4" ? rk4(f, x, t, p.dt) : [x[0] + p.dt * f(t, x)[0]]; PO.num.push([t + p.dt, x[0]]); }
+  PO.t = 0; PO.T = T; PO.play = true; $("pPlay").textContent = "Pausar"; $("pPlay").classList.add("go"); }
+ANIM.po = {
+  tick(dt) { ["pTau", "pXs", "pX0", "pDt"].forEach(id => $(id + "V").textContent = $(id).value); if (PO.play && PO.t < PO.T) PO.t = Math.min(PO.T, PO.t + dt * PO.T / 9); },
+  draw(dt) {
+    const p = poPars(), ex = t => p.xs + (p.x0 - p.xs) * Math.exp(-t / p.tau), xe = ex(PO.t), vis = PO.num.filter(r => r[0] <= PO.t + 1e-9), xn = vis.length ? vis.at(-1)[1] : p.x0;
+    const { ctx, w, h } = canvas("cvP0"), tx = w * 0.3, tw = w * 0.4, ty = 40, th = h - 80, lv = clamp(xe / 100, 0, 1.05);
+    ctx.fillStyle = "#F8FAFC"; ctx.fillRect(0, 0, w, h);
+    ctx.strokeStyle = COL.ink; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(30, 26); ctx.lineTo(tx + tw * 0.4, 26); ctx.lineTo(tx + tw * 0.4, ty + 4); ctx.stroke();
+    const inR = p.xs / p.tau, outR = xe / p.tau;
+    if (PO.play && PO.t < PO.T) { if (rnd() < inR * 0.06) PO.drops.push({ x: tx + tw * 0.4 + (rnd() - 0.5) * 6, y: ty, k: 0 }); if (rnd() < outR * 0.06) PO.drops.push({ x: tx + tw, y: ty + th - 8, k: 1 }); }
+    PO.drops = PO.drops.filter(d => { if (d.k === 0) { d.y += 3.5; disc(ctx, d.x, d.y, 2.5, COL.teal); return d.y < ty + th - th * lv; } d.x += 3; d.y += 0.6; disc(ctx, d.x, d.y, 2.5, COL.teal); return d.x < w - 10; });
+    const g = ctx.createLinearGradient(0, ty, 0, ty + th); g.addColorStop(0, "#67E8F9"); g.addColorStop(1, "#0891B2"); ctx.fillStyle = g; const wl = ty + th - th * Math.min(lv, 1);
+    ctx.beginPath(); ctx.moveTo(tx, ty + th); for (let k = 0; k <= 20; k++) ctx.lineTo(tx + tw * k / 20, wl + Math.sin(TCLOCK * 3 + k) * 1.5); ctx.lineTo(tx + tw, ty + th); ctx.fill();
+    ctx.strokeStyle = COL.ink; ctx.lineWidth = 3; ctx.strokeRect(tx, ty, tw, th); ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(tx + tw, ty + th - 6); ctx.lineTo(w - 12, ty + th - 6 + 6); ctx.stroke();
+    const ys = ty + th - th * p.xs / 100; path(ctx, [[tx - 12, ys], [tx + tw + 12, ys]], COL.amber, 2, [6, 4]); txt(ctx, "x*", tx - 30, ys + 4, { b: true, c: COL.amber });
+    const yn = ty + th - th * clamp(xn / 100, -0.1, 1.1); path(ctx, [[tx, yn], [tx + tw, yn]], COL.coral, 2.5); txt(ctx, p.met === "rk4" ? "RK4" : "Euler", tx + tw + 6, yn + 4, { b: true, s: 11, c: COL.coral });
+    label(ctx, `x exacto = ${fx(xe, 1)}`, 8, h - 30, COL.ink2, "#fff", 12); label(ctx, `entrada x*/τ = ${fx(inR, 2)} · salida x/τ = ${fx(outR, 2)}`, 8, h - 8, COL.teal, "#fff", 11);
+    // línea de fase
+    const r1 = canvas("cvP1"), A = axes(r1.ctx, r1.w, r1.h, 0, 100, -100 / p.tau, 100 / p.tau, "nivel x", "dx/dt", 0, 1), c1 = r1.ctx;
+    path(c1, [[A.X(0), A.Y(p.xs / p.tau)], [A.X(100), A.Y((p.xs - 100) / p.tau)]], COL.violet, 2.5); path(c1, [[A.X(0), A.Y(0)], [A.X(100), A.Y(0)]], COL.ink, 1);
+    [10, 30, 50, 70, 90].forEach(x => { if (Math.abs(x - p.xs) < 4) return; const d = x < p.xs ? 1 : -1; arrowHead(c1, A.X(x) + d * 8, A.Y(0) - 8, d > 0 ? 0 : Math.PI, 9, COL.teal); });
+    disc(c1, A.X(p.xs), A.Y(0), 7, COL.teal); disc(c1, A.X(clamp(xe, 0, 100)), A.Y((p.xs - xe) / p.tau), 6, COL.amber); txt(c1, "equilibrio estable: pendiente −1/τ", A.X(p.xs) + (p.xs > 60 ? -200 : 10), A.Y(0) - 14, { s: 11, b: true, c: COL.teal });
+    // trayectoria
+    const r2 = canvas("cvP2"), lo = Math.min(0, ...PO.num.map(r => r[1])), hi = Math.max(100, ...PO.num.map(r => r[1])), B = axes(r2.ctx, r2.w, r2.h, 0, PO.T, lo, hi, "tiempo", "x", 0, 0), c2 = r2.ctx, ex_ = [];
+    for (let t = 0; t <= PO.t + 1e-9; t += PO.T / 300) ex_.push([B.X(t), B.Y(ex(t))]); path(c2, ex_, COL.ink, 2.6);
+    path(c2, vis.map(([t, x]) => [B.X(t), B.Y(x)]), COL.coral, 1.8); vis.forEach(([t, x]) => disc(c2, B.X(t), B.Y(x), 3.5, COL.coral));
+    path(c2, [[B.X(0), B.Y(p.xs)], [B.X(PO.T), B.Y(p.xs)]], COL.amber, 1.2, [5, 4]); if (PO.t >= p.tau) { const y63 = ex(p.tau); path(c2, [[B.X(p.tau), B.Y(lo)], [B.X(p.tau), B.Y(y63)]], COL.muted, 1, [3, 3]); disc(c2, B.X(p.tau), B.Y(y63), 5, COL.teal); txt(c2, "63 % en t = τ", B.X(p.tau) + 6, B.Y(y63) + 14, { s: 11, b: true, c: COL.teal }); }
+    legend(c2, [["solución exacta", COL.ink], [p.met === "rk4" ? "RK4" : "Euler", COL.coral]], B.pl + 10, P0.t + 10);
+    const err = Math.max(0, ...vis.map(([t, x]) => Math.abs(x - ex(t)))), r = p.dt / p.tau;
+    $("pStats").innerHTML = stat("t", fx(PO.t, 1)) + stat("x exacto", fx(xe, 2)) + stat("x numérico", fx(xn, 2)) + stat("Error máximo", fx(err, 2)) + stat("DT/τ", fx(r, 2) + (p.met === "euler" ? (r >= 1 ? " ⚠ inestable" : r > 0.25 ? " · grande" : " · bien") : ""));
+  }
+};
+
+/* ======================= 2 · SEGUNDO ORDEN ======================= */
+const SO = { x: [0, 0], t: 0, hist: [], play: true };
+function soReset() { SO.x = [0, 0]; SO.t = 0; SO.hist = [[0, 0]]; SO.play = true; $("sPlay").textContent = "Pausar"; $("sPlay").classList.add("go"); }
+function soPoles(z, wn) { if (Math.abs(z) < 1) { const wd = wn * Math.sqrt(1 - z * z); return [[-z * wn, wd], [-z * wn, -wd]]; } const r = Math.sqrt(z * z - 1); return [[-wn * (z - r), 0], [-wn * (z + r), 0]]; }
+ANIM.so = {
+  tick(dt) { $("sZV").textContent = fx(num("sZ"), 2); $("sWV").textContent = fx(num("sW"), 2); if (!SO.play) return; const z = num("sZ"), wn = num("sW"), f = (t, s) => [s[1], wn * wn * (1 - s[0]) - 2 * z * wn * s[1]];
+    const n = 10, h = dt * 1.6 / n; for (let i = 0; i < n; i++) { SO.x = rk4(f, SO.x, SO.t, h); SO.t += h; } SO.hist.push([SO.t, SO.x[0]]); if (SO.hist.length > 1500) SO.hist.shift(); if (Math.abs(SO.x[0]) > 6 || SO.t > 40) soReset(); },
+  draw() {
+    const z = num("sZ"), wn = num("sW"), x = SO.x[0], { ctx, w, h } = canvas("cvS0"), x0 = 30, y = h * 0.5, sc = (w - 160) / 2.2, bx = x0 + 60 + clamp(x, -0.8, 2.6) * sc;
+    ctx.fillStyle = "#F8FAFC"; ctx.fillRect(0, 0, w, h); ctx.fillStyle = COL.ink; ctx.fillRect(x0 - 12, y - 70, 12, 140); ctx.fillStyle = "#CBD5E1"; ctx.fillRect(x0, y + 46, w - x0 - 10, 6);
+    ctx.strokeStyle = COL.violet; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x0, y - 22); const nz = 12; for (let i = 0; i <= nz; i++) ctx.lineTo(x0 + (bx - x0) * i / nz, y - 22 + (i % 2 ? -12 : 12) * (i > 0 && i < nz ? 1 : 0)); ctx.stroke();
+    ctx.strokeStyle = COL.ink; ctx.lineWidth = 2.5; const dm = x0 + (bx - x0) * 0.5; ctx.beginPath(); ctx.moveTo(x0, y + 22); ctx.lineTo(dm - 16, y + 22); ctx.moveTo(dm - 16, y + 12); ctx.lineTo(dm + 10, y + 12); ctx.moveTo(dm - 16, y + 32); ctx.lineTo(dm + 10, y + 32); ctx.moveTo(dm - 16, y + 12); ctx.lineTo(dm - 16, y + 32); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(dm - 4, y + 15); ctx.lineTo(dm - 4, y + 29); ctx.moveTo(dm - 4, y + 22); ctx.lineTo(bx - 30, y + 22); ctx.stroke(); txt(ctx, `amortiguador (ζ = ${fx(z, 2)})`, dm - 40, y + 64, { s: 11, b: true });
+    txt(ctx, `resorte (ωn = ${fx(wn, 2)})`, x0 + 20, y - 46, { s: 11, b: true, c: COL.violet });
+    ctx.fillStyle = COL.teal; rr(ctx, bx - 30, y - 40, 60, 80, 8); ctx.fill(); txt(ctx, "m", bx, y + 6, { a: "center", c: "#fff", b: true, s: 20, serif: true });
+    const tgx = x0 + 60 + sc; path(ctx, [[tgx, y - 80], [tgx, y + 56]], COL.amber, 2, [6, 4]); txt(ctx, "objetivo u = 1", tgx + 6, y - 66, { s: 11, b: true, c: COL.amber }); label(ctx, `x = ${fx(x, 3)}`, 10, 24, COL.ink2, "#fff", 13);
+    // polos
+    const r1 = canvas("cvS1"), A = axes(r1.ctx, r1.w, r1.h, -5, 1, -3, 3, "Re(s)", "Im(s)", 0, 0), c1 = r1.ctx;
+    c1.fillStyle = "rgba(22,163,74,.08)"; c1.fillRect(A.pl, P0.t, A.X(0) - A.pl, r1.h - P0.t - P0.b); c1.fillStyle = "rgba(225,29,72,.08)"; c1.fillRect(A.X(0), P0.t, r1.w - P0.r - A.X(0), r1.h - P0.t - P0.b);
+    path(c1, [[A.X(0), P0.t], [A.X(0), r1.h - P0.b]], COL.ink, 1.5); path(c1, [[A.pl, A.Y(0)], [r1.w - P0.r, A.Y(0)]], COL.ink, 1);
+    c1.strokeStyle = COL.line; c1.setLineDash([3, 3]); c1.beginPath(); c1.ellipse(A.X(0), A.Y(0), A.X(wn) - A.X(0), A.Y(0) - A.Y(wn), 0, 0, 7); c1.stroke(); c1.setLineDash([]);
+    soPoles(z, wn).forEach(([re, im]) => { const px = A.X(clamp(re, -5, 1)), py = A.Y(clamp(im, -3, 3)); c1.strokeStyle = z < 0 ? COL.coral : COL.teal; c1.lineWidth = 3.5; c1.beginPath(); c1.moveTo(px - 8, py - 8); c1.lineTo(px + 8, py + 8); c1.moveTo(px + 8, py - 8); c1.lineTo(px - 8, py + 8); c1.stroke(); });
+    txt(c1, "estable", A.pl + 8, P0.t + 14, { s: 11, b: true, c: COL.green }); txt(c1, "inestable", A.X(0) + 4, P0.t + 14, { s: 11, b: true, c: COL.coral }); txt(c1, "círculo de radio ωn", A.pl + 8, r1.h - P0.b - 8, { s: 10, c: COL.muted });
+    // respuesta
+    const r2 = canvas("cvS2"), tm = Math.max(10, SO.t), B = axes(r2.ctx, r2.w, r2.h, 0, tm, -0.5, 2.2, "tiempo (s)", "x", 0, 1), c2 = r2.ctx;
+    path(c2, [[B.X(0), B.Y(1)], [B.X(tm), B.Y(1)]], COL.amber, 1.4, [6, 4]); path(c2, SO.hist.map(([t, v]) => [B.X(t), B.Y(clamp(v, -0.5, 2.2))]), COL.teal, 2.6);
+    let m = null; if (z > 0 && z < 1) { const mp = Math.exp(-Math.PI * z / Math.sqrt(1 - z * z)), tp = Math.PI / (wn * Math.sqrt(1 - z * z)); m = { mp, tp, ts: 4 / (z * wn) }; if (tp <= tm) { disc(c2, B.X(tp), B.Y(1 + mp), 5, COL.coral); txt(c2, `Mp teórico ${fx(100 * mp, 1)} %`, B.X(tp) + 8, B.Y(1 + mp) - 4, { s: 11, b: true, c: COL.coral }); } }
+    const mpSim = Math.max(0, ...SO.hist.map(r => r[1])) - 1, tipo = z < 0 ? "inestable" : z === 0 ? "oscilación sostenida" : z < 1 ? "subamortiguado" : Math.abs(z - 1) < 0.01 ? "crítico" : "sobreamortiguado";
+    $("sStats").innerHTML = stat("Tipo", tipo) + stat("Mp teórico", m ? fx(100 * m.mp, 1) + " %" : (z <= 0 ? "—" : "0 %")) + stat("Mp medido", fx(100 * Math.max(0, mpSim), 1) + " %") + stat("tp teórico", m ? fx(m.tp, 2) + " s" : "—") + stat("ts (2 %)", z > 0 ? fx(4 / (z * wn), 1) + " s" : "∞");
+  }
+};
+
+/* ======================= 3 · VENSIM ↔ PYTHON ======================= */
+const MDLTXT = {"01_CPU_primer_orden": "{UTF-8}\nTemperatura CPU=\n\tINTEG (\n\t\t\tCalentamiento-Enfriamiento,\n\t\t\t\tTemperatura ambiente+Potencia en reposo*Resistencia termica)\n\t~\tC\n\t~\tNivel: temperatura del procesador. Arranca en el equilibrio de reposo.\n\t|\n\nCalentamiento=\n\tPotencia/Capacidad termica\n\t~\tC/s\n\t~\tFlujo de entrada: la potencia disipada calienta el chip.\n\t|\n\nEnfriamiento=\n\t(Temperatura CPU-Temperatura ambiente)/(Resistencia termica*Capacidad termica)\n\t~\tC/s\n\t~\tFlujo de salida: ley de enfriamiento de Newton.\n\t|\n\nPotencia=\n\tPotencia en reposo+STEP(Potencia en carga-Potencia en reposo, Inicio de la carga)\n\t~\tW\n\t~\tEscalón de carga (por ejemplo, un renderizado).\n\t|\n\nPotencia en reposo=\n\t15\n\t~\tW\n\t~\t\n\t|\n\nPotencia en carga=\n\t95\n\t~\tW\n\t~\t\n\t|\n\nInicio de la carga=\n\t30\n\t~\ts\n\t~\t\n\t|\n\nResistencia termica=\n\t0.4\n\t~\tC/W\n\t~\tDisipador. Pruebe 0.75 (disipador sucio) o 0.25 (refrigeración líquida).\n\t|\n\nCapacidad termica=\n\t50\n\t~\tJ/C\n\t~\tMasa térmica del chip y el disipador.\n\t|\n\nTemperatura ambiente=\n\t25\n\t~\tC\n\t~\t\n\t|\n\nConstante de tiempo=\n\tResistencia termica*Capacidad termica\n\t~\ts\n\t~\ttau = R·C. El 63 % del cambio ocurre en tau segundos.\n\t|\n\nTemperatura de equilibrio=\n\tTemperatura ambiente+Potencia*Resistencia termica\n\t~\tC\n\t~\tHacia donde se dirige la temperatura (objetivo del bucle B).\n\t|\n\n********************************************************\n\t.Control\n********************************************************~\n\t\tSimulation Control Parameters\n\t|\n\nFINAL TIME  = 200\n\t~\ts\n\t~\tTiempo final de la simulación.\n\t|\n\nINITIAL TIME  = 0\n\t~\ts\n\t~\tTiempo inicial de la simulación.\n\t|\n\nSAVEPER  = \n\tTIME STEP\n\t~\ts [0,?]\n\t~\tFrecuencia de guardado.\n\t|\n\nTIME STEP  = 0.5\n\t~\ts [0,?]\n\t~\tPaso de integración (método de Euler).\n\t|\n\n", "02_Cola_tickets_primer_orden": "{UTF-8}\nTickets pendientes=\n\tINTEG (\n\t\t\tLlegadas-Resoluciones,\n\t\t\t\tLlegadas normales*Tiempo de resolucion)\n\t~\ttickets\n\t~\tNivel: solicitudes sin resolver en la mesa de ayuda. Arranca en el equilibrio de la ley de Little.\n\t|\n\nLlegadas=\n\tLlegadas normales+STEP(Llegadas en incidente-Llegadas normales, Hora del incidente)\n\t~\ttickets/hora\n\t~\t\n\t|\n\nResoluciones=\n\tTickets pendientes/Tiempo de resolucion\n\t~\ttickets/hora\n\t~\tSalida proporcional al nivel: primer orden.\n\t|\n\nLlegadas normales=\n\t40\n\t~\ttickets/hora\n\t~\t\n\t|\n\nLlegadas en incidente=\n\t70\n\t~\ttickets/hora\n\t~\tEscenarios: optimista 55, pesimista 100.\n\t|\n\nHora del incidente=\n\t8\n\t~\thora\n\t~\t\n\t|\n\nTiempo de resolucion=\n\t2\n\t~\thora\n\t~\tCon más agentes baja a 1.4.\n\t|\n\nTiempo de espera estimado=\n\tTickets pendientes/Llegadas\n\t~\thora\n\t~\tLey de Little: W = L / lambda.\n\t|\n\n********************************************************\n\t.Control\n********************************************************~\n\t\tSimulation Control Parameters\n\t|\n\nFINAL TIME  = 24\n\t~\thora\n\t~\tTiempo final de la simulación.\n\t|\n\nINITIAL TIME  = 0\n\t~\thora\n\t~\tTiempo inicial de la simulación.\n\t|\n\nSAVEPER  = \n\tTIME STEP\n\t~\thora [0,?]\n\t~\tFrecuencia de guardado.\n\t|\n\nTIME STEP  = 0.0625\n\t~\thora [0,?]\n\t~\tPaso de integración (método de Euler).\n\t|\n\n", "03_Gusano_CodeRed_logistico": "{UTF-8}\nSusceptibles=\n\tINTEG (\n\t\t\t-Infecciones-Parcheo de susceptibles,\n\t\t\t\tHosts vulnerables-Infectados iniciales)\n\t~\thosts\n\t~\t\n\t|\n\nInfectados=\n\tINTEG (\n\t\t\tInfecciones-Parcheo de infectados,\n\t\t\t\tInfectados iniciales)\n\t~\thosts\n\t~\tNivel: servidores IIS comprometidos.\n\t|\n\nProtegidos=\n\tINTEG (\n\t\t\tParcheo de susceptibles+Parcheo de infectados,\n\t\t\t\t0)\n\t~\thosts\n\t~\t\n\t|\n\nInfecciones=\n\tTasa de contacto*Susceptibles*Infectados/Hosts vulnerables\n\t~\thosts/hora\n\t~\tCrecimiento logístico: R al inicio, B al agotarse los susceptibles.\n\t|\n\nParcheo de susceptibles=\n\tTasa de parcheo*Susceptibles*STEP(1, Inicio del parcheo)\n\t~\thosts/hora\n\t~\t\n\t|\n\nParcheo de infectados=\n\tTasa de parcheo*Infectados*STEP(1, Inicio del parcheo)\n\t~\thosts/hora\n\t~\t\n\t|\n\nTasa de contacto=\n\t1.33\n\t~\t1/hora\n\t~\tCalibrada: pico de unos 2 000 hosts por minuto (CAIDA, 2001).\n\t|\n\nHosts vulnerables=\n\t360000\n\t~\thosts\n\t~\tMás de 359 000 hosts infectados el 19 de julio de 2001 (CAIDA).\n\t|\n\nInfectados iniciales=\n\t30\n\t~\thosts\n\t~\t\n\t|\n\nTasa de parcheo=\n\t0\n\t~\t1/hora\n\t~\tEscenario: 0.5 desde la hora 4 o 6.\n\t|\n\nInicio del parcheo=\n\t4\n\t~\thora\n\t~\t\n\t|\n\n********************************************************\n\t.Control\n********************************************************~\n\t\tSimulation Control Parameters\n\t|\n\nFINAL TIME  = 16\n\t~\thora\n\t~\tTiempo final de la simulación.\n\t|\n\nINITIAL TIME  = 0\n\t~\thora\n\t~\tTiempo inicial de la simulación.\n\t|\n\nSAVEPER  = \n\tTIME STEP\n\t~\thora [0,?]\n\t~\tFrecuencia de guardado.\n\t|\n\nTIME STEP  = 0.0625\n\t~\thora [0,?]\n\t~\tPaso de integración (método de Euler).\n\t|\n\n", "04_Autoescalado_segundo_orden": "{UTF-8}\nInstancias en arranque=\n\tINTEG (\n\t\t\tSolicitud de instancias-Instancias listas,\n\t\t\t\t0)\n\t~\tinstancias\n\t~\tNivel 1: máquinas pedidas que aún no atienden tráfico.\n\t|\n\nInstancias activas=\n\tINTEG (\n\t\t\tInstancias listas-Retiro de instancias,\n\t\t\t\tDemanda base/(Capacidad por instancia*Utilizacion objetivo))\n\t~\tinstancias\n\t~\tNivel 2: máquinas que atienden tráfico.\n\t|\n\nUtilizacion medida=\n\tINTEG (\n\t\t\t(Utilizacion real-Utilizacion medida)/Tiempo de medicion,\n\t\t\t\tUtilizacion objetivo)\n\t~\tDmnl\n\t~\tMétrica suavizada (retardo de información, como la ventana del HPA).\n\t|\n\nInstancias listas=\n\tInstancias en arranque/Tiempo de arranque\n\t~\tinstancias/minuto\n\t~\t\n\t|\n\nBrecha de instancias=\n\tInstancias deseadas-Instancias activas-Considerar instancias en arranque*Instancias en arranque\n\t~\tinstancias\n\t~\t\n\t|\n\nSolicitud de instancias=\n\tMAX(Brecha de instancias/Tiempo de ajuste, 0)\n\t~\tinstancias/minuto\n\t~\t\n\t|\n\nRetiro de instancias=\n\tMAX(-Brecha de instancias/Tiempo de ajuste, 0)\n\t~\tinstancias/minuto\n\t~\t\n\t|\n\nInstancias deseadas=\n\tInstancias activas*Utilizacion medida/Utilizacion objetivo\n\t~\tinstancias\n\t~\tRegla del HPA de Kubernetes: réplicas · métrica actual / métrica deseada.\n\t|\n\nUtilizacion real=\n\tDemanda/(Capacidad por instancia*Instancias activas)\n\t~\tDmnl\n\t~\t\n\t|\n\nDemanda=\n\tDemanda base+(Demanda pico-Demanda base)*PULSE(Inicio del pico, Duracion del pico)\n\t~\tsolicitudes/segundo\n\t~\t\n\t|\n\nDemanda base=\n\t600\n\t~\tsolicitudes/segundo\n\t~\t\n\t|\n\nDemanda pico=\n\t1500\n\t~\tsolicitudes/segundo\n\t~\tCampaña o día sin IVA.\n\t|\n\nInicio del pico=\n\t10\n\t~\tminuto\n\t~\t\n\t|\n\nDuracion del pico=\n\t60\n\t~\tminuto\n\t~\t\n\t|\n\nCapacidad por instancia=\n\t100\n\t~\tsolicitudes/segundo/instancia\n\t~\t\n\t|\n\nUtilizacion objetivo=\n\t0.7\n\t~\tDmnl\n\t~\t\n\t|\n\nTiempo de ajuste=\n\t1\n\t~\tminuto\n\t~\t\n\t|\n\nTiempo de arranque=\n\t4\n\t~\tminuto\n\t~\t\n\t|\n\nTiempo de medicion=\n\t2\n\t~\tminuto\n\t~\t\n\t|\n\nConsiderar instancias en arranque=\n\t0\n\t~\tDmnl\n\t~\t0 = regla ingenua (oscila); 1 = cuenta las instancias en camino.\n\t|\n\n********************************************************\n\t.Control\n********************************************************~\n\t\tSimulation Control Parameters\n\t|\n\nFINAL TIME  = 120\n\t~\tminuto\n\t~\tTiempo final de la simulación.\n\t|\n\nINITIAL TIME  = 0\n\t~\tminuto\n\t~\tTiempo inicial de la simulación.\n\t|\n\nSAVEPER  = \n\tTIME STEP\n\t~\tminuto [0,?]\n\t~\tFrecuencia de guardado.\n\t|\n\nTIME STEP  = 0.0625\n\t~\tminuto [0,?]\n\t~\tPaso de integración (método de Euler).\n\t|\n\n", "05_Proyecto_Ley_de_Brooks": "{UTF-8}\nTareas pendientes=\n\tINTEG (\n\t\t\t-Avance,\n\t\t\t\tTamano del proyecto)\n\t~\ttareas\n\t~\t\n\t|\n\nNovatos=\n\tINTEG (\n\t\t\tContratacion-Asimilacion,\n\t\t\t\t0)\n\t~\tpersonas\n\t~\t\n\t|\n\nExpertos=\n\tINTEG (\n\t\t\tAsimilacion,\n\t\t\t\tExpertos iniciales)\n\t~\tpersonas\n\t~\t\n\t|\n\nContratacion=\n\tPersonas a contratar*PULSE(Dia de contratacion, TIME STEP)/TIME STEP\n\t~\tpersonas/dia\n\t~\tIngreso de nuevos desarrolladores en un solo día.\n\t|\n\nAsimilacion=\n\tNovatos/Tiempo de asimilacion\n\t~\tpersonas/dia\n\t~\t\n\t|\n\nTamano del equipo=\n\tNovatos+Expertos\n\t~\tpersonas\n\t~\t\n\t|\n\nSobrecarga de comunicacion=\n\tMIN(0.9, Coeficiente de comunicacion*(Tamano del equipo/10)^2)\n\t~\tDmnl\n\t~\tBrooks: los canales de comunicación crecen como n(n-1)/2.\n\t|\n\nProductividad bruta=\n\tMAX(0, (Expertos-Tiempo de mentoria*Novatos)*Productividad experto+Novatos*Productividad novato)\n\t~\ttareas/dia\n\t~\tLos novatos consumen tiempo de los expertos.\n\t|\n\nAvance=\n\tIF THEN ELSE(Tareas pendientes>0, Productividad bruta*(1-Sobrecarga de comunicacion), 0)\n\t~\ttareas/dia\n\t~\t\n\t|\n\nTamano del proyecto=\n\t2000\n\t~\ttareas\n\t~\t\n\t|\n\nExpertos iniciales=\n\t10\n\t~\tpersonas\n\t~\t\n\t|\n\nPersonas a contratar=\n\t0\n\t~\tpersonas\n\t~\tEscenarios: 10 personas el día 0, 100 o 150.\n\t|\n\nDia de contratacion=\n\t150\n\t~\tdia\n\t~\t\n\t|\n\nTiempo de asimilacion=\n\t60\n\t~\tdia\n\t~\t\n\t|\n\nCoeficiente de comunicacion=\n\t0.08\n\t~\tDmnl\n\t~\t\n\t|\n\nTiempo de mentoria=\n\t0.5\n\t~\tDmnl\n\t~\tFracción de un experto que consume cada novato.\n\t|\n\nProductividad experto=\n\t1\n\t~\ttareas/persona/dia\n\t~\t\n\t|\n\nProductividad novato=\n\t0.2\n\t~\ttareas/persona/dia\n\t~\t\n\t|\n\n********************************************************\n\t.Control\n********************************************************~\n\t\tSimulation Control Parameters\n\t|\n\nFINAL TIME  = 400\n\t~\tdia\n\t~\tTiempo final de la simulación.\n\t|\n\nINITIAL TIME  = 0\n\t~\tdia\n\t~\tTiempo inicial de la simulación.\n\t|\n\nSAVEPER  = \n\tTIME STEP\n\t~\tdia [0,?]\n\t~\tFrecuencia de guardado.\n\t|\n\nTIME STEP  = 0.25\n\t~\tdia [0,?]\n\t~\tPaso de integración (método de Euler).\n\t|\n\n", "06_Ventilador_PI_segundo_orden": "{UTF-8}\nTemperatura servidor=\n\tINTEG (\n\t\t\tCambio de temperatura,\n\t\t\t\tTemperatura objetivo inicial)\n\t~\tC\n\t~\tNivel 1 del lazo cerrado.\n\t|\n\nError acumulado=\n\tINTEG (\n\t\t\tAcumulacion del error,\n\t\t\t\tVentilador inicial/Ki)\n\t~\tC*s\n\t~\tNivel 2: la acción integral del controlador PI.\n\t|\n\nCambio de temperatura=\n\t(Temperatura ambiente+Potencia*Resistencia termica-Efecto del ventilador*Velocidad del ventilador-Temperatura servidor)/Constante de tiempo\n\t~\tC/s\n\t~\t\n\t|\n\nError=\n\tTemperatura servidor-Temperatura objetivo\n\t~\tC\n\t~\t\n\t|\n\nTemperatura objetivo=\n\tTemperatura objetivo inicial+STEP(Nuevo objetivo-Temperatura objetivo inicial, Momento del cambio)\n\t~\tC\n\t~\t\n\t|\n\nSenal del controlador=\n\tKp*Error+Ki*Error acumulado\n\t~\t%\n\t~\t\n\t|\n\nVelocidad del ventilador=\n\tMAX(0, MIN(100, Senal del controlador))\n\t~\t%\n\t~\t\n\t|\n\nAcumulacion del error=\n\tIF THEN ELSE(Senal del controlador>=100 :AND: Error>0, 0, IF THEN ELSE(Senal del controlador<=0 :AND: Error<0, 0, Error))\n\t~\tC\n\t~\tAnti-windup: deja de integrar si el ventilador está saturado.\n\t|\n\nVentilador inicial=\n\t(Temperatura ambiente+Potencia*Resistencia termica-Temperatura objetivo inicial)/Efecto del ventilador\n\t~\t%\n\t~\t\n\t|\n\nPotencia=\n\tPotencia base+STEP(Potencia extra, Momento de la carga)\n\t~\tW\n\t~\t\n\t|\n\nKp=\n\t1.5\n\t~\t%/C\n\t~\tAgresivo: 0.3 · Bien ajustado: 1.5 · Lento: 1\n\t|\n\nKi=\n\t0.1\n\t~\t%/(C*s)\n\t~\tAgresivo: 0.15 · Bien ajustado: 0.1 · Lento: 0.01\n\t|\n\nTemperatura objetivo inicial=\n\t60\n\t~\tC\n\t~\t\n\t|\n\nNuevo objetivo=\n\t50\n\t~\tC\n\t~\t\n\t|\n\nMomento del cambio=\n\t50\n\t~\ts\n\t~\t\n\t|\n\nTemperatura ambiente=\n\t25\n\t~\tC\n\t~\t\n\t|\n\nResistencia termica=\n\t0.4\n\t~\tC/W\n\t~\t\n\t|\n\nEfecto del ventilador=\n\t0.3\n\t~\tC/%\n\t~\t\n\t|\n\nConstante de tiempo=\n\t40\n\t~\ts\n\t~\t\n\t|\n\nPotencia base=\n\t120\n\t~\tW\n\t~\t\n\t|\n\nPotencia extra=\n\t0\n\t~\tW\n\t~\tPerturbación opcional.\n\t|\n\nMomento de la carga=\n\t300\n\t~\ts\n\t~\t\n\t|\n\n********************************************************\n\t.Control\n********************************************************~\n\t\tSimulation Control Parameters\n\t|\n\nFINAL TIME  = 600\n\t~\ts\n\t~\tTiempo final de la simulación.\n\t|\n\nINITIAL TIME  = 0\n\t~\ts\n\t~\tTiempo inicial de la simulación.\n\t|\n\nSAVEPER  = \n\tTIME STEP\n\t~\ts [0,?]\n\t~\tFrecuencia de guardado.\n\t|\n\nTIME STEP  = 0.125\n\t~\ts [0,?]\n\t~\tPaso de integración (método de Euler).\n\t|\n\n"};
+function vParse(txt) {
+  const eqs = {}, ctl = {}; txt.replace("{UTF-8}", "").split("|").forEach(b => { const p = b.split("~"); if (p.length < 2 || !p[0].includes("=")) return; const i = p[0].indexOf("="), n = p[0].slice(0, i).trim().replace(/\s+/g, " "), e = p[0].slice(i + 1).trim().replace(/\s+/g, " ");
+    if (!n || n.startsWith("*")) return; if (["FINAL TIME", "INITIAL TIME", "TIME STEP", "SAVEPER"].includes(n)) ctl[n] = e; else eqs[n] = { e, u: (p[1] || "").trim() }; }); return { eqs, ctl };
+}
+function vSim(txt, params = {}) {
+  const { eqs, ctl } = vParse(txt); Object.entries(params).forEach(([k, v]) => { if (eqs[k]) eqs[k].e = String(v); });
+  const dt = +ctl["TIME STEP"], T = +ctl["FINAL TIME"], names = Object.keys(eqs).sort((a, b) => b.length - a.length), id = n => "v_" + n.replace(/\W/g, "_");
+  const tr = e => { e = e.replace(/IF THEN ELSE/g, "IFTE").replace(/:AND:/g, "&&").replace(/:OR:/g, "||").replace(/\^/g, "**"); names.concat(["TIME STEP"]).forEach(n => { e = e.replace(new RegExp("(?<![\\w])" + n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?![\\w])", "g"), n === "TIME STEP" ? "DT" : id(n)); }); return e.replace(/(?<![<>=!])=(?!=)/g, "=="); };
+  const split2 = s => { let d = 0; for (let i = 0; i < s.length; i++) { const c = s[i]; if (c === "(") d++; if (c === ")") d--; if (c === "," && d === 0) return [s.slice(0, i), s.slice(i + 1)]; } };
+  const lev = {}, aux = {}; Object.entries(eqs).forEach(([n, { e }]) => { const m = e.match(/^INTEG\s*\((.*)\)\s*$/); if (m) { const [a, b] = split2(m[1]); lev[n] = [tr(a), tr(b)]; } else aux[n] = tr(e); });
+  const fn = ex => new Function("E", "with(E){return (" + ex + ");}");
+  const deps = ex => [...ex.matchAll(/v_\w+/g)].map(m => m[0]);
+  const auxIds = Object.keys(aux).map(n => [n, id(n)]), order = [], done = new Set(Object.keys(lev).map(id));
+  let guard = 0; while (order.length < auxIds.length && guard++ < 200) auxIds.forEach(([n, i]) => { if (done.has(i)) return; if (deps(aux[n]).every(d => done.has(d) || d === i)) { order.push([n, i, fn(aux[n])]); done.add(i); } });
+  if (order.length < auxIds.length) throw new Error("No se pudo ordenar las ecuaciones");
+  const E = { IFTE: (c, a, b) => c ? a : b, MIN: Math.min, MAX: Math.max, EXP: Math.exp, SQRT: Math.sqrt, ABS: Math.abs, LN: Math.log, DT: dt, TIME: 0 };
+  E.STEP = (h, t0) => E.TIME >= t0 - 1e-9 ? h : 0; E.PULSE = (s0, w) => (E.TIME >= s0 - 1e-9 && E.TIME < s0 + w - 1e-9) ? 1 : 0;
+  // condiciones iniciales
+  const levIni = Object.entries(lev).map(([n, [r, ini]]) => [n, id(n), fn(ini), fn(r)]); Object.keys(lev).forEach(n => E[id(n)] = NaN);
+  for (let pass = 0; pass < 5; pass++) { order.forEach(([, i, f]) => { try { E[i] = f(E); } catch (er) { E[i] = NaN; } }); levIni.forEach(([, i, fi]) => { const v = fi(E); if (Number.isFinite(v)) E[i] = v; }); }
+  const out = { t: [] }; Object.keys(eqs).forEach(n => out[n] = []); const N = Math.round(T / dt);
+  for (let k = 0; k <= N; k++) { E.TIME = k * dt; order.forEach(([, i, f]) => E[i] = f(E)); out.t.push(E.TIME); Object.keys(eqs).forEach(n => out[n].push(E[id(n)]));
+    if (k < N) { const rates = levIni.map(([, , , fr]) => fr(E)); levIni.forEach(([, i], j) => E[i] += dt * rates[j]); } }
+  out._lev = Object.keys(lev); out._aux = Object.keys(aux); out._unit = ctl["TIME STEP"]; return out;
+}
+const VCASE = {
+  cpu: { f: "01_CPU_primer_orden", n: "1 · CPU", d: "Primer orden lineal: la temperatura busca el equilibrio Ta + P·Rth con τ = Rth·Cth.", v: "Temperatura CPU", u: "s",
+    L: { lv: { T: [.5, .5, "Temperatura CPU"] }, cl: { c1: [.08, .5], c2: [.92, .5] }, fl: [["Cal", "c1", "T", "Calentamiento"], ["Enf", "T", "c2", "Enfriamiento"]], k: { P: [.25, .13, "Potencia"], C: [.45, .88, "Capacidad termica"], R: [.75, .88, "Resistencia termica"], Ta: [.8, .13, "Temperatura ambiente"] }, ln: [["P", "Cal"], ["C", "Cal"], ["R", "Enf"], ["Ta", "Enf"], ["T", "Enf"]] },
+    map: { T: "Temperatura CPU", Cal: "Calentamiento", Enf: "Enfriamiento", P: "Potencia", C: "Capacidad termica", R: "Resistencia termica", Ta: "Temperatura ambiente" }, mx: { T: 110 },
+    py: `import numpy as np
+Ta, Rth, Cth = 25, 0.4, 50          # constantes del .mdl
+P0, P1, t_carga = 15, 95, 30
+dt, T = 0.5, 200                    # TIME STEP, FINAL TIME
+n = int(T / dt)
+temp = np.empty(n + 1)
+temp[0] = Ta + P0 * Rth             # valor inicial del INTEG
+for k in range(n):
+    t = k * dt
+    P = P0 + (P1 - P0) * (t >= t_carga)       # STEP
+    calentamiento = P / Cth
+    enfriamiento = (temp[k] - Ta) / (Rth * Cth)
+    temp[k + 1] = temp[k] + dt * (calentamiento - enfriamiento)
+print(round(temp[-1], 3))           # 62.994` },
+  tic: { f: "02_Cola_tickets_primer_orden", n: "2 · Tickets", d: "Primer orden lineal con salida proporcional al nivel. Equilibrio: ley de Little (B* = λ·τ).", v: "Tickets pendientes", u: "hora",
+    L: { lv: { B: [.5, .5, "Tickets pendientes"] }, cl: { c1: [.08, .5], c2: [.92, .5] }, fl: [["Lle", "c1", "B", "Llegadas"], ["Res", "B", "c2", "Resoluciones"]], k: { ln: [.22, .12, "Llegadas normales"], li: [.22, .88, "Llegadas en incidente"], tau: [.78, .88, "Tiempo de resolucion"], W: [.6, .12, "Espera estimada"] }, ln: [["ln", "Lle"], ["li", "Lle"], ["tau", "Res"], ["B", "Res"], ["B", "W"]] },
+    map: { B: "Tickets pendientes", Lle: "Llegadas", Res: "Resoluciones", ln: "Llegadas normales", li: "Llegadas en incidente", tau: "Tiempo de resolucion", W: "Tiempo de espera estimado" }, mx: { B: 220 },
+    py: `lam0, lam1, hora, tau = 40, 70, 8, 2
+dt, T = 0.0625, 24
+B = lam0 * tau                      # equilibrio inicial (Little)
+for k in range(int(T / dt)):
+    t = k * dt
+    llegadas = lam0 + (lam1 - lam0) * (t >= hora)
+    resoluciones = B / tau
+    B += dt * (llegadas - resoluciones)
+print(round(B, 2), "tickets · espera", round(B / llegadas, 2), "h")` },
+  gus: { f: "03_Gusano_CodeRed_logistico", n: "3 · Gusano", d: "Primer orden no lineal: crecimiento logístico (R al principio, B al agotarse los vulnerables).", v: "Infectados", u: "hora",
+    L: { lv: { S: [.18, .5, "Susceptibles"], I: [.55, .5, "Infectados"], R: [.88, .5, "Protegidos"] }, cl: {}, fl: [["Inf", "S", "I", "Infecciones"], ["Pi", "I", "R", "Parcheo"]], k: { b: [.36, .12, "Tasa de contacto"], N: [.18, .88, "Hosts vulnerables"], g: [.72, .88, "Tasa de parcheo"] }, ln: [["b", "Inf"], ["N", "Inf"], ["S", "Inf"], ["I", "Inf"], ["g", "Pi"]] },
+    map: { S: "Susceptibles", I: "Infectados", R: "Protegidos", Inf: "Infecciones", Pi: "Parcheo de infectados", b: "Tasa de contacto", N: "Hosts vulnerables", g: "Tasa de parcheo" }, mx: { S: 360000, I: 360000, R: 360000 },
+    py: `beta, N, I0 = 1.33, 360_000, 30
+gamma, t_parche = 0.0, 4            # tasa de parcheo y su inicio
+dt, T = 0.0625, 16
+S, I, R = N - I0, I0, 0.0
+for k in range(int(T / dt)):
+    t = k * dt
+    inf = beta * S * I / N
+    pS = gamma * S * (t >= t_parche)
+    pI = gamma * I * (t >= t_parche)
+    S, I, R = S + dt * (-inf - pS), I + dt * (inf - pI), R + dt * (pS + pI)
+print(f"{I:,.0f} infectados a las {T} h")` },
+  aut: { f: "04_Autoescalado_segundo_orden", n: "4 · Autoescalado", d: "Dos niveles de material (en arranque, activas) y uno de información (utilización medida). Pruebe «Considerar instancias en arranque» = 1.", v: "Instancias activas", u: "minuto",
+    L: { lv: { P: [.33, .5, "En arranque"], S: [.68, .5, "Activas"] }, cl: { c1: [.06, .5], c2: [.94, .5] }, fl: [["Sol", "c1", "P", "Solicitud"], ["Lis", "P", "S", "Listas"], ["Ret", "S", "c2", "Retiro"]], k: { D: [.86, .12, "Demanda"], U: [.68, .88, "Utilización medida"], Des: [.33, .88, "Deseadas"], tb: [.5, .12, "Arranque"] }, ln: [["Des", "Sol"], ["U", "Des"], ["S", "Des"], ["tb", "Lis"], ["D", "U"], ["P", "Sol"]] },
+    map: { P: "Instancias en arranque", S: "Instancias activas", Sol: "Solicitud de instancias", Lis: "Instancias listas", Ret: "Retiro de instancias", D: "Demanda", U: "Utilizacion medida", Des: "Instancias deseadas", tb: "Tiempo de arranque" }, mx: { P: 30, S: 45 },
+    py: `cap, u_obj, ta, tb, tm, c = 100, 0.7, 1, 4, 2, 0   # c=1 cuenta las que vienen
+dem = lambda t: 1500 if 10 <= t < 70 else 600        # PULSE
+dt, T = 0.0625, 120
+P, S, Um = 0.0, 600 / (cap * u_obj), u_obj
+maxS = S
+for k in range(int(T / dt)):
+    t = k * dt
+    U = dem(t) / (cap * S)
+    deseadas = S * Um / u_obj                       # regla HPA
+    brecha = deseadas - S - c * P
+    sol, ret = max(brecha / ta, 0), max(-brecha / ta, 0)
+    listas = P / tb
+    P, S, Um = P + dt*(sol - listas), S + dt*(listas - ret), Um + dt*(U - Um)/tm
+    maxS = max(maxS, S)
+print(round(maxS, 2), "instancias como máximo")` },
+  bro: { f: "05_Proyecto_Ley_de_Brooks", n: "5 · Brooks", d: "Orden 3: tareas, novatos y expertos. Pruebe «Personas a contratar» = 10 y «Dia de contratacion» = 0 o 150.", v: "Tareas pendientes", u: "dia",
+    L: { lv: { N: [.32, .3, "Novatos"], E: [.68, .3, "Expertos"], W: [.5, .8, "Tareas pendientes"] }, cl: { c1: [.06, .3], c2: [.94, .8] }, fl: [["Con", "c1", "N", "Contratación"], ["Asi", "N", "E", "Asimilación"], ["Av", "W", "c2", "Avance"]], k: { pr: [.2, .62, "Productividad"], so: [.86, .52, "Sobrecarga"] }, ln: [["N", "pr"], ["E", "pr"], ["pr", "Av"], ["so", "Av"]] },
+    map: { N: "Novatos", E: "Expertos", W: "Tareas pendientes", Con: "Contratacion", Asi: "Asimilacion", Av: "Avance", pr: "Productividad bruta", so: "Sobrecarga de comunicacion" }, mx: { N: 25, E: 25, W: 2000 },
+    py: `W0, E0, contratar, dia = 2000, 10, 10, 150
+pe, pn, mentor, tau_a, kc = 1, 0.2, 0.5, 60, 0.08
+dt, T = 0.25, 400
+W, N, E = W0, 0.0, E0
+fin = None
+for k in range(int(T / dt)):
+    t = k * dt
+    contrat = contratar / dt if dia <= t < dia + dt else 0   # PULSE
+    asim = N / tau_a
+    n = N + E
+    sobre = min(0.9, kc * (n / 10) ** 2)
+    prod = max(0, (E - mentor * N) * pe + N * pn)
+    avance = prod * (1 - sobre) if W > 0 else 0
+    if W <= 0 and fin is None: fin = t
+    W, N, E = W - dt * avance, N + dt * (contrat - asim), E + dt * asim
+print("termina el día", fin)` },
+  ven: { f: "06_Ventilador_PI_segundo_orden", n: "6 · Ventilador PI", d: "Segundo orden en lazo cerrado: temperatura + error acumulado. Pruebe Kp = 0,3 y Ki = 0,15 (agresivo).", v: "Temperatura servidor", u: "s",
+    L: { lv: { T: [.35, .3, "Temperatura"], I: [.35, .82, "Error acumulado"] }, cl: { c1: [.06, .3], c2: [.06, .82] }, fl: [["Cam", "c1", "T", "Cambio de temperatura"], ["Acu", "c2", "I", "Acumulación"]], k: { fan: [.72, .3, "Ventilador %"], err: [.72, .82, "Error"], sig: [.92, .56, "Señal PI"] }, ln: [["fan", "Cam"], ["T", "err"], ["err", "Acu"], ["err", "sig"], ["I", "sig"], ["sig", "fan"]] },
+    map: { T: "Temperatura servidor", I: "Error acumulado", Cam: "Cambio de temperatura", Acu: "Acumulacion del error", fan: "Velocidad del ventilador", err: "Error", sig: "Senal del controlador" }, mx: { T: 80, I: 1200 },
+    py: `Kp, Ki, tau, g, Ta, Rth, P = 1.5, 0.1, 40, 0.3, 25, 0.4, 120
+T0, T1, t_cambio = 60, 50, 50
+dt, T = 0.125, 600
+fan0 = (Ta + P * Rth - T0) / g
+temp, I = T0, fan0 / Ki
+for k in range(int(T / dt)):
+    t = k * dt
+    obj = T1 if t >= t_cambio else T0
+    e = temp - obj
+    u = Kp * e + Ki * I
+    fan = max(0, min(100, u))                 # saturación
+    acum = 0 if (u >= 100 and e > 0) or (u <= 0 and e < 0) else e
+    cambio = (Ta + P * Rth - g * fan - temp) / tau
+    temp, I = temp + dt * cambio, I + dt * acum
+print(round(temp, 3))` } };
+const VP = { k: "cpu", res: null, keep: null, t: 0, ph: {} };
+function vHighlight(txt) { return txt.split("\\\\\\---///")[0].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/(INTEG|STEP|PULSE|IF THEN ELSE|MIN|MAX|:AND:)/g, '<span class="k">$1</span>').replace(/~[^~|]*~[^|]*\|/g, m => `<span class="c">${m}</span>`); }
+function vSelect(k) {
+  VP.k = k; const C = VCASE[k], txt = MDLTXT[C.f]; $("vBtns").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === k)); $("vTit").textContent = C.f + ".mdl"; $("vDesc").textContent = C.d;
+  const { eqs } = vParse(txt); $("vPars").innerHTML = Object.entries(eqs).filter(([, o]) => /^-?[\d.]+$/.test(o.e)).map(([n, o]) => `<tr><td>${n}</td><td><input data-n="${n}" value="${o.e}"></td><td class="mini">${o.u}</td></tr>`).join("");
+  $("vMdl").innerHTML = vHighlight(txt.split("********************************************************")[0]); $("vPy").textContent = C.py;
+  VP.keep = null; vRun(); $("vVar").innerHTML = [...VP.res._lev, ...VP.res._aux].map(n => `<option${n === C.v ? " selected" : ""}>${n}</option>`).join("");
+}
+function vRun() { const p = {}; $("vPars").querySelectorAll("input").forEach(i => { if (Number.isFinite(+i.value)) p[i.dataset.n] = +i.value; }); VP.res = vSim(MDLTXT[VCASE[VP.k].f], p); VP.t = 0; }
+ANIM.vp = {
+  tick(dt) { if (VP.res) VP.t = Math.min(1, VP.t + dt / 5); },
+  draw() {
+    const C = VCASE[VP.k], R = VP.res; if (!R) return; const n = R.t.length, k = Math.min(n - 1, Math.floor(VP.t * (n - 1))), v = {}; Object.entries(C.map).forEach(([id, nm]) => v[id] = R[nm] ? R[nm][k] : undefined);
+    const { ctx, w, h } = canvas("cvV0"); ctx.fillStyle = "#F8FAFC"; ctx.fillRect(0, 0, w, h);
+    const rs = Math.max(1e-6, ...C.L.fl.map(([id]) => Math.max(...R[C.map[id]].map(Math.abs)))) / 3; drawForrester(ctx, w, h, C.L, v, C.mx, VP.ph, { rs });
+    label(ctx, `${C.u} = ${fx(R.t[k], 2)}`, 10, 22, COL.ink, "#fff", 12);
+    const vn = $("vVar").value || C.v, y = R[vn], r1 = canvas("cvV1"); if (!y) return; const all = y.concat(VP.keep && VP.keep.n === vn ? VP.keep.y : []), lo = Math.min(...all), hi = Math.max(...all), pad = (hi - lo) * 0.08 || 1;
+    const A = axes(r1.ctx, r1.w, r1.h, 0, R.t.at(-1), lo - pad, hi + pad, C.u, vn, 0, Math.abs(hi) < 10 ? 2 : 0, { pl: 64 });
+    if (VP.keep && VP.keep.n === vn) path(r1.ctx, VP.keep.t.map((t, i) => [A.X(t), A.Y(VP.keep.y[i])]), COL.muted, 2, [6, 4]);
+    path(r1.ctx, R.t.slice(0, k + 1).map((t, i) => [A.X(t), A.Y(y[i])]), COL.teal, 2.6); disc(r1.ctx, A.X(R.t[k]), A.Y(y[k]), 5, COL.amber);
+    if (VP.keep && VP.keep.n === vn) legend(r1.ctx, [["corrida actual", COL.teal], ["corrida fijada", COL.muted]], A.pl + 10, P0.t + 10);
+    $("vStats").innerHTML = stat("Final", fx(y.at(-1), 3)) + stat("Máximo", fx(Math.max(...y), 3)) + stat("Mínimo", fx(Math.min(...y), 3)) + stat("Pasos de Euler", n - 1);
+  }
+};
+
+/* ======================= modelos en JS (mismos parámetros que los .mdl) ======================= */
+function mBrooks(o = {}) { const p = { W0: 2000, E0: 10, c: 0, dia: 150, pe: 1, pn: 0.2, m: 0.5, ta: 60, kc: 0.08, dt: 0.25, T: 400, ...o }; let W = p.W0, N = 0, E = p.E0, fin = null; const out = [];
+  for (let k = 0; k <= p.T / p.dt; k++) { const t = k * p.dt, con = (t >= p.dia - 1e-9 && t < p.dia + p.dt - 1e-9) ? p.c / p.dt : 0, asi = N / p.ta, n = N + E, so = Math.min(0.9, p.kc * (n / 10) ** 2), pr = Math.max(0, (E - p.m * N) * p.pe + N * p.pn), av = W > 0 ? pr * (1 - so) : 0;
+    if (W <= 0 && fin === null) fin = t; out.push([t, W, N, E, av]); W -= p.dt * av; N += p.dt * (con - asi); E += p.dt * asi; } return { out, fin: fin ?? NaN }; }
+function mAuto(o = {}) { const p = { cap: 100, u: 0.7, ta: 1, tb: 4, tm: 2, c: 0, base: 600, pico: 1500, ini: 10, dur: 60, dt: 0.0625, T: 120, ...o }; let P = 0, S = p.base / (p.cap * p.u), Um = p.u, mx = S, hot = 0, cost = 0; const out = [];
+  for (let k = 0; k <= p.T / p.dt; k++) { const t = k * p.dt, D = (t >= p.ini && t < p.ini + p.dur) ? p.pico : p.base, U = D / (p.cap * S), des = S * Um / p.u, br = des - S - p.c * P, so = Math.max(br / p.ta, 0), re = Math.max(-br / p.ta, 0), li = P / p.tb;
+    out.push([t, S, P, U, D]); mx = Math.max(mx, S); if (U > 0.9) hot += p.dt; cost += S * p.dt; P += p.dt * (so - li); S += p.dt * (li - re); Um += p.dt * (U - Um) / p.tm; }
+  const obj = p.pico / (p.cap * p.u); return { out, mx, sobre: 100 * (mx - obj) / obj, hot, cost, obj }; }
+
+/* ======================= 4 · ESCENARIOS ======================= */
+const ES = { sub: "esc", t: 0, mc: [], mcRun: false };
+const ESUB = {
+  esc: { d: "Cuatro escenarios de la cola de tickets tras una falla a las 8:00: tres de demanda (lo que no controlamos) y uno de política (más agentes). Solución exacta del primer orden.", t0: "Tickets pendientes por escenario", t1: "Equilibrio (barras) y espera W = τ (rombos)",
+    pars: [["eo", "Optimista: llegadas en el incidente", 40, 120, 5, 55], ["eb", "Base: llegadas en el incidente", 40, 120, 5, 70], ["ep", "Pesimista: llegadas en el incidente", 40, 160, 5, 100], ["ea", "Más agentes: tiempo de resolución (h)", 0.5, 2, 0.1, 1.4]] },
+  pol: { d: "Ley de Brooks: elige cuántas personas contratar y cuándo. La gráfica de abajo barre el día de contratación de 0 a 200.", t0: "Tareas pendientes: sin contratar frente a la política elegida", t1: "Día de terminación según el día de contratación",
+    pars: [["pc", "Personas a contratar", 0, 20, 1, 10], ["pd", "Día de contratación", 0, 200, 5, 150]] },
+  tor: { d: "Autoescalado con la regla ingenua. Cada barra mueve un parámetro ±X % dejando los demás fijos y mide el cambio del indicador elegido.", t0: "Diagrama de tornado", t1: "Instancias activas en el caso base",
+    pars: [["tp", "Variación de cada parámetro (±%)", 10, 50, 5, 20]], sel: ["ti", "Indicador", [["sobre", "Sobrepaso de instancias (%)"], ["hot", "Minutos con utilización > 90 %"], ["cost", "Costo (instancia-minuto)"]]] },
+  mc: { d: "Monte Carlo del gusano Code-Red: la tasa de contacto β y los infectados iniciales son inciertos. Cada corrida da las horas hasta infectar el 90 % de los hosts vulnerables (solución analítica de la logística).", t0: "Histograma de horas hasta el 90 %", t1: "Muestra de trayectorias simuladas",
+    pars: [["mb0", "β mínimo (por hora)", 0.5, 1.5, 0.05, 1.0], ["mb1", "β máximo (por hora)", 1.0, 2.5, 0.05, 1.7], ["mi1", "Infectados iniciales máximos", 10, 500, 10, 100]] } };
+function esSelect(k) {
+  ES.sub = k; const S_ = ESUB[k]; $("eNav").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.c === k)); $("eDesc").textContent = S_.d; $("eT0").textContent = S_.t0; $("eT1").textContent = S_.t1;
+  $("ePars").innerHTML = S_.pars.map(([id, l, a, b, st, v]) => `<label for="${id}">${l} = <b id="${id}V">${v}</b></label><input id="${id}" type="range" min="${a}" max="${b}" step="${st}" value="${v}">`).join("") + (S_.sel ? `<label for="${S_.sel[0]}">${S_.sel[1]}</label><select id="${S_.sel[0]}">${S_.sel[2].map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select>` : "");
+  $("eBtns").innerHTML = k === "mc" ? '<button class="b go" id="mcGo">Lanzar 400 corridas</button>' : ""; if (k === "mc") $("mcGo").onclick = () => { ES.mc = []; ES.mcRun = true; RNG = mulberry32(Date.now() % 1e6); };
+  S_.pars.forEach(([id]) => $(id).oninput = () => { $(id + "V").textContent = $(id).value; ES.t = 0; esCompute(); }); if (S_.sel) $(S_.sel[0]).onchange = esCompute;
+  ES.t = 0; ES.mc = []; ES.mcRun = k === "mc"; esCompute();
+}
+function esCompute() {
+  if (ES.sub === "pol") { ES.base = mBrooks(); ES.pol = mBrooks({ c: num("pc"), dia: num("pd") }); ES.sweep = []; for (let d = 0; d <= 200; d += 10) ES.sweep.push([d, mBrooks({ c: num("pc"), dia: d, dt: 0.5 }).fin]); ES.sweepBase = mBrooks({ dt: 0.5 }).fin; }
+  if (ES.sub === "tor") { const f = num("tp") / 100, key = $("ti").value, b = mAuto(); ES.tb = b; ES.tkey = key; ES.tbase = b[key];
+    ES.torn = [["Suavizado de la métrica", "tm", 2], ["Tiempo de ajuste", "ta", 1], ["Arranque de instancia", "tb", 4], ["Utilización objetivo", "u", 0.7], ["Capacidad por instancia", "cap", 100]].map(([n, k, v]) => [n, mAuto({ [k]: v * (1 - f) })[key] - b[key], mAuto({ [k]: v * (1 + f) })[key] - b[key]]).sort((a, c) => Math.max(Math.abs(c[1]), Math.abs(c[2])) - Math.max(Math.abs(a[1]), Math.abs(a[2]))); }
+}
+ANIM.es = {
+  tick(dt) { ES.t += dt; if (ES.sub === "mc" && ES.mcRun && ES.mc.length < 400) { const b0 = num("mb0"), b1 = Math.max(b0 + 0.01, num("mb1")), i1 = num("mi1"); for (let i = 0; i < 8; i++) { const b = b0 + (b1 - b0) * rnd(), i0 = 10 + (i1 - 10) * rnd(); ES.mc.push([b, i0, Math.log(9 * (360000 - i0) / i0) / b]); } } },
+  draw() { ({ esc: esEsc, pol: esPol, tor: esTor, mc: esMc })[ES.sub](); }
+};
+function esEsc() {
+  const sc = [["Optimista", num("eo"), 2, COL.green], ["Base", num("eb"), 2, COL.teal], ["Pesimista", num("ep"), 2, COL.coral], ["Más agentes", num("eb"), num("ea"), COL.violet]], B = (t, l1, tau) => t < 8 ? 40 * tau : l1 * tau + (40 * tau - l1 * tau) * Math.exp(-(t - 8) / tau);
+  const { ctx, w, h } = canvas("cvX0"), ym = Math.max(...sc.map(s => s[1] * s[2])) * 1.15, A = axes(ctx, w, h, 0, 24, 0, ym, "hora del día", "tickets pendientes", 0, 0), tt = Math.min(24, ES.t * 6);
+  sc.forEach(([n, l1, tau, col]) => { const pts = []; for (let t = 0; t <= tt; t += 0.1) pts.push([A.X(t), A.Y(B(t, l1, tau))]); path(ctx, pts, col, 2.6); if (pts.length) disc(ctx, pts.at(-1)[0], pts.at(-1)[1], 4, col); });
+  path(ctx, [[A.X(8), P0.t], [A.X(8), h - P0.b]], COL.muted, 1, [4, 3]); txt(ctx, "falla a las 8:00", A.X(8) + 4, P0.t + 12, { s: 11, c: COL.muted, b: true }); legend(ctx, sc.map(s => [s[0], s[3]]), A.pl + 10, P0.t + 30);
+  const r1 = canvas("cvX1"), c1 = r1.ctx, Bx = axes(c1, r1.w, r1.h, 0, 4, 0, ym, "", "tickets (barras) · espera ×50 (rombos)", 0, 0), bw = (r1.w - Bx.pl - P0.r) / 4;
+  sc.forEach(([n, l1, tau, col], i) => { const x = Bx.pl + i * bw + bw * 0.2, v = l1 * tau; c1.fillStyle = col; c1.fillRect(x, Bx.Y(v), bw * 0.6, Bx.Y(0) - Bx.Y(v)); txt(c1, n, x + bw * 0.3, r1.h - P0.b + 14, { a: "center", s: 11, b: true }); txt(c1, fx(v, 0), x + bw * 0.3, Bx.Y(v) - 6, { a: "center", s: 12, b: true });
+    const yW = Bx.Y(tau * 50); c1.fillStyle = COL.amber; c1.beginPath(); c1.moveTo(x + bw * 0.3, yW - 7); c1.lineTo(x + bw * 0.3 + 7, yW); c1.lineTo(x + bw * 0.3, yW + 7); c1.lineTo(x + bw * 0.3 - 7, yW); c1.fill(); });
+  $("eStats").innerHTML = sc.map(([n, l1, tau]) => stat(n, `${fx(l1 * tau, 0)} · W ${fx(tau, 1)} h`)).join("");
+  $("eMsg").className = "msg"; $("eMsg").innerHTML = "En equilibrio la espera es τ en los tres escenarios de demanda: crece la cola, no la espera (ley de Little). Solo la política, que cambia τ, reduce la espera.";
+}
+function esPol() {
+  const { ctx, w, h } = canvas("cvX0"), A = axes(ctx, w, h, 0, 400, 0, 2050, "días", "tareas pendientes", 0, 0), tt = Math.min(400, ES.t * 80), pick = (o, i) => o.out.filter(r => r[0] <= tt).map(r => [A.X(r[0]), A.Y(Math.max(0, r[i]))]);
+  path(ctx, pick(ES.base, 1), COL.ink, 2.4, [6, 4]); path(ctx, pick(ES.pol, 1), COL.teal, 3); const sc = 2050 / 25, team = ES.pol.out.filter(r => r[0] <= tt).map(r => [A.X(r[0]), A.Y((r[2] + r[3]) * sc)]); path(ctx, team, COL.amber, 1.6);
+  if (num("pc") > 0) { path(ctx, [[A.X(num("pd")), P0.t], [A.X(num("pd")), h - P0.b]], COL.coral, 1.2, [3, 3]); txt(ctx, "contratación", A.X(num("pd")) + 4, P0.t + 12, { s: 11, b: true, c: COL.coral }); }
+  legend(ctx, [["sin contratar", COL.ink], ["con la política", COL.teal], ["tamaño del equipo (escala ×82)", COL.amber]], A.pl + 220, P0.t + 10);
+  const r1 = canvas("cvX1"), fins = ES.sweep.map(s => s[1]).concat([ES.sweepBase]), B = axes(r1.ctx, r1.w, r1.h, 0, 200, Math.min(...fins) - 5, Math.max(...fins) + 5, "día de contratación", "día de terminación", 0, 0);
+  path(r1.ctx, [[B.X(0), B.Y(ES.sweepBase)], [B.X(200), B.Y(ES.sweepBase)]], COL.coral, 1.6, [6, 4]); path(r1.ctx, ES.sweep.map(([d, f]) => [B.X(d), B.Y(f)]), COL.teal, 2.6); ES.sweep.forEach(([d, f]) => disc(r1.ctx, B.X(d), B.Y(f), 3.5, COL.teal));
+  disc(r1.ctx, B.X(num("pd")), B.Y(ES.pol.fin), 7, COL.amber); legend(r1.ctx, [["contratando", COL.teal], ["sin contratar", COL.coral]], B.pl + 10, P0.t + 10);
+  const dif = ES.pol.fin - ES.base.fin; $("eStats").innerHTML = stat("Sin contratar", fx(ES.base.fin, 1) + " días") + stat("Con la política", fx(ES.pol.fin, 1) + " días") + stat("Diferencia", (dif > 0 ? "+" : "") + fx(dif, 1) + " días");
+  $("eMsg").className = "msg " + (dif > 0.5 ? "bad" : "ok"); $("eMsg").innerHTML = num("pc") === 0 ? "Sin contratación: es el caso base." : dif > 0.5 ? "<b>Ley de Brooks:</b> contratar tan tarde atrasa el proyecto. Los novatos consumen tiempo de los expertos y aumentan la comunicación antes de volverse productivos." : "La contratación adelanta el proyecto: llega a tiempo para que los novatos se vuelvan productivos.";
+}
+function esTor() {
+  const { ctx, w, h } = canvas("cvX0"), mxv = Math.max(1e-6, ...ES.torn.flatMap(t => [Math.abs(t[1]), Math.abs(t[2])])) * 1.25, A = axes(ctx, w, h, -mxv, mxv, 0, ES.torn.length, `cambio del indicador (base: ${fx(ES.tbase, 1)})`, "", 1, 0, { pl: 180 }), bh = (h - P0.t - P0.b) / ES.torn.length, gr = Math.min(1, ES.t * 1.5);
+  ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, A.pl - 2, h - P0.b);
+  ES.torn.forEach(([n, lo, hi], i) => { const y = P0.t + i * bh + bh * 0.2; ctx.fillStyle = COL.teal; ctx.fillRect(Math.min(A.X(0), A.X(lo * gr)), y, Math.abs(A.X(lo * gr) - A.X(0)), bh * 0.28); ctx.fillStyle = COL.coral; ctx.fillRect(Math.min(A.X(0), A.X(hi * gr)), y + bh * 0.32, Math.abs(A.X(hi * gr) - A.X(0)), bh * 0.28);
+    txt(ctx, n, A.pl - 8, y + bh * 0.36, { a: "right", s: 12, b: true }); });
+  path(ctx, [[A.X(0), P0.t], [A.X(0), h - P0.b]], COL.ink, 1.5); legend(ctx, [[`parámetro −${$("tp").value} %`, COL.teal], [`parámetro +${$("tp").value} %`, COL.coral]], w - 170, P0.t + 10);
+  const r1 = canvas("cvX1"), B = axes(r1.ctx, r1.w, r1.h, 0, 120, 0, Math.max(...ES.tb.out.map(r => r[1])) * 1.1, "minutos", "instancias", 0, 0); path(r1.ctx, ES.tb.out.map(r => [B.X(r[0]), B.Y(r[1])]), COL.coral, 2.4); path(r1.ctx, ES.tb.out.map(r => [B.X(r[0]), B.Y(r[4] / 70)]), COL.muted, 1.5, [5, 4]);
+  legend(r1.ctx, [["instancias activas", COL.coral], ["instancias necesarias", COL.muted]], B.pl + 10, P0.t + 10);
+  const top = ES.torn[0]; $("eStats").innerHTML = stat("Indicador base", fx(ES.tbase, 1)) + stat("Parámetro más influyente", top[0]);
+  $("eMsg").className = "msg"; $("eMsg").innerHTML = ES.tkey === "sobre" ? "Los retardos (medición, ajuste, arranque) dominan el sobrepaso; la capacidad y la utilización objetivo mueven el objetivo pero no el porcentaje de sobrepaso." : "Cambie el indicador: los parámetros que importan dependen de la pregunta.";
+}
+function esMc() {
+  const vals = ES.mc.map(r => r[2]).sort((a, b) => a - b), q = f => vals.length ? vals[Math.min(vals.length - 1, Math.floor(f * vals.length))] : NaN, { ctx, w, h } = canvas("cvX0"), x0 = 3, x1 = 16, nb = 26, bins = new Array(nb).fill(0);
+  vals.forEach(v => { const i = Math.floor((v - x0) / (x1 - x0) * nb); if (i >= 0 && i < nb) bins[i]++; }); const A = axes(ctx, w, h, x0, x1, 0, Math.max(10, ...bins) * 1.15, "horas hasta infectar el 90 %", "corridas", 0, 0), bw = (A.X(x1) - A.X(x0)) / nb;
+  bins.forEach((c, i) => { ctx.fillStyle = COL.violet; ctx.fillRect(A.X(x0) + i * bw + 1, A.Y(c), bw - 2, A.Y(0) - A.Y(c)); });
+  [[0.05, "P5"], [0.5, "mediana"], [0.95, "P95"]].forEach(([f, l]) => { const v = q(f); if (!Number.isFinite(v)) return; path(ctx, [[A.X(v), P0.t], [A.X(v), h - P0.b]], COL.ink, 1.5, [5, 4]); txt(ctx, `${l} ${fx(v, 1)} h`, A.X(v) + 4, P0.t + 14, { s: 11, b: true }); });
+  const r1 = canvas("cvX1"), B = axes(r1.ctx, r1.w, r1.h, 0, 16, 0, 370, "horas", "infectados (miles)", 0, 0); r1.ctx.globalAlpha = 0.25;
+  ES.mc.slice(0, 60).forEach(([b, i0]) => { const pts = []; for (let t = 0; t <= 16; t += 0.2) pts.push([B.X(t), B.Y(360 / (1 + (360000 / i0 - 1) * Math.exp(-b * t)))]); path(r1.ctx, pts, COL.violet, 1.4); }); r1.ctx.globalAlpha = 1;
+  $("eStats").innerHTML = stat("Corridas", ES.mc.length) + stat("P5", fx(q(0.05), 2) + " h") + stat("Mediana", fx(q(0.5), 2) + " h") + stat("P95", fx(q(0.95), 2) + " h");
+  $("eMsg").className = "msg"; $("eMsg").innerHTML = `El resultado es una distribución: el equipo de seguridad tiene entre ${fx(q(0.05), 1)} y ${fx(q(0.95), 1)} horas para reaccionar (90 % de las corridas). Vensim PLE no trae Monte Carlo; en Python o aquí es un bucle.`;
+}
+
+/* ======================= 5 · CASOS ======================= */
+const KS = { k: "cpu", t: 0, x: [], hist: [], play: true, fx: [], o: {} };
+const KC = {
+  cpu: { n: "1 · CPU", t: "Temperatura de la CPU", d: "Inicie un renderizado y observe cómo la temperatura busca su equilibrio con τ = Rth·Cth. Con un disipador sucio supera el umbral de 90 °C.", T1: "Temperatura (°C) en los últimos 200 s",
+    form: "dT/dt = P/Cth − (T − Ta)/(Rth·Cth)<br>T* = Ta + P·Rth · τ = Rth·Cth", pars: [["kR", "Resistencia térmica Rth (°C/W)", 0.2, 0.9, 0.05, 0.4], ["kC", "Capacidad térmica Cth (J/°C)", 20, 120, 5, 50], ["kTa", "Temperatura ambiente (°C)", 15, 40, 1, 25]],
+    acts: [["kLoad", "Iniciar renderizado (95 W)"]], scale: 10, x0: () => [25 + 15 * 0.4], init() { KS.o.load = false; },
+    f: (t, x) => { const P = KS.o.load ? 95 : 15; return [P / num("kC") - (x[0] - num("kTa")) / (num("kR") * num("kC"))]; }, y: x => x[0], win: 200, ylab: "°C", ymin: 15, ymax: 110 },
+  tic: { n: "2 · Tickets", t: "Cola de tickets de la mesa de ayuda", d: "Provoque una falla masiva y vea crecer la cola hasta λ·τ. Más agentes reducen τ y, por la ley de Little, la espera.", T1: "Tickets pendientes en las últimas 24 h",
+    form: "dB/dt = λ − B/τ · τ = 8 h / agentes<br>Ley de Little: B* = λ·τ, W = τ", pars: [["kL0", "Llegadas normales λ (tickets/h)", 10, 80, 5, 40], ["kL1", "Llegadas durante la falla (tickets/h)", 40, 150, 5, 70], ["kAg", "Agentes de soporte", 1, 10, 1, 4]],
+    acts: [["kInc", "Provocar falla masiva"]], scale: 1, x0: () => [40 * 2], init() { KS.o.inc = false; }, lam: () => KS.o.inc ? num("kL1") : num("kL0"), tau: () => 8 / num("kAg"),
+    f: (t, x) => [KC.tic.lam() - x[0] / KC.tic.tau()], y: x => x[0], win: 24, ylab: "tickets", ymin: 0, ymax: 400 },
+  gus: { n: "3 · Gusano", t: "Gusano Code-Red (19 de julio de 2001)", d: "Cada punto representa unos 1 500 servidores vulnerables. Al principio el crecimiento se acelera (R); luego se frena porque quedan pocos vulnerables (B). Inicie el parcheo para ver el efecto de reaccionar.", T1: "Infectados (miles)",
+    form: "dI/dt = β·S·I/N − γ·I<br>Pico de unos 2 000 hosts por minuto (CAIDA)", pars: [["kB", "Tasa de contacto β (por hora)", 0.5, 2.5, 0.05, 1.33]], acts: [["kPat", "Iniciar campaña de parches (γ = 0,5/h)"]], scale: 1 / 1.5,
+    x0: () => [360000 - 30, 30, 0], init() { KS.o.g = 0; RNG = mulberry32(4); KS.o.ord = Array.from({ length: 240 }, (_, i) => i).sort(() => rnd() - 0.5); KS.o.ord2 = Array.from({ length: 240 }, (_, i) => i).sort(() => rnd() - 0.5); },
+    f: (t, x) => { const b = num("kB"), g = KS.o.g, inf = b * x[0] * x[1] / 360000; return [-inf - g * x[0], inf - g * x[1], g * (x[0] + x[1])]; }, y: x => x[1] / 1000, win: 16, ylab: "miles", ymin: 0, ymax: 370 },
+  aut: { n: "4 · Nube", t: "Autoescalado en la nube", d: "Lance un pico de tráfico. Con la regla ingenua el autoescalador pide de más mientras las máquinas arrancan; al contar las que vienen en camino el sobrepaso desaparece.", T1: "Instancias en los últimos 120 minutos",
+    form: "deseadas = activas · U medida / 0,7<br>brecha = deseadas − activas − c·en arranque", pars: [["kTb", "Tiempo de arranque (min)", 1, 8, 0.5, 4], ["kTm", "Suavizado de la métrica (min)", 0.5, 5, 0.5, 2]], acts: [["kPeak", "Lanzar pico de tráfico (1 500 req/s)"], ["kSL", "Regla: ingenua"]], scale: 4,
+    x0: () => [0, 600 / 70, 0.7], init() { KS.o.peak = false; KS.o.sl = 0; }, dem: () => KS.o.peak ? 1500 : 600,
+    f: (t, x) => { const S = Math.max(x[1], 1), U = KC.aut.dem() / (100 * S), des = S * x[2] / 0.7, br = des - S - KS.o.sl * x[0], so = Math.max(br, 0), re = Math.max(0, Math.min(-br, S - des)); return [so - x[0] / num("kTb"), x[0] / num("kTb") - re, (U - x[2]) / num("kTm")]; }, y: x => x[1], win: 120, ylab: "instancias", ymin: 0, ymax: 45 },
+  bro: { n: "5 · Brooks", t: "Proyecto de software y ley de Brooks", d: "Contrate en distintos momentos. Cada línea gris es un canal de comunicación: son n(n−1)/2. Las líneas ámbar son la mentoría de los novatos.", T1: "Tareas pendientes (línea discontinua: sin contratar)",
+    form: "Prod = (E − 0,5·N) + 0,2·N<br>sobrecarga = 0,08·(n/10)² · dE/dt = N/60", pars: [], acts: [["kHire", "Contratar 10 personas ahora"]], scale: 12,
+    x0: () => [2000, 0, 10], init() { KS.o.base = mBrooks({ dt: 0.5 }); KS.o.fin = null; },
+    f: (t, x) => { const n = x[1] + x[2], so = Math.min(0.9, 0.08 * (n / 10) ** 2), pr = Math.max(0, (x[2] - 0.5 * x[1]) + 0.2 * x[1]), av = x[0] > 0 ? pr * (1 - so) : 0; return [-av, -x[1] / 60, x[1] / 60]; }, y: x => Math.max(0, x[0]), win: 400, ylab: "tareas", ymin: 0, ymax: 2050 },
+  ven: { n: "6 · Ventilador PI", t: "Control PI del ventilador de un servidor", d: "El controlador PI convierte un sistema de primer orden en uno de segundo orden. Use los ajustes predefinidos y cambie el objetivo de temperatura o agregue carga.", T1: "Temperatura del servidor (°C) y objetivo",
+    form: "ventilador = Kp·e + Ki·∫e (0 a 100 %)<br>ωn = √(K·Ki/τ) · ζ = (1 + K·Kp)/(2√(τ·K·Ki))", pars: [["kKp", "Kp", 0.1, 5, 0.1, 1.5], ["kKi", "Ki", 0.005, 0.4, 0.005, 0.1], ["kSp", "Objetivo de temperatura (°C)", 40, 70, 1, 60]],
+    acts: [["kAgr", "Agresivo"], ["kOk", "Bien ajustado"], ["kSlow", "Lento"], ["kExtra", "Carga extra +40 W"]], scale: 10,
+    x0: () => [60, (25 + 120 * 0.4 - 60) / 0.3 / num("kKi")], init() { KS.o.extra = false; },
+    f: (t, x) => { const e = x[0] - num("kSp"), u = num("kKp") * e + num("kKi") * x[1], fan = clamp(u, 0, 100), P = 120 + (KS.o.extra ? 40 : 0), acc = (u >= 100 && e > 0) || (u <= 0 && e < 0) ? 0 : e; KS.o.fan = fan; return [(25 + P * 0.4 - 0.3 * fan - x[0]) / 40, acc]; }, y: x => x[0], win: 600, ylab: "°C", ymin: 35, ymax: 90 } };
+function kSelect(k) {
+  KS.k = k; const C = KC[k]; $("kBtns").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.k === k)); $("kTit").textContent = C.t; $("kDesc").textContent = C.d; $("kForm").innerHTML = C.form; $("kT1").textContent = C.T1;
+  $("kPars").innerHTML = C.pars.map(([id, l, a, b, st, v]) => `<label for="${id}">${l} = <b id="${id}V">${v}</b></label><input id="${id}" type="range" min="${a}" max="${b}" step="${st}" value="${v}">`).join("");
+  C.pars.forEach(([id]) => $(id).oninput = () => $(id + "V").textContent = $(id).value);
+  $("kActs").innerHTML = C.acts.map(([id, t]) => `<button class="b alt" id="${id}">${t}</button>`).join("") + '<button class="b alt" id="kRst">Reiniciar</button>';
+  $("kRst").onclick = () => kSelect(KS.k); kWire(k); C.init(); KS.x = C.x0(); KS.t = 0; KS.hist = [[0, C.y(KS.x)]]; KS.fx = []; KS.o.parts = [];
+}
+function kWire(k) {
+  if (k === "cpu") $("kLoad").onclick = () => { KS.o.load = !KS.o.load; $("kLoad").textContent = KS.o.load ? "Detener renderizado (15 W)" : "Iniciar renderizado (95 W)"; };
+  if (k === "tic") $("kInc").onclick = () => { KS.o.inc = !KS.o.inc; $("kInc").textContent = KS.o.inc ? "Resolver la falla" : "Provocar falla masiva"; };
+  if (k === "gus") $("kPat").onclick = () => { KS.o.g = KS.o.g ? 0 : 0.5; $("kPat").textContent = KS.o.g ? "Detener parches" : "Iniciar campaña de parches (γ = 0,5/h)"; };
+  if (k === "aut") { $("kPeak").onclick = () => { KS.o.peak = !KS.o.peak; $("kPeak").textContent = KS.o.peak ? "Terminar el pico (600 req/s)" : "Lanzar pico de tráfico (1 500 req/s)"; }; $("kSL").onclick = () => { KS.o.sl = 1 - KS.o.sl; $("kSL").textContent = KS.o.sl ? "Regla: cuenta las que vienen" : "Regla: ingenua"; }; }
+  if (k === "bro") $("kHire").onclick = () => { KS.x[1] += 10; KS.o.hires = (KS.o.hires || []).concat([KS.t]); };
+  if (k === "ven") { const set = (p, i) => { $("kKp").value = p; $("kKi").value = i; $("kKpV").textContent = p; $("kKiV").textContent = i; }; $("kAgr").onclick = () => set(0.3, 0.15); $("kOk").onclick = () => set(1.5, 0.1); $("kSlow").onclick = () => set(1, 0.01); $("kExtra").onclick = () => { KS.o.extra = !KS.o.extra; $("kExtra").textContent = KS.o.extra ? "Quitar carga extra" : "Carga extra +40 W"; }; }
+}
+ANIM.ca = {
+  tick(dt) { const C = KC[KS.k], h = dt * C.scale, n = Math.max(1, Math.ceil(h / 0.05)); for (let i = 0; i < n; i++) { KS.x = rk4(C.f, KS.x, KS.t, h / n); KS.t += h / n; }
+    if (KS.k === "bro" && KS.x[0] <= 0 && KS.o.fin === null) KS.o.fin = KS.t; if (KS.k === "bro" && KS.t > 420) return;
+    KS.hist.push([KS.t, C.y(KS.x), KS.k === "ven" ? num("kSp") : KS.k === "aut" ? KS.x[0] : null]); while (KS.hist.length > 3 && KS.hist[0][0] < KS.t - C.win) KS.hist.shift(); },
+  draw(dt) { const C = KC[KS.k], { ctx, w, h } = canvas("cvK0"); ({ cpu: scCpu, tic: scTic, gus: scGus, aut: scAut, bro: scBro, ven: scVen })[KS.k](ctx, w, h, dt || 0.016);
+    const r1 = canvas("cvK1"), t1 = Math.max(C.win, KS.t), t0 = KS.k === "bro" ? 0 : Math.max(0, KS.t - C.win), A = axes(r1.ctx, r1.w, r1.h, t0, KS.k === "bro" ? 420 : t0 + C.win, C.ymin, C.ymax, KS.k === "aut" || KS.k === "tic" ? "minutos" : KS.k === "bro" ? "días" : KS.k === "gus" ? "horas" : "segundos", C.ylab, 0, 0), c1 = r1.ctx;
+    if (KS.k === "cpu") { [[90, COL.coral, "throttling 90 °C"], [num("kTa") + (KS.o.load ? 95 : 15) * num("kR"), COL.amber, "equilibrio"]].forEach(([v, col, l]) => { path(c1, [[A.pl, A.Y(v)], [r1.w - P0.r, A.Y(v)]], col, 1.3, [5, 4]); txt(c1, l, r1.w - P0.r - 4, A.Y(v) - 4, { a: "right", s: 11, b: true, c: col }); }); }
+    if (KS.k === "tic") { const eq = KC.tic.lam() * KC.tic.tau(); path(c1, [[A.pl, A.Y(eq)], [r1.w - P0.r, A.Y(eq)]], COL.amber, 1.3, [5, 4]); txt(c1, "equilibrio λ·τ", r1.w - P0.r - 4, A.Y(eq) - 4, { a: "right", s: 11, b: true, c: COL.amber }); }
+    if (KS.k === "bro") path(c1, KS.o.base.out.map(r => [A.X(r[0]), A.Y(Math.max(0, r[1]))]), COL.muted, 1.8, [6, 4]);
+    if (KS.k === "aut") { path(c1, KS.hist.map(r => [A.X(r[0]), A.Y(r[2])]), COL.amber, 1.8); path(c1, [[A.pl, A.Y(KC.aut.dem() / 70)], [r1.w - P0.r, A.Y(KC.aut.dem() / 70)]], COL.muted, 1.3, [5, 4]); legend(c1, [["activas", COL.teal], ["en arranque", COL.amber], ["necesarias", COL.muted]], A.pl + 10, P0.t + 10); }
+    if (KS.k === "ven") path(c1, KS.hist.map(r => [A.X(r[0]), A.Y(r[2])]), COL.amber, 1.6, [5, 4]);
+    path(c1, KS.hist.map(r => [A.X(r[0]), A.Y(clamp(r[1], C.ymin, C.ymax))]), COL.teal, 2.6); const L = KS.hist.at(-1); disc(c1, A.X(L[0]), A.Y(clamp(L[1], C.ymin, C.ymax)), 5, COL.coral); }
+};
+function chip(ctx, x, y, s, col) { ctx.fillStyle = "#334155"; for (let i = 0; i < 6; i++) { ctx.fillRect(x - s / 2 - 8, y - s / 2 + 6 + i * (s - 12) / 5, 8, 3); ctx.fillRect(x + s / 2, y - s / 2 + 6 + i * (s - 12) / 5, 8, 3); } ctx.fillStyle = col; rr(ctx, x - s / 2, y - s / 2, s, s, 6); ctx.fill(); }
+function fan(ctx, x, y, r, ang) { ctx.strokeStyle = COL.ink; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.stroke(); for (let i = 0; i < 5; i++) { const a = ang + i * 2 * Math.PI / 5; ctx.fillStyle = "#94A3B8"; ctx.beginPath(); ctx.ellipse(x + Math.cos(a) * r * 0.5, y + Math.sin(a) * r * 0.5, r * 0.45, r * 0.16, a, 0, 7); ctx.fill(); } disc(ctx, x, y, r * 0.18, COL.ink); }
+function scCpu(ctx, w, h, dt) {
+  const T = KS.x[0], hot = clamp((T - 25) / 75, 0, 1); ctx.fillStyle = "#14532D"; ctx.fillRect(0, 0, w, h); ctx.strokeStyle = "rgba(250,204,21,.25)"; for (let i = 0; i < 14; i++) { ctx.beginPath(); ctx.moveTo(0, 20 + i * 22); ctx.lineTo(w, 20 + i * 22 + (i % 3) * 10); ctx.stroke(); }
+  const cx = w * 0.38, cy = h * 0.58; ctx.fillStyle = "#94A3B8"; for (let i = 0; i < 9; i++) ctx.fillRect(cx - 70 + i * 17, cy - 125, 9, 60); ctx.fillRect(cx - 75, cy - 68, 150, 12);
+  KS.o.ang = (KS.o.ang || 0) + dt * 18; fan(ctx, cx, cy - 150, 34, KS.o.ang); chip(ctx, cx, cy, 90, mixRGB([59, 130, 246], [225, 29, 72], hot)); txt(ctx, KS.o.load ? "95 W" : "15 W", cx, cy + 6, { a: "center", c: "#fff", b: true, s: 16 });
+  for (let i = 0; i < Math.round(hot * 10); i++) { ctx.strokeStyle = `rgba(251,146,60,${0.5 * hot})`; ctx.lineWidth = 2; ctx.beginPath(); for (let j = 0; j < 12; j++) { const yy = cy - 70 - j * 6, xx = cx - 60 + i * 13 + Math.sin(TCLOCK * 4 + j * 0.6 + i) * 4; j ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); } ctx.stroke(); }
+  const gx = w * 0.8, gy = h * 0.55, gr = Math.min(80, w * 0.13); ctx.lineWidth = 14; [[0, 0.65, COL.green], [0.65, 0.85, COL.amber], [0.85, 1, COL.coral]].forEach(([a, b, col]) => { ctx.strokeStyle = col; ctx.beginPath(); ctx.arc(gx, gy, gr, Math.PI + a * Math.PI, Math.PI + b * Math.PI); ctx.stroke(); });
+  const an = Math.PI + clamp((T - 20) / 90, 0, 1) * Math.PI; ctx.strokeStyle = "#fff"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(gx, gy); ctx.lineTo(gx + Math.cos(an) * gr * 0.9, gy + Math.sin(an) * gr * 0.9); ctx.stroke();
+  txt(ctx, fx(T, 1) + " °C", gx, gy + 34, { a: "center", c: "#fff", b: true, s: 22 }); if (T > 90) label(ctx, "THROTTLING: la CPU baja su frecuencia", w * 0.52, 26, COL.coral, "#fff", 13);
+  const tau = num("kR") * num("kC"); $("kStats").innerHTML = stat("Temperatura", fx(T, 1) + " °C") + stat("Equilibrio", fx(num("kTa") + (KS.o.load ? 95 : 15) * num("kR"), 1) + " °C") + stat("τ = R·C", fx(tau, 0) + " s") + stat("Tiempo", fx(KS.t, 0) + " s");
+  $("kMsg").className = "msg " + (T > 90 ? "bad" : ""); $("kMsg").innerHTML = T > 90 ? "Con este disipador el equilibrio supera 90 °C: el procesador reduciría su frecuencia." : "Primer orden: la curva nunca se pasa del equilibrio; recorre el 63 % de la brecha en τ segundos.";
+}
+function scTic(ctx, w, h, dt) {
+  const B = KS.x[0], lam = KC.tic.lam(), tau = KC.tic.tau(), ag = num("kAg"); ctx.fillStyle = "#F8FAFC"; ctx.fillRect(0, 0, w, h);
+  if (rnd() < lam * dt / 3) KS.o.parts.push({ x: 0, y: 40 + rnd() * 30, v: 120 + rnd() * 60 }); KS.o.parts = KS.o.parts.filter(p => { p.x += p.v * dt; ctx.fillStyle = KS.o.inc ? COL.coral : COL.violet; ctx.fillRect(p.x, p.y, 16, 11); return p.x < w * 0.35; });
+  txt(ctx, `llegadas λ = ${lam}/h`, 10, 30, { b: true, c: KS.o.inc ? COL.coral : COL.violet }); const n = Math.min(160, Math.round(B / 2)), qx = w * 0.36, cols = 8;
+  for (let i = 0; i < n; i++) { const c = i % cols, r = Math.floor(i / cols); ctx.fillStyle = r % 2 ? "#FDE68A" : "#FCD34D"; ctx.fillRect(qx + c * 18, h - 30 - r * 13, 15, 10); }
+  txt(ctx, `cola: ${fx(B, 0)} tickets (cada tarjeta = 2)`, qx, h - 10, { b: true, s: 12 });
+  for (let a = 0; a < ag; a++) { const ax = w * 0.78 + (a % 2) * 70, ay = 40 + Math.floor(a / 2) * 54; ctx.fillStyle = "#E2E8F0"; ctx.fillRect(ax - 24, ay + 14, 48, 8); disc(ctx, ax, ay - 2, 10, COL.teal); ctx.fillStyle = COL.teal; rr(ctx, ax - 12, ay + 6, 24, 14, 6); ctx.fill(); const pr = (TCLOCK * (B / tau / ag) / 6 + a * 0.37) % 1; ctx.fillStyle = COL.amber; ctx.fillRect(ax + 14, ay - 4 - pr * 10, 10, 7); }
+  txt(ctx, `${ag} agentes · τ = ${fx(tau, 1)} h`, w * 0.75, h - 10, { b: true, s: 12, c: COL.teal });
+  $("kStats").innerHTML = stat("Tickets", fx(B, 0)) + stat("Resoluciones", fx(B / tau, 1) + "/h") + stat("Espera W = B/λ", fx(B / lam, 2) + " h") + stat("Equilibrio λ·τ", fx(lam * tau, 0));
+  $("kMsg").className = "msg"; $("kMsg").innerHTML = `Ley de Little: en equilibrio la espera es τ = ${fx(tau, 1)} h sin importar cuántos tickets lleguen. Para esperar menos hay que bajar τ (más agentes).`;
+}
+function scGus(ctx, w, h, dt) {
+  const [S, I, R] = KS.x, nI = Math.round(I / 1500), nR = Math.round(R / 1500), cols = 20, rows = 12, gx = (w - 40) / cols, gy = (h - 50) / rows; ctx.fillStyle = "#0F172A"; ctx.fillRect(0, 0, w, h);
+  const pos = i => [20 + (i % cols) * gx + gx / 2, 36 + Math.floor(i / cols) * gy + gy / 2], inf = new Set(KS.o.ord.slice(0, nI)), pat = new Set(KS.o.ord2.slice(0, nR));
+  if (nI > 0 && rnd() < Math.min(1, nI / 20)) { const a = KS.o.ord[Math.floor(rnd() * Math.max(1, nI))], b = Math.floor(rnd() * 240); KS.fx.push({ a, b, t: 1 }); }
+  KS.fx = KS.fx.filter(f => { f.t -= dt * 2; const [x1, y1] = pos(f.a), [x2, y2] = pos(f.b); ctx.strokeStyle = `rgba(225,29,72,${f.t * 0.6})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); return f.t > 0; });
+  for (let i = 0; i < 240; i++) { const [x, y] = pos(i); if (pat.has(i)) { ctx.fillStyle = COL.teal; rr(ctx, x - 5, y - 5, 10, 10, 2); ctx.fill(); } else disc(ctx, x, y, 4.5, inf.has(i) ? COL.coral : "#475569"); }
+  txt(ctx, `Hora ${fx(KS.t, 1)} desde las 10:00 UTC · infectados ${fx(I, 0)} · protegidos ${fx(R, 0)}`, 20, 22, { c: "#fff", b: true, s: 13 });
+  const rate = num("kB") * S * I / 360000 / 60; $("kStats").innerHTML = stat("Infectados", fx(I, 0)) + stat("Nuevos por minuto", fx(rate, 0)) + stat("Vulnerables", fx(S, 0)) + stat("Protegidos", fx(R, 0));
+  $("kMsg").className = "msg " + (KS.o.g ? "ok" : ""); $("kMsg").innerHTML = KS.o.g ? "Con los parches la población vulnerable se reduce y el bucle de refuerzo pierde fuerza." : "Rojo: infectado · gris: vulnerable · cian: parcheado. Con β = 1,33 el pico supera los 2 000 hosts nuevos por minuto, como reportó CAIDA.";
+}
+function scAut(ctx, w, h, dt) {
+  const [P, S, Um] = KS.x, D = KC.aut.dem(), U = D / (100 * S); ctx.fillStyle = "#F8FAFC"; ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = COL.ink2; rr(ctx, 14, h / 2 - 40, 60, 80, 8); ctx.fill(); txt(ctx, "balanceador", 44, h / 2 + 56, { a: "center", s: 11, b: true }); txt(ctx, `${D} req/s`, 44, h / 2 + 4, { a: "center", c: "#fff", b: true, s: 11 });
+  if (rnd() < D / 900) KS.o.parts.push({ x: 74, y: h / 2 + (rnd() - 0.5) * 50, v: 160 + rnd() * 80 }); KS.o.parts = KS.o.parts.filter(p => { p.x += p.v * dt; disc(ctx, p.x, p.y, 2.5, COL.violet); return p.x < 120; });
+  const na = Math.round(S), nb = Math.round(P), tot = Math.min(60, na + nb), cols = 10, cw = (w - 150) / cols, ch = Math.min(34, (h - 40) / 6);
+  for (let i = 0; i < tot; i++) { const x = 130 + (i % cols) * cw, y = 20 + Math.floor(i / cols) * (ch + 8), boot = i >= na; ctx.fillStyle = boot ? "#FEF3C7" : "#DCFCE7"; rr(ctx, x, y, cw - 6, ch, 4); ctx.fill(); ctx.strokeStyle = boot ? COL.amber : COL.green; ctx.lineWidth = 1.5; ctx.stroke();
+    if (boot) { const pr = (TCLOCK * 0.6 + i * 0.13) % 1; ctx.fillStyle = COL.amber; ctx.fillRect(x + 4, y + ch - 8, (cw - 14) * pr, 4); } else { const ul = clamp(U, 0, 1.3); ctx.fillStyle = ul > 0.9 ? COL.coral : ul > 0.75 ? COL.amber : COL.green; ctx.fillRect(x + 4, y + ch - 8, (cw - 14) * Math.min(1, ul), 4); disc(ctx, x + 8, y + 8, 2.5, (TCLOCK * 4 + i) % 2 > 1 ? COL.green : "#86EFAC"); } }
+  txt(ctx, `activas ${fx(S, 1)} · en arranque ${fx(P, 1)} · utilización ${fx(100 * U, 0)} % · minuto ${fx(KS.t, 0)}`, 130, h - 8, { b: true, s: 12 });
+  $("kStats").innerHTML = stat("Activas", fx(S, 1)) + stat("En arranque", fx(P, 1)) + stat("Necesarias", fx(D / 70, 1)) + stat("Utilización", fx(100 * U, 0) + " %");
+  $("kMsg").className = "msg"; $("kMsg").innerHTML = KS.o.sl ? "Regla con línea de suministro: descuenta las instancias que ya vienen en camino y no sobrerreacciona." : "Regla ingenua: mientras las máquinas arrancan, la utilización sigue alta y se piden más; al terminar de arrancar sobran.";
+}
+function scBro(ctx, w, h, dt) {
+  const [W, N, E] = KS.x, n = N + E; ctx.fillStyle = "#F8FAFC"; ctx.fillRect(0, 0, w, h); const kx = 14, kw = w * 0.34;
+  [["Pendiente", Math.max(0, W)], ["Hecho", 2000 - Math.max(0, W)]].forEach(([l, v], j) => { const x = kx + j * (kw / 2 + 6); ctx.fillStyle = "#E2E8F0"; rr(ctx, x, 30, kw / 2, h - 44, 8); ctx.fill(); txt(ctx, `${l} (${fx(v, 0)})`, x + 6, 22, { b: true, s: 12 });
+    const nc = Math.round(v / 40); for (let i = 0; i < nc; i++) { ctx.fillStyle = j ? "#BBF7D0" : "#FDE68A"; ctx.fillRect(x + 6 + (i % 4) * ((kw / 2 - 12) / 4), 38 + Math.floor(i / 4) * 21, (kw / 2 - 12) / 4 - 4, 16); } });
+  const cx = w * 0.7, cy = h * 0.52, rad = Math.min(w * 0.22, h * 0.38), ne = Math.round(E), nn = Math.round(N), tot = ne + nn, P = Array.from({ length: tot }, (_, i) => [cx + rad * Math.cos(2 * Math.PI * i / tot), cy + rad * Math.sin(2 * Math.PI * i / tot)]);
+  ctx.strokeStyle = "rgba(100,116,139,.18)"; ctx.lineWidth = 1; for (let i = 0; i < tot; i++) for (let j = i + 1; j < tot; j++) { ctx.beginPath(); ctx.moveTo(...P[i]); ctx.lineTo(...P[j]); ctx.stroke(); }
+  ctx.strokeStyle = "rgba(245,158,11,.8)"; ctx.lineWidth = 2; for (let j = 0; j < nn; j++) { const a = P[ne + j], b = P[j % Math.max(1, ne)]; ctx.beginPath(); ctx.moveTo(...a); ctx.lineTo(...b); ctx.stroke(); }
+  P.forEach(([x, y], i) => { disc(ctx, x, y, 9, i < ne ? COL.blue : COL.amber); disc(ctx, x, y - 13, 5, i < ne ? COL.blue : COL.amber); });
+  txt(ctx, `${tot} personas · ${tot * (tot - 1) / 2} canales de comunicación`, cx, h - 8, { a: "center", b: true, s: 12 }); legend(ctx, [["expertos", COL.blue], ["novatos", COL.amber]], w - 110, 18);
+  const so = Math.min(0.9, 0.08 * (n / 10) ** 2), pr = Math.max(0, (E - 0.5 * N) + 0.2 * N) * (1 - so);
+  $("kStats").innerHTML = stat("Día", fx(KS.t, 0)) + stat("Tareas pendientes", fx(Math.max(0, W), 0)) + stat("Avance", fx(pr, 1) + " tareas/día") + stat("Sobrecarga", fx(100 * so, 0) + " %");
+  const fin = KS.o.fin, base = KS.o.base.fin; $("kMsg").className = "msg " + (fin !== null ? (fin > base + 0.5 ? "bad" : "ok") : ""); $("kMsg").innerHTML = fin !== null ? `Proyecto terminado el día ${fx(fin, 0)} (sin contratar: ${fx(base, 0)}). ${fin > base + 0.5 ? "Contratar tarde lo atrasó: ley de Brooks." : ""}` : "Contrate al inicio y luego repita contratando hacia el día 150: compare el día de terminación.";
+}
+function scVen(ctx, w, h, dt) {
+  const T = KS.x[0], sp = num("kSp"), f = KS.o.fan ?? 43, kp = num("kKp"), ki = num("kKi"), z = (1 + 0.3 * kp) / (2 * Math.sqrt(40 * 0.3 * ki)), wn = Math.sqrt(0.3 * ki / 40), hot = clamp((T - 35) / 45, 0, 1);
+  ctx.fillStyle = "#E2E8F0"; ctx.fillRect(0, 0, w, h); ctx.fillStyle = "#1E293B"; rr(ctx, 20, 30, w - 40, h - 60, 14); ctx.fill();
+  KS.o.ang = (KS.o.ang || 0) + dt * f * 0.25; fan(ctx, 110, h / 2, Math.min(70, h * 0.25), KS.o.ang); txt(ctx, `ventilador ${fx(f, 0)} %`, 110, h - 40, { a: "center", c: "#fff", b: true });
+  if (rnd() < f / 60) KS.o.parts.push({ x: 190, y: h / 2 + (rnd() - 0.5) * 100, v: 100 + f * 2 }); KS.o.parts = KS.o.parts.filter(p => { p.x += p.v * dt; ctx.strokeStyle = "rgba(103,232,249,.6)"; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + 14, p.y); ctx.stroke(); return p.x < w - 40; });
+  chip(ctx, w * 0.55, h / 2, 90, mixRGB([59, 130, 246], [225, 29, 72], hot)); txt(ctx, fx(T, 1) + " °C", w * 0.55, h / 2 + 6, { a: "center", c: "#fff", b: true, s: 17 });
+  txt(ctx, `objetivo ${sp} °C`, w * 0.8, h / 2 - 10, { a: "center", c: COL.amber, b: true, s: 15 }); txt(ctx, KS.o.extra ? "carga 160 W" : "carga 120 W", w * 0.8, h / 2 + 16, { a: "center", c: "#CBD5E1", b: true, s: 13 });
+  $("kStats").innerHTML = stat("ζ", fx(z, 2)) + stat("ωn", fx(wn, 4) + " rad/s") + stat("Mp teórico", z < 1 ? fx(100 * Math.exp(-Math.PI * z / Math.sqrt(1 - z * z)), 1) + " %" : "0 %") + stat("Ventilador", fx(f, 0) + " %");
+  $("kMsg").className = "msg"; $("kMsg").innerHTML = z < 0.5 ? "ζ bajo: la temperatura se pasa del objetivo y oscila." : z > 1.2 ? "ζ alto: no oscila, pero tarda mucho en llegar al objetivo." : "ζ cercano a 0,7: buen compromiso entre rapidez y sobrepaso.";
+}
+
+/* ======================= arranque ======================= */
+function goTab(t) { document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("on", b.dataset.t === t)); document.querySelectorAll("main section").forEach(s => s.classList.toggle("on", s.id === t)); window.scrollTo({ top: 0, behavior: "smooth" }); }
+document.querySelectorAll("#nav button").forEach(b => b.onclick = () => goTab(b.dataset.t));
+buildCases(); $("cases").querySelectorAll("[data-go]").forEach(c => { c.style.cursor = "pointer"; c.onclick = () => goTab(c.dataset.go); });
+playBtn("pPlay", PO); $("pReset").onclick = poReset; ["pTau", "pXs", "pX0", "pDt", "pMet"].forEach(id => $(id).addEventListener("change", poReset)); ["pTau", "pXs", "pX0", "pDt"].forEach(id => $(id).addEventListener("input", poReset)); poReset();
+playBtn("sPlay", SO); $("sReset").onclick = soReset; document.querySelectorAll("[data-z]").forEach(b => b.onclick = () => { $("sZ").value = b.dataset.z; soReset(); }); ["sZ", "sW"].forEach(id => $(id).addEventListener("input", soReset)); soReset();
+$("vBtns").innerHTML = Object.entries(VCASE).map(([k, c]) => `<button data-v="${k}">${c.n}</button>`).join(""); $("vBtns").querySelectorAll("button").forEach(b => b.onclick = () => vSelect(b.dataset.v));
+$("vRun").onclick = () => vRun(); $("vKeep").onclick = () => { if (!VP.res) return; const n = $("vVar").value; VP.keep = { n, t: VP.res.t.slice(), y: VP.res[n].slice() }; VP.t = 1; }; $("vClr").onclick = () => { VP.keep = null; }; $("vVar").onchange = () => { VP.t = 1; };
+vSelect("cpu");
+$("eNav").querySelectorAll("button").forEach(b => b.onclick = () => esSelect(b.dataset.c)); esSelect("esc");
+$("kBtns").innerHTML = Object.entries(KC).map(([k, c]) => `<button data-k="${k}">${c.n}</button>`).join(""); $("kBtns").querySelectorAll("button").forEach(b => b.onclick = () => kSelect(b.dataset.k)); kSelect("cpu");
+requestAnimationFrame(mainLoop);
+
+</script>
+</body>
+</html>

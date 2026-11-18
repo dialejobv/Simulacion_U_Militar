@@ -1,0 +1,148 @@
+{UTF-8}
+Susceptibles=
+	INTEG (
+			-Infecciones-Parcheo de susceptibles,
+				Hosts vulnerables-Infectados iniciales)
+	~	hosts
+	~	
+	|
+
+Infectados=
+	INTEG (
+			Infecciones-Parcheo de infectados,
+				Infectados iniciales)
+	~	hosts
+	~	Nivel: servidores IIS comprometidos.
+	|
+
+Protegidos=
+	INTEG (
+			Parcheo de susceptibles+Parcheo de infectados,
+				0)
+	~	hosts
+	~	
+	|
+
+Infecciones=
+	Tasa de contacto*Susceptibles*Infectados/Hosts vulnerables
+	~	hosts/hora
+	~	Crecimiento logístico: R al inicio, B al agotarse los susceptibles.
+	|
+
+Parcheo de susceptibles=
+	Tasa de parcheo*Susceptibles*STEP(1, Inicio del parcheo)
+	~	hosts/hora
+	~	
+	|
+
+Parcheo de infectados=
+	Tasa de parcheo*Infectados*STEP(1, Inicio del parcheo)
+	~	hosts/hora
+	~	
+	|
+
+Tasa de contacto=
+	1.33
+	~	1/hora
+	~	Calibrada: pico de unos 2 000 hosts por minuto (CAIDA, 2001).
+	|
+
+Hosts vulnerables=
+	360000
+	~	hosts
+	~	Más de 359 000 hosts infectados el 19 de julio de 2001 (CAIDA).
+	|
+
+Infectados iniciales=
+	30
+	~	hosts
+	~	
+	|
+
+Tasa de parcheo=
+	0
+	~	1/hora
+	~	Escenario: 0.5 desde la hora 4 o 6.
+	|
+
+Inicio del parcheo=
+	4
+	~	hora
+	~	
+	|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 16
+	~	hora
+	~	Tiempo final de la simulación.
+	|
+
+INITIAL TIME  = 0
+	~	hora
+	~	Tiempo inicial de la simulación.
+	|
+
+SAVEPER  = 
+	TIME STEP
+	~	hora [0,?]
+	~	Frecuencia de guardado.
+	|
+
+TIME STEP  = 0.0625
+	~	hora [0,?]
+	~	Paso de integración (método de Euler).
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,100,0
+10,1,Susceptibles,160,220,46,26,3,3,0,0,0,0,0,0
+10,2,Infectados,420,220,46,26,3,3,0,0,0,0,0,0
+10,3,Protegidos,300,420,46,26,3,3,0,0,0,0,0,0
+1,4,6,2,4,0,0,22,0,0,0,-1--1--1,,1|(349,220)|
+1,5,6,1,100,0,0,22,0,0,0,-1--1--1,,1|(205,220)|
+11,6,48,290,220,6,8,34,3,0,0,1,0,0,0
+10,7,Infecciones,290,242,44,12,40,3,0,0,-1,0,0,0
+10,8,Tasa de contacto,290,110,40,12,8,3,0,0,0,0,0,0
+10,9,Hosts vulnerables,170,90,40,12,8,3,0,0,0,0,0,0
+10,10,Infectados iniciales,470,100,40,12,8,3,0,0,0,0,0,0
+10,11,Tasa de parcheo,560,330,40,12,8,3,0,0,0,0,0,0
+10,12,Inicio del parcheo,560,420,40,12,8,3,0,0,0,0,0,0
+10,13,Parcheo de susceptibles,150,330,40,12,8,3,0,0,0,0,0,0
+10,14,Parcheo de infectados,430,330,40,12,8,3,0,0,0,0,0,0
+1,15,8,6,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,16,9,6,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,17,1,6,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,18,2,6,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,19,11,14,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,20,11,13,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,21,12,14,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,22,1,13,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,23,2,14,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+///---\\\
+:L<%^E!@
+1:Current.vdf
+9:Current
+15:0,0,0,0,0,0
+19:100,0
+27:0,
+34:0,
+4:Time
+5:Susceptibles
+35:Date
+36:YYYY-MM-DD
+37:2000
+38:1
+39:1
+40:0
+41:0
+42:1
+24:0
+25:16
+26:16

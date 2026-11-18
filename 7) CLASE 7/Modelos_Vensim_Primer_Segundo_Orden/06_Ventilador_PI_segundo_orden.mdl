@@ -1,0 +1,241 @@
+{UTF-8}
+Temperatura servidor=
+	INTEG (
+			Cambio de temperatura,
+				Temperatura objetivo inicial)
+	~	C
+	~	Nivel 1 del lazo cerrado.
+	|
+
+Error acumulado=
+	INTEG (
+			Acumulacion del error,
+				Ventilador inicial/Ki)
+	~	C*s
+	~	Nivel 2: la acción integral del controlador PI.
+	|
+
+Cambio de temperatura=
+	(Temperatura ambiente+Potencia*Resistencia termica-Efecto del ventilador*Velocidad del ventilador-Temperatura servidor)/Constante de tiempo
+	~	C/s
+	~	
+	|
+
+Error=
+	Temperatura servidor-Temperatura objetivo
+	~	C
+	~	
+	|
+
+Temperatura objetivo=
+	Temperatura objetivo inicial+STEP(Nuevo objetivo-Temperatura objetivo inicial, Momento del cambio)
+	~	C
+	~	
+	|
+
+Senal del controlador=
+	Kp*Error+Ki*Error acumulado
+	~	%
+	~	
+	|
+
+Velocidad del ventilador=
+	MAX(0, MIN(100, Senal del controlador))
+	~	%
+	~	
+	|
+
+Acumulacion del error=
+	IF THEN ELSE(Senal del controlador>=100 :AND: Error>0, 0, IF THEN ELSE(Senal del controlador<=0 :AND: Error<0, 0, Error))
+	~	C
+	~	Anti-windup: deja de integrar si el ventilador está saturado.
+	|
+
+Ventilador inicial=
+	(Temperatura ambiente+Potencia*Resistencia termica-Temperatura objetivo inicial)/Efecto del ventilador
+	~	%
+	~	
+	|
+
+Potencia=
+	Potencia base+STEP(Potencia extra, Momento de la carga)
+	~	W
+	~	
+	|
+
+Kp=
+	1.5
+	~	%/C
+	~	Agresivo: 0.3 · Bien ajustado: 1.5 · Lento: 1
+	|
+
+Ki=
+	0.1
+	~	%/(C*s)
+	~	Agresivo: 0.15 · Bien ajustado: 0.1 · Lento: 0.01
+	|
+
+Temperatura objetivo inicial=
+	60
+	~	C
+	~	
+	|
+
+Nuevo objetivo=
+	50
+	~	C
+	~	
+	|
+
+Momento del cambio=
+	50
+	~	s
+	~	
+	|
+
+Temperatura ambiente=
+	25
+	~	C
+	~	
+	|
+
+Resistencia termica=
+	0.4
+	~	C/W
+	~	
+	|
+
+Efecto del ventilador=
+	0.3
+	~	C/%
+	~	
+	|
+
+Constante de tiempo=
+	40
+	~	s
+	~	
+	|
+
+Potencia base=
+	120
+	~	W
+	~	
+	|
+
+Potencia extra=
+	0
+	~	W
+	~	Perturbación opcional.
+	|
+
+Momento de la carga=
+	300
+	~	s
+	~	
+	|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 600
+	~	s
+	~	Tiempo final de la simulación.
+	|
+
+INITIAL TIME  = 0
+	~	s
+	~	Tiempo inicial de la simulación.
+	|
+
+SAVEPER  = 
+	TIME STEP
+	~	s [0,?]
+	~	Frecuencia de guardado.
+	|
+
+TIME STEP  = 0.125
+	~	s [0,?]
+	~	Paso de integración (método de Euler).
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,100,0
+12,1,48,110,230,10,8,0,3,0,0,-1,0,0,0
+10,2,Temperatura servidor,330,230,46,26,3,3,0,0,0,0,0,0
+12,3,48,330,520,10,8,0,3,0,0,-1,0,0,0
+10,4,Error acumulado,580,470,46,26,3,3,0,0,0,0,0,0
+1,5,7,2,4,0,0,22,0,0,0,-1--1--1,,1|(236,230)|
+1,6,7,1,100,0,0,22,0,0,0,-1--1--1,,1|(142,230)|
+11,7,48,202,230,6,8,34,3,0,0,1,0,0,0
+10,8,Cambio de temperatura,202,252,44,12,40,3,0,0,-1,0,0,0
+1,9,11,4,4,0,0,22,0,0,0,-1--1--1,,1|(486,470)|
+1,10,11,3,100,0,0,22,0,0,0,-1--1--1,,1|(374,470)|
+11,11,48,443,470,6,8,34,3,0,0,1,0,0,0
+10,12,Acumulacion del error,443,492,44,12,40,3,0,0,-1,0,0,0
+10,13,Error,530,320,40,12,8,3,0,0,0,0,0,0
+10,14,Temperatura objetivo,600,210,40,12,8,3,0,0,0,0,0,0
+10,15,Senal del controlador,760,380,40,12,8,3,0,0,0,0,0,0
+10,16,Velocidad del ventilador,520,110,40,12,8,3,0,0,0,0,0,0
+10,17,Ventilador inicial,760,530,40,12,8,3,0,0,0,0,0,0
+10,18,Potencia,140,110,40,12,8,3,0,0,0,0,0,0
+10,19,Kp,860,300,40,12,8,3,0,0,0,0,0,0
+10,20,Ki,860,460,40,12,8,3,0,0,0,0,0,0
+10,21,Temperatura objetivo inicial,760,130,40,12,8,3,0,0,0,0,0,0
+10,22,Nuevo objetivo,760,70,40,12,8,3,0,0,0,0,0,0
+10,23,Momento del cambio,640,60,40,12,8,3,0,0,0,0,0,0
+10,24,Temperatura ambiente,90,340,40,12,8,3,0,0,0,0,0,0
+10,25,Resistencia termica,190,380,40,12,8,3,0,0,0,0,0,0
+10,26,Efecto del ventilador,330,60,40,12,8,3,0,0,0,0,0,0
+10,27,Constante de tiempo,230,330,40,12,8,3,0,0,0,0,0,0
+10,28,Potencia base,60,60,40,12,8,3,0,0,0,0,0,0
+10,29,Potencia extra,160,30,40,12,8,3,0,0,0,0,0,0
+10,30,Momento de la carga,260,50,40,12,8,3,0,0,0,0,0,0
+1,31,2,13,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,32,14,13,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,33,13,15,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,34,4,15,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,35,19,15,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,36,20,15,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,37,15,16,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,38,16,7,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,39,2,7,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,40,18,7,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,41,24,7,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,42,25,7,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,43,26,7,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,44,27,7,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,45,13,11,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,46,15,11,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,47,21,14,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,48,22,14,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,49,23,14,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,50,28,18,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,51,29,18,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,52,30,18,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+///---\\\
+:L<%^E!@
+1:Current.vdf
+9:Current
+15:0,0,0,0,0,0
+19:100,0
+27:0,
+34:0,
+4:Time
+5:Temperatura servidor
+35:Date
+36:YYYY-MM-DD
+37:2000
+38:1
+39:1
+40:0
+41:0
+42:1
+24:0
+25:600
+26:600
